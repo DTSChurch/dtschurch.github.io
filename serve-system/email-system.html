@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serve System Email Docs | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="../">DTS Dev Docs</a>
+      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-nav">
+        Menu
+      </button>
+      <nav id="site-nav" class="site-nav" data-menu>
+        <a href="../">Home</a>
+        <a href="./">Serve System</a>
+      </nav>
+    </header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Serve System Docs</h2>
+        <a href="./">Overview</a>
+        <a href="email-system.html">Email System</a>
+        <a href="connection-requests.html">Connection Requests</a>
+        <a href="reference/">Reference Library</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Workflow</p>
+          <h1>Email system (confirmation + notification)</h1>
+          <p>
+            Serve System sends confirmation emails to volunteers and notification emails to
+            recipients configured per opportunity. Both use Rock System Communications with
+            merge fields provided by the sign-up service.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Flow summary</h2>
+          <pre><code>Volunteer signs up
+|- confirmation path -> system comm on opportunity -> send to volunteer
+|  |- optional ContentTemplate (hierarchical template match)
+|- notification path -> filter signups by recipient campus/role -> send to people/groups</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Template hierarchy</h2>
+          <p>
+            Content template resolution is implemented in
+            <code>ServeOpportunityNotificationContentTemplateService.GetMostSpecificTemplate</code>
+            with this order:
+          </p>
+          <ol>
+            <li>Role + Campus</li>
+            <li>Role only</li>
+            <li>Role Category + Campus</li>
+            <li>Role Category only</li>
+            <li>Campus only</li>
+            <li>Default template (no role/category/campus)</li>
+          </ol>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Key merge fields</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Confirmation</th>
+                  <th>Notification</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Person</code></td>
+                  <td>Volunteer who signed up</td>
+                  <td>Email recipient person</td>
+                </tr>
+                <tr>
+                  <td><code>ServeOpportunity</code></td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><code>ServeOpportunityInstance</code></td>
+                  <td>Yes</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><code>ServeOpportunityRole</code></td>
+                  <td>Selected role</td>
+                  <td>Role from grouped sign-ups</td>
+                </tr>
+                <tr>
+                  <td><code>Campus</code></td>
+                  <td>Selected campus</td>
+                  <td>Campus from grouped sign-ups</td>
+                </tr>
+                <tr>
+                  <td><code>ShiftDetails</code></td>
+                  <td>List of shift items</td>
+                  <td>Grouped shift objects with people/signups</td>
+                </tr>
+                <tr>
+                  <td><code>ContentTemplate</code></td>
+                  <td>Yes (if matched)</td>
+                  <td>No</td>
+                </tr>
+                <tr>
+                  <td><code>NotificationRole</code> / <code>NotificationCampus</code></td>
+                  <td>No</td>
+                  <td>Yes, based on recipient filters</td>
+                </tr>
+                <tr>
+                  <td><code>People</code> / <code>SignUps</code></td>
+                  <td>No</td>
+                  <td>Yes</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Implementation source</h2>
+          <ul>
+            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityInstanceSignUp/ServeOpportunityInstanceSignUpService.cs</code></li>
+            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityNotificationContentTemplate/ServeOpportunityNotificationContentTemplateService.cs</code></li>
+            <li><code>serve-system/org.tpcc.ServeSystem/ServeHelper.cs</code></li>
+          </ul>
+          <p>
+            Canonical long-form documentation is mirrored at
+            <a href="reference/TPCC_ServeSystem_Email_Documentation.md">reference/TPCC_ServeSystem_Email_Documentation.md</a>.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Troubleshooting quick list</h2>
+          <ul>
+            <li>Missing confirmations: verify <code>ConfirmationSystemEmailId</code> and active System Communication.</li>
+            <li>Missing notifications: verify <code>NotificationSystemEmailId</code> and recipient filters.</li>
+            <li>Empty template output: add at least a default content template for fallback.</li>
+            <li>Unexpected template: verify role/category/campus specificity precedence.</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <script src="../assets/site.js"></script>
+  </body>
+</html>

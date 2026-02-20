@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serve System References | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="../../">DTS Dev Docs</a>
+      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-nav">
+        Menu
+      </button>
+      <nav id="site-nav" class="site-nav" data-menu>
+        <a href="../../">Home</a>
+        <a href="../">Serve System</a>
+      </nav>
+    </header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Serve System Docs</h2>
+        <a href="../">Overview</a>
+        <a href="../email-system.html">Email System</a>
+        <a href="../connection-requests.html">Connection Requests</a>
+        <a href="../operations.html">Operations</a>
+        <a href="./">Reference Library</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">References</p>
+          <h1>Mirrored source documents</h1>
+          <p>
+            These files are mirrored from <code>serve-system/README.md</code> and
+            <code>serve-system/docs/</code> in the development workspace.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Markdown docs</h2>
+          <ul>
+            <li><a href="README.md">README.md</a></li>
+            <li><a href="TPCC_ServeSystem_Email_Documentation.md">TPCC_ServeSystem_Email_Documentation.md</a></li>
+            <li><a href="TPCC_ServeSystem_ConnectionRequest_Documentation.md">TPCC_ServeSystem_ConnectionRequest_Documentation.md</a></li>
+            <li><a href="WS-001_Block_Mapping_Matrix.md">WS-001_Block_Mapping_Matrix.md</a></li>
+            <li><a href="WS-014_Migration_Rehearsal_Report.md">WS-014_Migration_Rehearsal_Report.md</a></li>
+            <li><a href="WS-015_Release_Runbook.md">WS-015_Release_Runbook.md</a></li>
+            <li><a href="WS-015_Go_No_Go_Checklist.md">WS-015_Go_No_Go_Checklist.md</a></li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>CSV artifacts</h2>
+          <ul>
+            <li><a href="task-tracker.csv">task-tracker.csv</a></li>
+            <li><a href="ws-014-regression-matrix.csv">ws-014-regression-matrix.csv</a></li>
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

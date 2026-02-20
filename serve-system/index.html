@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serve System Docs | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="Serve System technical documentation for Rock RMS."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="../">DTS Dev Docs</a>
+      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-nav">
+        Menu
+      </button>
+      <nav id="site-nav" class="site-nav" data-menu>
+        <a href="../">Home</a>
+        <a href="./" class="is-active">Serve System</a>
+      </nav>
+    </header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Serve System Docs</h2>
+        <a href="./">Overview</a>
+        <a href="email-system.html">Email System</a>
+        <a href="connection-requests.html">Connection Requests</a>
+        <a href="reference/">Reference Library</a>
+        <a href="reference/TPCC_ServeSystem_Email_Documentation.md">Reference Email Doc</a>
+        <a href="reference/TPCC_ServeSystem_ConnectionRequest_Documentation.md">Reference Connection Doc</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Serve System</p>
+          <h1>Rock RMS volunteer scheduling and sign-up plugin</h1>
+          <p>
+            The Serve System plugin extends Rock RMS with structured volunteer opportunity
+            management, role-based scheduling, self-service sign-up, targeted communications,
+            and coordinator workflows.
+          </p>
+          <p>
+            Codebase source: <code>serve-system/</code>
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Core capabilities</h2>
+          <ul class="kv-list">
+            <li><strong>Serve Opportunities:</strong> define opportunities, roles, campuses, and attributes.</li>
+            <li><strong>Scheduling:</strong> generate and manage instances and shifts with custom timing.</li>
+            <li><strong>Volunteer experience:</strong> self-service sign-up and confirmation communication.</li>
+            <li><strong>Coordinator operations:</strong> targeted notification emails and connection integration.</li>
+            <li><strong>Rock integration:</strong> WebForms legacy blocks and Obsidian block surfaces.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Quick start (development)</h2>
+          <pre><code>dotnet tool install --global SparkDevNetwork.Rock.DevTool
+rock-dev-tool env update
+cd serve-system
+dotnet restore
+dotnet build</code></pre>
+          <p class="footer-note">
+            Requirements from current project docs: Rock RMS v17+, .NET Framework 4.7.2,
+            and .NET 8 SDK for toolchain support.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>High-level architecture</h2>
+          <pre><code>ServeOpportunity
+|- Roles (ServeOpportunityRole)
+|  |- optional Connection Opportunity / DataView filters
+|- Notification Recipients
+|- Notification Content Templates
+|- Instances (ServeOpportunityInstance)
+   |- Shifts (ServeOpportunityInstanceShift)
+      |- Sign-Ups (ServeOpportunityInstanceSignUp)</code></pre>
+          <p>
+            Primary implementation namespaces live under
+            <code>org.tpcc.ServeSystem/Model</code>,
+            <code>org.tpcc.ServeSystem/Blocks</code>, and
+            <code>org.tpcc.ServeSystem/Workflow/Actions</code>.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Primary blocks</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Block</th>
+                  <th>Plugin path</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Serve Opportunity List</td>
+                  <td><code>~/Plugins/org_tpcc/ServeSystem/ServeOpportunityList.ascx</code></td>
+                  <td>List and route into opportunity management.</td>
+                </tr>
+                <tr>
+                  <td>Serve Opportunity Detail</td>
+                  <td><code>~/Plugins/org_tpcc/ServeSystem/ServeOpportunityDetail.ascx</code></td>
+                  <td>Edit opportunity metadata, roles, recipients, and templates.</td>
+                </tr>
+                <tr>
+                  <td>Serve Opportunity Instance List/Detail</td>
+                  <td><code>~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstance*.ascx</code></td>
+                  <td>Create and maintain event/service instances.</td>
+                </tr>
+                <tr>
+                  <td>Serve Opportunity Instance Sign-Up List/Detail</td>
+                  <td><code>~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstanceSignUp*.ascx</code></td>
+                  <td>View and manage registrations and cancellation state.</td>
+                </tr>
+                <tr>
+                  <td>Role Schedule Configurator</td>
+                  <td><code>~/Plugins/org_tpcc/ServeSystem/RoleScheduleConfigurator.ascx</code></td>
+                  <td>Configure role-level scheduling behavior.</td>
+                </tr>
+                <tr>
+                  <td>Serve Sign-Up</td>
+                  <td><code>~/Plugins/org_tpcc/ServeSystem/SignUp/ServeSignUp.ascx</code></td>
+                  <td>Public volunteer sign-up entry point.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Key source files</h2>
+          <ul>
+            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityInstanceSignUp/ServeOpportunityInstanceSignUpService.cs</code></li>
+            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityNotificationContentTemplate/ServeOpportunityNotificationContentTemplateService.cs</code></li>
+            <li><code>serve-system/org.tpcc.ServeSystem/Workflow/Actions/CancelServeSignUp.cs</code></li>
+            <li><code>serve-system/org.tpcc.ServeSystem/Lava/ServeFilters.cs</code></li>
+            <li><code>serve-system/org.tpcc.ServeSystem/Startup.cs</code></li>
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <script src="../assets/site.js"></script>
+  </body>
+</html>

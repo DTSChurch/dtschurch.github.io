@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serve Connection Requests | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="../">DTS Dev Docs</a>
+      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-nav">
+        Menu
+      </button>
+      <nav id="site-nav" class="site-nav" data-menu>
+        <a href="../">Home</a>
+        <a href="./">Serve System</a>
+      </nav>
+    </header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Serve System Docs</h2>
+        <a href="./">Overview</a>
+        <a href="email-system.html">Email System</a>
+        <a href="connection-requests.html">Connection Requests</a>
+        <a href="reference/">Reference Library</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Workflow</p>
+          <h1>Connection request lifecycle</h1>
+          <p>
+            Serve System can create Rock Connection Requests during sign-up when the selected
+            role has a <code>ConnectionOpportunityId</code> configured.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Processing logic</h2>
+          <pre><code>On sign-up
+|- if role has no ConnectionOpportunityId -> skip
+|- else check for existing active connection request (person + opportunity)
+|  |- if found -> link sign-up to existing request
+|  |- else optionally evaluate role DataView filter
+|     |- if allowed -> create request and attach all selected shift times
+|     |- if filtered out -> keep sign-up without connection request</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Fields set on create</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Value source</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>PersonAliasId</code></td>
+                  <td>Volunteer primary alias</td>
+                </tr>
+                <tr>
+                  <td><code>ConnectionOpportunityId</code></td>
+                  <td>Configured on role</td>
+                </tr>
+                <tr>
+                  <td><code>CampusId</code></td>
+                  <td>Selected campus or person primary campus</td>
+                </tr>
+                <tr>
+                  <td><code>ConnectionState</code></td>
+                  <td>Active</td>
+                </tr>
+                <tr>
+                  <td><code>ConnectionStatusId</code></td>
+                  <td>Default status from connection type</td>
+                </tr>
+                <tr>
+                  <td><code>Comments</code></td>
+                  <td>Aggregated shift date/time text</td>
+                </tr>
+                <tr>
+                  <td><code>ConnectorPersonAliasId</code></td>
+                  <td>Default connector by campus</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Sign-up cancellation behavior</h2>
+          <p>
+            After cancellation, the service method
+            <code>DeactivateConnectionRequestIfOrphaned</code> deactivates a connection request
+            only when no other active sign-ups still reference it.
+          </p>
+          <ul>
+            <li>Connection state changes to inactive.</li>
+            <li>An activity note is written to the request.</li>
+            <li>If an auto-inactivate status exists, status is updated as well.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Implementation source</h2>
+          <ul>
+            <li><code>serve-system/Plugins/org_tpcc/ServeSystem/SignUp/ServeSignUp.ascx.cs</code> (creation flow)</li>
+            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityRole/ServeOpportunityRole.cs</code> (role configuration)</li>
+            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityInstanceSignUp/ServeOpportunityInstanceSignUpService.cs</code> (orphan deactivation)</li>
+          </ul>
+          <p>
+            Canonical long-form documentation is mirrored at
+            <a href="reference/TPCC_ServeSystem_ConnectionRequest_Documentation.md">reference/TPCC_ServeSystem_ConnectionRequest_Documentation.md</a>.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script src="../assets/site.js"></script>
+  </body>
+</html>
