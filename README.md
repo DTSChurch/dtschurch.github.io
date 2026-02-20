@@ -25,7 +25,8 @@ When `serve-system` docs are updated, sync reference files:
 
 ```bash
 cp ../serve-system/README.md serve-system/reference/README.md
-cp ../serve-system/docs/* serve-system/reference/
+cp ../serve-system/docs/TPCC_ServeSystem_Email_Documentation.md serve-system/reference/
+cp ../serve-system/docs/TPCC_ServeSystem_ConnectionRequest_Documentation.md serve-system/reference/
 ```
 
 Then update HTML summary pages in `serve-system/*.html` if behavior changed.
