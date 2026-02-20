@@ -21,6 +21,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  max-width: 100%;
 }
 
 body {
@@ -29,6 +30,7 @@ body {
   background: var(--bg);
   line-height: 1.55;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 h1,
@@ -52,6 +54,11 @@ a {
 code,
 pre {
   font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .site-bg {
@@ -95,8 +102,9 @@ pre {
 }
 
 .topbar {
-  width: min(var(--max), calc(100% - 2rem));
+  width: min(var(--max), 100%);
   margin: 1rem auto 0;
+  padding-inline: 1rem;
   background: var(--surface);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 14px;
@@ -105,7 +113,8 @@ pre {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.85rem 1rem;
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
   position: sticky;
   top: 0.8rem;
   z-index: 20;
@@ -144,7 +153,8 @@ pre {
 }
 
 .page {
-  width: min(var(--max), calc(100% - 2rem));
+  width: min(var(--max), 100%);
+  padding-inline: 1rem;
   margin: 2.5rem auto 4rem;
   display: grid;
   gap: 1.7rem;
@@ -268,6 +278,7 @@ pre {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   gap: 1rem;
+  min-width: 0;
 }
 
 .docs-nav {
@@ -306,6 +317,7 @@ pre {
 .docs-main {
   display: grid;
   gap: 1rem;
+  min-width: 0;
 }
 
 .panel {
@@ -314,6 +326,7 @@ pre {
   border-radius: 14px;
   padding: 1.2rem;
   box-shadow: var(--shadow);
+  min-width: 0;
 }
 
 .panel h1 {
@@ -350,6 +363,12 @@ pre {
   border: 1px solid var(--line);
   background: #f2efe9;
   overflow-x: auto;
+  max-width: 100%;
+}
+
+pre code {
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .kv-list {
