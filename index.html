@@ -23,16 +23,7 @@
       <div class="grid-overlay"></div>
     </div>
 
-    <header class="topbar">
-      <a class="brand" href="./">DTS Dev Docs</a>
-      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="site-nav">
-        Menu
-      </button>
-      <nav id="site-nav" class="site-nav" data-menu>
-        <a href="./" class="is-active">Home</a>
-        <a href="serve-system/">Serve System</a>
-      </nav>
-    </header>
+    <header id="site-header"></header>
 
     <main class="page">
       <section class="hero reveal">
@@ -65,17 +56,19 @@
           <a class="text-link" href="serve-system/">Browse documentation</a>
         </article>
 
-        <article class="card info-card">
-          <p class="card-kicker">Source of Truth</p>
-          <h2>Synced from local codebase</h2>
+        <article class="card feature-card">
+          <p class="card-kicker">Rock Plugin</p>
+          <h2>Mailgun Toolbox</h2>
           <p>
-            Content in this site is derived from files in:
-            <code>/serve-system/README.md</code> and <code>/serve-system/docs/</code>.
+            Mailgun email monitoring dashboard for Rock RMS. Track delivery health,
+            manage bounces and complaints, and drill into failure details.
           </p>
-          <p>
-            Keep docs current by updating the source project and then syncing this
-            GitHub Pages repository.
-          </p>
+          <ul class="card-list">
+            <li>Overview dashboard with rate cards and charts</li>
+            <li>Bounce and complaint suppression management</li>
+            <li>Per-domain delivery breakdown</li>
+          </ul>
+          <a class="text-link" href="mailgun-toolbox/">Browse documentation</a>
         </article>
       </section>
 
@@ -98,6 +91,7 @@
       </section>
     </main>
 
+    <script src="assets/nav.js"></script>
     <script src="assets/site.js"></script>
   </body>
 </html>

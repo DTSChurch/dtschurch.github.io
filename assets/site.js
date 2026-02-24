@@ -1,22 +1,11 @@
 (function () {
-  var menuToggle = document.querySelector("[data-menu-toggle]");
-  var menu = document.querySelector("[data-menu]");
-
-  if (menuToggle && menu) {
-    menuToggle.addEventListener("click", function () {
-      var isOpen = menu.classList.toggle("is-open");
-      menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    });
-  }
-
-  var links = document.querySelectorAll(".site-nav a, .docs-nav a");
+  // ── Docs sidebar active-link highlighting ───────────────────
+  var links = document.querySelectorAll(".docs-nav a");
   var path = window.location.pathname;
 
   links.forEach(function (link) {
     var href = link.getAttribute("href");
-    if (!href) {
-      return;
-    }
+    if (!href) return;
 
     var normalizedHref = href.replace(/index\.html$/, "");
     var normalizedPath = path.replace(/index\.html$/, "");
@@ -29,6 +18,7 @@
     }
   });
 
+  // ── Scroll reveal ───────────────────────────────────────────
   var revealNodes = document.querySelectorAll(".reveal");
 
   if ("IntersectionObserver" in window) {

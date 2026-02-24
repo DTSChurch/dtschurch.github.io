@@ -129,6 +129,14 @@ code {
   font-weight: 700;
   color: var(--brand-deep);
   letter-spacing: 0.01em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-logo {
+  height: 28px;
+  width: auto;
 }
 
 .site-nav {
@@ -154,6 +162,97 @@ code {
 
 .menu-toggle {
   display: none;
+}
+
+/* ── Dropdown menu ─────────────────────────────── */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-toggle {
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+}
+
+.nav-dropdown-toggle:hover,
+.nav-dropdown-toggle.is-active {
+  color: var(--brand-deep);
+  border-color: rgba(10, 58, 114, 0.28);
+  background: var(--surface-strong);
+}
+
+.dropdown-arrow {
+  font-size: 0.7rem;
+  margin-left: 0.1rem;
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.nav-dropdown-panel.is-open ~ .nav-dropdown-toggle .dropdown-arrow,
+.nav-dropdown-toggle[aria-expanded="true"] .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  min-width: 230px;
+  background: var(--surface-strong);
+  border: 1px solid rgba(10, 58, 114, 0.14);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(12, 27, 43, 0.12);
+  padding: 0.4rem;
+  z-index: 30;
+}
+
+.nav-dropdown-panel.is-open {
+  display: block;
+}
+
+.dropdown-group {
+  padding: 0.3rem 0;
+}
+
+.dropdown-group + .dropdown-group {
+  border-top: 1px solid var(--line);
+}
+
+.dropdown-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  padding: 0.35rem 0.65rem 0.2rem;
+}
+
+.dropdown-link {
+  display: block;
+  text-decoration: none;
+  color: var(--ink);
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.dropdown-link:hover {
+  background: var(--bg);
+  color: var(--brand-deep);
+}
+
+.dropdown-link.is-active {
+  color: var(--brand-deep);
+  font-weight: 600;
+  background: rgba(10, 58, 114, 0.05);
 }
 
 .page {
@@ -447,5 +546,17 @@ pre code {
 
   .site-nav.is-open {
     display: flex;
+  }
+
+  .nav-dropdown {
+    width: 100%;
+  }
+
+  .nav-dropdown-panel {
+    position: static;
+    border: none;
+    box-shadow: none;
+    min-width: auto;
+    padding: 0 0 0 0.5rem;
   }
 }

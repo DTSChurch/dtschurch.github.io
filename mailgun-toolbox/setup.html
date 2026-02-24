@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mailgun Toolbox Setup | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Mailgun Toolbox</h2>
+        <a href="./">Overview</a>
+        <a href="setup.html">Setup &amp; Configuration</a>
+        <a href="reference/">Reference Library</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Setup Guide</p>
+          <h1>Installation &amp; Configuration</h1>
+          <p>
+            Two installation options are supported. The plugin file method is recommended
+            for most environments.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Option A: Plugin file (Recommended)</h2>
+          <ol>
+            <li>In Rock, navigate to <strong>Admin Tools &gt; System Settings &gt; Installed Plugins</strong>.</li>
+            <li>Click <strong>Upload Plugin</strong> and select the <code>mailgun-toolbox-x.x.x.plugin</code> file.</li>
+            <li>Rock installs the DLL and Obsidian files automatically.</li>
+            <li>Restart Rock (or recycle the application pool) to load the assembly.</li>
+          </ol>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Option B: Manual install</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Source</th>
+                  <th>Destination</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>com.dtschurch.ManagedMail/bin/Release/net472/com.dtschurch.ManagedMail.dll</code></td>
+                  <td><code>RockWeb/Bin/</code></td>
+                </tr>
+                <tr>
+                  <td><code>com.dtschurch.ManagedMail.Obsidian/dist/mailgunDomainStats.obs.js</code></td>
+                  <td><code>RockWeb/Plugins/com_dtschurch/ManagedMail/</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="footer-note">
+            Restart Rock after copying the files. The plugin migrations run automatically on startup.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>What the plugin creates</h2>
+          <p>On first startup the migrations will automatically:</p>
+          <ol>
+            <li>Register the <strong>Mailgun Domain Stats</strong> block type under <strong>DTSChurch &gt; Mail</strong>.</li>
+            <li>Create two <strong>Global Attributes</strong>: <code>MailgunApiKey</code> and <code>MailgunDomain</code>.</li>
+            <li>Create a <strong>Mailgun Toolbox</strong> page under <strong>Rock Shop / Installed Plugins</strong> with the block already added.</li>
+          </ol>
+          <p>
+            After restart, navigate to <strong>Admin Tools &gt; Installed Plugins &gt; Mailgun Toolbox</strong>.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Configuration</h2>
+
+          <h3>1. Set the Mailgun API Key</h3>
+          <ol>
+            <li>Go to <strong>Admin Tools &gt; General Settings &gt; Global Attributes</strong>.</li>
+            <li>Find <strong>Mailgun API Key</strong> (added by the plugin migration).</li>
+            <li>Enter your Mailgun private API key (starts with <code>key-...</code> or is a hex string).</li>
+            <li>Click <strong>Save</strong>.</li>
+          </ol>
+
+          <h3>2. Set the Mailgun Domain</h3>
+          <ol>
+            <li>In the same Global Attributes page, find <strong>Mailgun Domain</strong>.</li>
+            <li>Enter the sending domain configured in Mailgun (e.g. <code>mg.yourchurch.com</code>).</li>
+            <li>Click <strong>Save</strong>.</li>
+          </ol>
+
+          <h3>3. Configure the block (Optional)</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th>Description</th>
+                  <th>Default</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Default Date Range</strong></td>
+                  <td>Date range filter applied on page load. Options: Current Month, Previous Month, Last 7/30/90 Days.</td>
+                  <td>Current Month</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Troubleshooting</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Problem</th>
+                  <th>Solution</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>"Mailgun API key is not configured"</td>
+                  <td>Set the <strong>Mailgun API Key</strong> global attribute.</td>
+                </tr>
+                <tr>
+                  <td>"Mailgun domain is not configured"</td>
+                  <td>Set the <strong>Mailgun Domain</strong> global attribute.</td>
+                </tr>
+                <tr>
+                  <td>Stats return zeros</td>
+                  <td>Verify the domain matches your Mailgun sending domain exactly.</td>
+                </tr>
+                <tr>
+                  <td>Hourly resolution returns an error</td>
+                  <td>Mailgun limits hourly data to short ranges. The plugin clamps to 48 hours automatically. Try a shorter date range.</td>
+                </tr>
+                <tr>
+                  <td>Complained count doesn't match clickable list</td>
+                  <td>Stats count individual events. If an address complained multiple times, each event is counted separately.</td>
+                </tr>
+                <tr>
+                  <td>Failed count seems high</td>
+                  <td>Only permanent failures are reported. Temporary failures (retries) are excluded from the count.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../assets/nav.js"></script>
+    <script src="../assets/site.js"></script>
+  </body>
+</html>
