@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Guide | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="Guide to using the Mailgun Toolbox dashboard tabs in Rock RMS."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Mailgun Toolbox</h2>
+        <a href="./">Overview</a>
+        <a href="setup.html">Setup &amp; Configuration</a>
+        <a href="dashboard.html">Dashboard Guide</a>
+        <a href="troubleshooting.html">Troubleshooting &amp; Support</a>
+        <a href="nerd-talk.html">Nerd Talk</a>
+        <a href="reference/">Developer Reference</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Dashboard Guide</p>
+          <h1>Using the Mailgun Toolbox dashboard</h1>
+          <p>
+            The Mailgun Toolbox dashboard gives you a complete view of your email health.
+            This guide walks through each tab and explains what to look for.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Date range filter</h2>
+          <p>
+            A date range dropdown appears at the top of the dashboard and applies to all tabs.
+            Choose from preset ranges (Current Month, Previous Month, Last 7 Days, Last 30 Days,
+            Last 90 Days) or select <strong>Custom</strong> to enter your own date range.
+          </p>
+          <p class="footer-note">
+            The default range can be changed in <a href="setup.html#configuration">block settings</a>.
+          </p>
+          <div class="screenshot-placeholder">
+            <strong>Screenshot: Date range filter dropdown</strong>
+            Replace this with a screenshot showing the date range selector.
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Overview tab</h2>
+          <p>
+            The Overview tab is your at-a-glance email health summary. It displays:
+          </p>
+          <ul>
+            <li><strong>Rate cards</strong> &mdash; delivery rate, open rate, click rate, and bounce rate as percentages, plus total counts.</li>
+            <li><strong>Daily trend charts</strong> &mdash; line charts showing email counts, failure rate, and engagement rates over the selected period.</li>
+            <li><strong>Complaint count</strong> &mdash; click the complained count to see individual complaint events.</li>
+          </ul>
+          <h3>What to look for</h3>
+          <ul>
+            <li>A healthy delivery rate is typically above 95%.</li>
+            <li>A rising failure rate trend may indicate a deliverability problem.</li>
+            <li>Low open or click rates may indicate content or list quality issues.</li>
+          </ul>
+          <div class="screenshot-placeholder">
+            <strong>Screenshot: Overview tab</strong>
+            Replace this with a screenshot of the Overview tab showing rate cards and charts.
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Details tab</h2>
+          <p>
+            The Details tab helps you investigate delivery failures:
+          </p>
+          <ul>
+            <li><strong>Failure severity breakdown</strong> &mdash; permanent failures (messages that could not be delivered) vs. temporary failures (retries that eventually succeeded or were abandoned).</li>
+            <li><strong>Top error codes</strong> &mdash; a ranked list of the most common error codes with their frequency.</li>
+            <li><strong>Recent failed events</strong> &mdash; the 25 most recent failed deliveries showing recipient, error message, and timestamp.</li>
+          </ul>
+          <h3>What to look for</h3>
+          <ul>
+            <li>Common error codes like <code>550 5.1.1</code> indicate invalid recipient addresses.</li>
+            <li>A spike in temporary failures may indicate a temporary issue with a receiving mail server.</li>
+          </ul>
+          <div class="screenshot-placeholder">
+            <strong>Screenshot: Details tab</strong>
+            Replace this with a screenshot of the Details tab showing failure breakdown and error codes.
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Bounces tab</h2>
+          <p>
+            The Bounces tab shows email addresses on the Mailgun suppression list &mdash; addresses
+            that previously bounced and will not receive future emails.
+          </p>
+          <ul>
+            <li><strong>Search</strong> &mdash; use the search box to find a specific email address.</li>
+            <li><strong>Delete</strong> &mdash; remove an address from the suppression list to allow Mailgun to attempt delivery again.</li>
+            <li><strong>Pagination</strong> &mdash; browse through the full list page by page.</li>
+          </ul>
+          <h3>When to delete a bounce</h3>
+          <ul>
+            <li>If you know the recipient&rsquo;s mailbox issue has been fixed (e.g., they cleared space or their IT team resolved a server issue).</li>
+            <li>If the bounce was caused by a temporary problem that has been resolved.</li>
+            <li><strong>Caution:</strong> repeatedly sending to addresses that bounce can harm your sender reputation.</li>
+          </ul>
+          <div class="screenshot-placeholder">
+            <strong>Screenshot: Bounces tab</strong>
+            Replace this with a screenshot of the Bounces tab showing the suppression list.
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Historicals tab</h2>
+          <p>
+            The Historicals tab shows email volume and outcomes as a time-series table.
+            You can view data at three resolutions:
+          </p>
+          <ul>
+            <li><strong>Hourly</strong> &mdash; best for investigating recent issues (limited to 48-hour windows).</li>
+            <li><strong>Daily</strong> &mdash; good for week-over-week comparisons.</li>
+            <li><strong>Monthly</strong> &mdash; useful for long-term trend analysis.</li>
+          </ul>
+          <p>
+            Click any non-zero failed count to drill into the specific failure events for that time period.
+          </p>
+          <div class="screenshot-placeholder">
+            <strong>Screenshot: Historicals tab</strong>
+            Replace this with a screenshot of the Historicals tab showing the time-series table.
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Domains tab</h2>
+          <p>
+            The Domains tab breaks down your email delivery by recipient domain
+            (e.g., gmail.com, outlook.com, yahoo.com). For each domain, you see:
+          </p>
+          <ul>
+            <li>Total sent count</li>
+            <li>Delivered count</li>
+            <li>Hard failure count (permanent bounces)</li>
+            <li>Soft failure count (temporary issues)</li>
+            <li>Success rate percentage</li>
+          </ul>
+          <h3>What to look for</h3>
+          <ul>
+            <li>If a specific domain has a significantly lower success rate, there may be a deliverability issue with that provider.</li>
+            <li>Gmail and Outlook have stricter sending requirements &mdash; monitor these closely.</li>
+          </ul>
+          <div class="screenshot-placeholder">
+            <strong>Screenshot: Domains tab</strong>
+            Replace this with a screenshot of the Domains tab showing per-domain statistics.
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../assets/nav.js"></script>
+    <script src="../assets/site.js"></script>
+  </body>
+</html>

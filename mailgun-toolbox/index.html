@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mailgun Toolbox Docs | DTS Dev Docs</title>
+    <title>Mailgun Toolbox | DTS Dev Docs</title>
     <meta
       name="description"
-      content="Mailgun Toolbox technical documentation for Rock RMS."
+      content="Mailgun Toolbox email monitoring dashboard for Rock RMS. Monitor delivery rates, manage bounces, and analyze email health."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -30,15 +30,18 @@
         <h2>Mailgun Toolbox</h2>
         <a href="./">Overview</a>
         <a href="setup.html">Setup &amp; Configuration</a>
-        <a href="reference/">Reference Library</a>
+        <a href="dashboard.html">Dashboard Guide</a>
+        <a href="troubleshooting.html">Troubleshooting &amp; Support</a>
+        <a href="nerd-talk.html">Nerd Talk</a>
+        <a href="reference/">Developer Reference</a>
       </aside>
 
       <div class="docs-main">
         <section class="panel reveal">
           <p class="eyebrow">Mailgun Toolbox</p>
-          <h1>Mailgun email monitoring dashboard for Rock RMS</h1>
+          <h1>Email monitoring dashboard for Rock RMS</h1>
           <p>
-            The Mailgun Toolbox plugin provides a comprehensive email health dashboard
+            The Mailgun Toolbox plugin provides an email health dashboard
             inside Rock RMS. Monitor delivery rates, manage bounces and complaints,
             drill into failure details, and analyze per-domain statistics &mdash; all without
             leaving Rock.
@@ -46,153 +49,34 @@
           <p>
             Requires Rock RMS v16.9+ (Obsidian) and a Mailgun account with API access.
           </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="setup.html">Setup Guide</a>
+            <a class="btn btn-ghost" href="dashboard.html">Dashboard Guide</a>
+          </div>
         </section>
 
         <section class="panel reveal">
-          <h2>Dashboard tabs</h2>
+          <h2>What you get</h2>
           <ul class="kv-list">
-            <li><strong>Overview:</strong> Delivery, open, click, and bounce rate cards with totals. Line charts for daily counts, failure rate, and engagement rates. Clickable complaint count.</li>
-            <li><strong>Details:</strong> Permanent vs. temporary failure breakdown, top error codes by frequency, and the 25 most recent failed delivery events.</li>
-            <li><strong>Bounces:</strong> Paginated suppression list with search-by-email and per-row delete to remove addresses from Mailgun.</li>
-            <li><strong>Historicals:</strong> Time-series data at hourly, daily, or monthly resolution. Click any failed count to drill into specific failure events.</li>
-            <li><strong>Domains:</strong> Per-recipient-domain breakdown of sent, delivered, hard-failed, and soft-failed counts with success rate percentages.</li>
+            <li><strong>Overview:</strong> See delivery, open, click, and bounce rates at a glance with daily trend charts.</li>
+            <li><strong>Details:</strong> Investigate delivery failures &mdash; see error breakdowns and the most recent failed messages.</li>
+            <li><strong>Bounces:</strong> View and manage the list of bounced email addresses. Remove addresses to allow re-delivery.</li>
+            <li><strong>Historicals:</strong> Explore email volume over time at hourly, daily, or monthly resolution.</li>
+            <li><strong>Domains:</strong> See how email performs per recipient domain (gmail.com, outlook.com, etc.).</li>
           </ul>
           <p class="footer-note">
-            A global date range filter (Current Month, Previous Month, Last 7/30/90 Days, Custom)
-            applies across all tabs. The default range is configurable per block instance.
+            A date range filter applies across all tabs. You can choose from preset ranges or enter custom dates.
           </p>
         </section>
 
         <section class="panel reveal">
-          <h2>Quick start (development)</h2>
-          <pre><code># C# Backend
-dotnet build com.dtschurch.ManagedMail/com.dtschurch.ManagedMail.csproj -c Release
-
-# Obsidian Frontend
-cd com.dtschurch.ManagedMail.Obsidian
-npm install
-npm run build
-
-# Package as .plugin file
-dotnet tool install --global sparkdevnetwork.rock.devtool
-rock-dev-tool plugin pack</code></pre>
-        </section>
-
-        <section class="panel reveal">
-          <h2>Project structure</h2>
-          <pre><code>com.dtschurch.ManagedMail/            # C# plugin (.NET Framework 4.7.2)
-  Blocks/Mail/                        #   MailgunDomainStats block type
-  Integration/                        #   Mailgun API v3 client &amp; models
-  Migrations/                         #   Rock database migrations (5)
-  Constants/                          #   GUIDs and plugin metadata
-
-com.dtschurch.ManagedMail.Obsidian/   # Vue 3 frontend (Obsidian)
-  src/mailgunDomainStats.obs          #   Single-file component (~61 KB)</code></pre>
-        </section>
-
-        <section class="panel reveal">
-          <h2>Block actions</h2>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Action</th>
-                  <th>Purpose</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>GetStats</code></td>
-                  <td>Aggregate statistics for the selected date range.</td>
-                </tr>
-                <tr>
-                  <td><code>GetTimeSeriesStats</code></td>
-                  <td>Time-series data at hour/day/month resolution.</td>
-                </tr>
-                <tr>
-                  <td><code>GetBounces</code> / <code>GetBouncesPage</code></td>
-                  <td>Paginated bounce suppression list.</td>
-                </tr>
-                <tr>
-                  <td><code>DeleteBounce</code></td>
-                  <td>Remove an address from the Mailgun bounce suppression list.</td>
-                </tr>
-                <tr>
-                  <td><code>SearchBounce</code></td>
-                  <td>Look up a specific bounce address.</td>
-                </tr>
-                <tr>
-                  <td><code>GetEventsPage</code></td>
-                  <td>Paginated event log (failures, complaints, deliveries).</td>
-                </tr>
-                <tr>
-                  <td><code>GetComplaints</code> / <code>DeleteComplaint</code></td>
-                  <td>View and manage the complaint suppression list.</td>
-                </tr>
-                <tr>
-                  <td><code>GetDomainBreakdown</code></td>
-                  <td>Per-recipient-domain delivery statistics.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="panel reveal">
-          <h2>Mailgun API endpoints used</h2>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Method</th>
-                  <th>Endpoint</th>
-                  <th>Purpose</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>GET</code></td>
-                  <td><code>/v3/{domain}/stats/total</code></td>
-                  <td>Aggregate and time-series statistics</td>
-                </tr>
-                <tr>
-                  <td><code>GET</code></td>
-                  <td><code>/v3/{domain}/bounces</code></td>
-                  <td>Bounce suppression list</td>
-                </tr>
-                <tr>
-                  <td><code>DELETE</code></td>
-                  <td><code>/v3/{domain}/bounces/{address}</code></td>
-                  <td>Remove a bounce</td>
-                </tr>
-                <tr>
-                  <td><code>GET</code></td>
-                  <td><code>/v3/{domain}/events</code></td>
-                  <td>Event log (failures, complaints)</td>
-                </tr>
-                <tr>
-                  <td><code>GET</code></td>
-                  <td><code>/v3/{domain}/complaints</code></td>
-                  <td>Complaint suppression list</td>
-                </tr>
-                <tr>
-                  <td><code>DELETE</code></td>
-                  <td><code>/v3/{domain}/complaints/{address}</code></td>
-                  <td>Remove a complaint</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="panel reveal">
-          <h2>Key source files</h2>
-          <ul>
-            <li><code>com.dtschurch.ManagedMail/Blocks/Mail/MailgunDomainStats.cs</code></li>
-            <li><code>com.dtschurch.ManagedMail/Integration/MailgunApiClient.cs</code></li>
-            <li><code>com.dtschurch.ManagedMail.Obsidian/src/mailgunDomainStats.obs</code></li>
-            <li><code>com.dtschurch.ManagedMail/Migrations/</code></li>
-          </ul>
+          <h2>Getting started</h2>
+          <ol>
+            <li><a href="setup.html"><strong>Install the plugin</strong></a> &mdash; upload the plugin file and restart Rock.</li>
+            <li><a href="setup.html#configuration"><strong>Configure your Mailgun credentials</strong></a> &mdash; set your API key and sending domain.</li>
+            <li><a href="dashboard.html"><strong>Explore the dashboard</strong></a> &mdash; learn what each tab shows and what to look for.</li>
+            <li><a href="troubleshooting.html"><strong>Having trouble?</strong></a> &mdash; common issues, bounce rate guidance, and how to get support.</li>
+          </ol>
         </section>
       </div>
     </main>

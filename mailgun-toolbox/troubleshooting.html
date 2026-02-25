@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Troubleshooting &amp; Support | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="Troubleshooting guide and support information for the Mailgun Toolbox Rock RMS plugin."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Mailgun Toolbox</h2>
+        <a href="./">Overview</a>
+        <a href="setup.html">Setup &amp; Configuration</a>
+        <a href="dashboard.html">Dashboard Guide</a>
+        <a href="troubleshooting.html">Troubleshooting &amp; Support</a>
+        <a href="nerd-talk.html">Nerd Talk</a>
+        <a href="reference/">Developer Reference</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Troubleshooting</p>
+          <h1>Troubleshooting &amp; Support</h1>
+          <p>
+            Solutions for common issues and guidance on maintaining good email deliverability.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Dealing with a high bounce rate</h2>
+          <p>
+            A bounce rate above 5% can negatively impact your sender reputation and email
+            deliverability. Here&rsquo;s what to do if your bounce rate is climbing.
+          </p>
+
+          <h3>Common causes</h3>
+          <ul>
+            <li><strong>Stale email lists</strong> &mdash; sending to addresses that no longer exist (people leave organizations, change providers).</li>
+            <li><strong>Typos in email addresses</strong> &mdash; data entry errors in person records.</li>
+            <li><strong>Purchased or imported lists</strong> &mdash; addresses that were never verified.</li>
+            <li><strong>Domain changes</strong> &mdash; organizations that changed their email domain.</li>
+          </ul>
+
+          <h3>Steps to address a high bounce rate</h3>
+          <ol>
+            <li><strong>Review the Bounces tab</strong> &mdash; go to the <a href="dashboard.html">Bounces tab</a> and look at the addresses on the suppression list. Identify patterns (e.g., many addresses at one domain).</li>
+            <li><strong>Clean your people data</strong> &mdash; in Rock, find and update or inactivate person records with invalid email addresses. Use Rock&rsquo;s Data Integrity features to find email duplicates and inactive addresses.</li>
+            <li><strong>Check the Details tab for error patterns</strong> &mdash; the <a href="dashboard.html">Details tab</a> shows the most common error codes. If you see <code>550 5.1.1</code> (user unknown) frequently, you have stale addresses.</li>
+            <li><strong>Monitor the Domains tab</strong> &mdash; if one domain has a high failure rate, investigate whether that domain is still valid.</li>
+            <li><strong>Remove known-bad addresses from Rock</strong> &mdash; mark email addresses as inactive in Rock for people who have permanently invalid addresses.</li>
+            <li><strong>Consider an email verification service</strong> &mdash; for large lists, use a third-party email verification tool to validate addresses before sending.</li>
+          </ol>
+          <p class="footer-note">
+            Mailgun automatically adds hard-bounced addresses to its suppression list, so they
+            will not receive further emails. However, cleaning up the source data in Rock prevents
+            wasted sends and improves your statistics.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Common issues</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Problem</th>
+                  <th>Solution</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&ldquo;Mailgun API key is not configured&rdquo;</td>
+                  <td>Set the <strong>Mailgun API Key</strong> global attribute. See <a href="setup.html#configuration">Configuration</a>.</td>
+                </tr>
+                <tr>
+                  <td>&ldquo;Mailgun domain is not configured&rdquo;</td>
+                  <td>Set the <strong>Mailgun Domain</strong> global attribute. See <a href="setup.html#configuration">Configuration</a>.</td>
+                </tr>
+                <tr>
+                  <td>Stats return zeros</td>
+                  <td>Verify the domain matches your Mailgun sending domain exactly.</td>
+                </tr>
+                <tr>
+                  <td>Hourly resolution returns an error</td>
+                  <td>Mailgun limits hourly data to short ranges. The plugin clamps to 48 hours automatically. Try a shorter date range.</td>
+                </tr>
+                <tr>
+                  <td>Complained count doesn&rsquo;t match clickable list</td>
+                  <td>Stats count individual events. If an address complained multiple times, each event is counted separately.</td>
+                </tr>
+                <tr>
+                  <td>Failed count seems high</td>
+                  <td>Only permanent failures are reported. Temporary failures (retries) are excluded from the count.</td>
+                </tr>
+                <tr>
+                  <td>Dashboard page is blank or shows a loading spinner</td>
+                  <td>Clear your browser cache and reload. If the issue persists, check the Rock exception log for errors related to &ldquo;ManagedMail&rdquo; or &ldquo;Mailgun.&rdquo;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Getting support</h2>
+          <p>
+            If you&rsquo;re experiencing an issue not covered above, you can get help from the
+            DTS development team.
+          </p>
+          <h3>How to report an issue</h3>
+          <ol>
+            <li>Go to the <a href="https://github.com/DTSChurch/Mailgun-Toolbox/issues">Mailgun Toolbox GitHub Issues page</a>.</li>
+            <li>Click <strong>New Issue</strong>.</li>
+            <li>Describe the problem, including: what you expected to happen, what actually happened, your Rock version, and any error messages you see.</li>
+            <li>If possible, include a screenshot of the issue.</li>
+          </ol>
+          <p class="footer-note">
+            GitHub Issues is the supported channel for Mailgun Toolbox support requests.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script src="../assets/nav.js"></script>
+    <script src="../assets/site.js"></script>
+  </body>
+</html>

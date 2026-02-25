@@ -26,7 +26,10 @@
         <h2>Mailgun Toolbox</h2>
         <a href="./">Overview</a>
         <a href="setup.html">Setup &amp; Configuration</a>
-        <a href="reference/">Reference Library</a>
+        <a href="dashboard.html">Dashboard Guide</a>
+        <a href="troubleshooting.html">Troubleshooting &amp; Support</a>
+        <a href="nerd-talk.html">Nerd Talk</a>
+        <a href="reference/">Developer Reference</a>
       </aside>
 
       <div class="docs-main">
@@ -34,46 +37,45 @@
           <p class="eyebrow">Setup Guide</p>
           <h1>Installation &amp; Configuration</h1>
           <p>
-            Two installation options are supported. The plugin file method is recommended
-            for most environments.
+            Get the Mailgun Toolbox installed and connected to your Mailgun account.
+            Most installations take just a few minutes.
           </p>
         </section>
 
         <section class="panel reveal">
-          <h2>Option A: Plugin file (Recommended)</h2>
+          <h2>Install the plugin</h2>
           <ol>
             <li>In Rock, navigate to <strong>Admin Tools &gt; System Settings &gt; Installed Plugins</strong>.</li>
             <li>Click <strong>Upload Plugin</strong> and select the <code>mailgun-toolbox-x.x.x.plugin</code> file.</li>
             <li>Rock installs the DLL and Obsidian files automatically.</li>
             <li>Restart Rock (or recycle the application pool) to load the assembly.</li>
           </ol>
-        </section>
-
-        <section class="panel reveal">
-          <h2>Option B: Manual install</h2>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Source</th>
-                  <th>Destination</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>com.dtschurch.ManagedMail/bin/Release/net472/com.dtschurch.ManagedMail.dll</code></td>
-                  <td><code>RockWeb/Bin/</code></td>
-                </tr>
-                <tr>
-                  <td><code>com.dtschurch.ManagedMail.Obsidian/dist/mailgunDomainStats.obs.js</code></td>
-                  <td><code>RockWeb/Plugins/com_dtschurch/ManagedMail/</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p class="footer-note">
-            Restart Rock after copying the files. The plugin migrations run automatically on startup.
-          </p>
+          <details>
+            <summary><strong>Advanced: Manual install</strong></summary>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Source</th>
+                    <th>Destination</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>com.dtschurch.ManagedMail/bin/Release/net472/com.dtschurch.ManagedMail.dll</code></td>
+                    <td><code>RockWeb/Bin/</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>com.dtschurch.ManagedMail.Obsidian/dist/mailgunDomainStats.obs.js</code></td>
+                    <td><code>RockWeb/Plugins/com_dtschurch/ManagedMail/</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="footer-note">
+              Restart Rock after copying the files. The plugin migrations run automatically on startup.
+            </p>
+          </details>
         </section>
 
         <section class="panel reveal">
@@ -89,10 +91,25 @@
           </p>
         </section>
 
-        <section class="panel reveal">
+        <section class="panel reveal" id="configuration">
           <h2>Configuration</h2>
 
-          <h3>1. Set the Mailgun API Key</h3>
+          <h3>1. Verify your Mailgun email transport</h3>
+          <p>
+            Before configuring the plugin, make sure Rock is already set up to send email through Mailgun:
+          </p>
+          <ol>
+            <li>Go to <strong>Admin Tools &gt; Communications &gt; Communication Transports</strong>.</li>
+            <li>Confirm that <strong>Mailgun HTTP</strong> is listed and marked as active.</li>
+            <li>If Mailgun is not your active transport, configure it first per Rock&rsquo;s documentation.</li>
+          </ol>
+          <p class="footer-note">
+            The Mailgun Toolbox reads stats from the same Mailgun domain that Rock uses to send
+            email. If Rock is not configured to send through Mailgun, the dashboard will have no
+            data to display.
+          </p>
+
+          <h3>2. Set the Mailgun API Key</h3>
           <ol>
             <li>Go to <strong>Admin Tools &gt; General Settings &gt; Global Attributes</strong>.</li>
             <li>Find <strong>Mailgun API Key</strong> (added by the plugin migration).</li>
@@ -100,14 +117,14 @@
             <li>Click <strong>Save</strong>.</li>
           </ol>
 
-          <h3>2. Set the Mailgun Domain</h3>
+          <h3>3. Set the Mailgun Domain</h3>
           <ol>
             <li>In the same Global Attributes page, find <strong>Mailgun Domain</strong>.</li>
             <li>Enter the sending domain configured in Mailgun (e.g. <code>mg.yourchurch.com</code>).</li>
             <li>Click <strong>Save</strong>.</li>
           </ol>
 
-          <h3>3. Configure the block (Optional)</h3>
+          <h3>4. Configure the block (Optional)</h3>
           <div class="table-wrap">
             <table>
               <thead>
@@ -129,42 +146,16 @@
         </section>
 
         <section class="panel reveal">
-          <h2>Troubleshooting</h2>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Problem</th>
-                  <th>Solution</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>"Mailgun API key is not configured"</td>
-                  <td>Set the <strong>Mailgun API Key</strong> global attribute.</td>
-                </tr>
-                <tr>
-                  <td>"Mailgun domain is not configured"</td>
-                  <td>Set the <strong>Mailgun Domain</strong> global attribute.</td>
-                </tr>
-                <tr>
-                  <td>Stats return zeros</td>
-                  <td>Verify the domain matches your Mailgun sending domain exactly.</td>
-                </tr>
-                <tr>
-                  <td>Hourly resolution returns an error</td>
-                  <td>Mailgun limits hourly data to short ranges. The plugin clamps to 48 hours automatically. Try a shorter date range.</td>
-                </tr>
-                <tr>
-                  <td>Complained count doesn't match clickable list</td>
-                  <td>Stats count individual events. If an address complained multiple times, each event is counted separately.</td>
-                </tr>
-                <tr>
-                  <td>Failed count seems high</td>
-                  <td>Only permanent failures are reported. Temporary failures (retries) are excluded from the count.</td>
-                </tr>
-              </tbody>
-            </table>
+          <h2>Verify it&rsquo;s working</h2>
+          <ol>
+            <li>Navigate to <strong>Admin Tools &gt; Installed Plugins &gt; Mailgun Toolbox</strong>.</li>
+            <li>You should see the Overview tab with delivery rate cards and charts.</li>
+            <li>If you see data for the current month, the plugin is correctly configured.</li>
+            <li>If you see zeros or an error message, see the <a href="troubleshooting.html">Troubleshooting page</a>.</li>
+          </ol>
+          <div class="screenshot-placeholder">
+            <strong>Screenshot: Dashboard after successful setup</strong>
+            Replace this with a screenshot of the Overview tab showing populated data.
           </div>
         </section>
       </div>

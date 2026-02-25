@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nerd Talk | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="Technical details about how the Mailgun Toolbox plugin is structured, including block actions and API endpoints."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Mailgun Toolbox</h2>
+        <a href="./">Overview</a>
+        <a href="setup.html">Setup &amp; Configuration</a>
+        <a href="dashboard.html">Dashboard Guide</a>
+        <a href="troubleshooting.html">Troubleshooting &amp; Support</a>
+        <a href="nerd-talk.html">Nerd Talk</a>
+        <a href="reference/">Developer Reference</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Nerd Talk</p>
+          <h1>How the plugin is built</h1>
+          <p>
+            A look under the hood at the Mailgun Toolbox plugin architecture,
+            block actions, and API integration. This page is for the technically curious
+            &mdash; you don&rsquo;t need any of this to use the plugin.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Project structure</h2>
+          <pre><code>com.dtschurch.ManagedMail/            # C# plugin (.NET Framework 4.7.2)
+  Blocks/Mail/                        #   MailgunDomainStats block type
+  Integration/                        #   Mailgun API v3 client &amp; models
+  Migrations/                         #   Rock database migrations (5)
+  Constants/                          #   GUIDs and plugin metadata
+
+com.dtschurch.ManagedMail.Obsidian/   # Vue 3 frontend (Obsidian)
+  src/mailgunDomainStats.obs          #   Single-file component (~61 KB)</code></pre>
+          <p>
+            The plugin has two main parts: a C# backend that runs inside Rock and talks to
+            the Mailgun API, and a Vue 3 frontend component that renders the dashboard in
+            Rock&rsquo;s Obsidian shell.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Block actions</h2>
+          <p>
+            The Obsidian frontend calls these block actions on the C# backend to fetch data
+            and manage suppression lists:
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>GetStats</code></td>
+                  <td>Aggregate statistics for the selected date range.</td>
+                </tr>
+                <tr>
+                  <td><code>GetTimeSeriesStats</code></td>
+                  <td>Time-series data at hour/day/month resolution.</td>
+                </tr>
+                <tr>
+                  <td><code>GetBounces</code> / <code>GetBouncesPage</code></td>
+                  <td>Paginated bounce suppression list.</td>
+                </tr>
+                <tr>
+                  <td><code>DeleteBounce</code></td>
+                  <td>Remove an address from the Mailgun bounce suppression list.</td>
+                </tr>
+                <tr>
+                  <td><code>SearchBounce</code></td>
+                  <td>Look up a specific bounce address.</td>
+                </tr>
+                <tr>
+                  <td><code>GetEventsPage</code></td>
+                  <td>Paginated event log (failures, complaints, deliveries).</td>
+                </tr>
+                <tr>
+                  <td><code>GetComplaints</code> / <code>DeleteComplaint</code></td>
+                  <td>View and manage the complaint suppression list.</td>
+                </tr>
+                <tr>
+                  <td><code>GetDomainBreakdown</code></td>
+                  <td>Per-recipient-domain delivery statistics.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Mailgun API endpoints used</h2>
+          <p>
+            The C# backend proxies requests to these Mailgun API v3 endpoints:
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Endpoint</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/v3/{domain}/stats/total</code></td>
+                  <td>Aggregate and time-series statistics</td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/v3/{domain}/bounces</code></td>
+                  <td>Bounce suppression list</td>
+                </tr>
+                <tr>
+                  <td><code>DELETE</code></td>
+                  <td><code>/v3/{domain}/bounces/{address}</code></td>
+                  <td>Remove a bounce</td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/v3/{domain}/events</code></td>
+                  <td>Event log (failures, complaints)</td>
+                </tr>
+                <tr>
+                  <td><code>GET</code></td>
+                  <td><code>/v3/{domain}/complaints</code></td>
+                  <td>Complaint suppression list</td>
+                </tr>
+                <tr>
+                  <td><code>DELETE</code></td>
+                  <td><code>/v3/{domain}/complaints/{address}</code></td>
+                  <td>Remove a complaint</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Key source files</h2>
+          <ul>
+            <li><code>com.dtschurch.ManagedMail/Blocks/Mail/MailgunDomainStats.cs</code> &mdash; the Rock block that handles all block actions and API calls.</li>
+            <li><code>com.dtschurch.ManagedMail/Integration/MailgunApiClient.cs</code> &mdash; HTTP client wrapper for the Mailgun API.</li>
+            <li><code>com.dtschurch.ManagedMail.Obsidian/src/mailgunDomainStats.obs</code> &mdash; the Vue 3 single-file component that renders the entire dashboard UI.</li>
+            <li><code>com.dtschurch.ManagedMail/Migrations/</code> &mdash; five Rock migrations that set up the block type, global attributes, and default page.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Building from source</h2>
+          <pre><code># C# Backend
+dotnet build com.dtschurch.ManagedMail/com.dtschurch.ManagedMail.csproj -c Release
+
+# Obsidian Frontend
+cd com.dtschurch.ManagedMail.Obsidian
+npm install
+npm run build
+
+# Package as .plugin file
+dotnet tool install --global sparkdevnetwork.rock.devtool
+rock-dev-tool plugin pack</code></pre>
+          <p class="footer-note">
+            For full build instructions and contributing guidelines, see the
+            <a href="reference/">Developer Reference</a>.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script src="../assets/nav.js"></script>
+    <script src="../assets/site.js"></script>
+  </body>
+</html>
