@@ -6,7 +6,7 @@
     <title>DTS Dev Docs</title>
     <meta
       name="description"
-      content="Development documentation hub for DTS plugins and systems."
+      content="Development documentation hub for DTS Church Rock RMS plugins and systems."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,67 +26,99 @@
     <header id="site-header"></header>
 
     <main class="page">
+      <!-- Section 1: Documentation Hub -->
       <section class="hero reveal">
         <p class="eyebrow">Documentation Hub</p>
-        <h1>Engineering docs built for day-to-day delivery.</h1>
+        <h1>Technical docs for DTS Rock RMS plugins.</h1>
         <p>
-          This site is the front door for DTS development documentation. The first
-          full section is the Serve System docs, sourced from the active
-          `serve-system` project in this workspace.
+          The central hub for all DTS Church development documentation &mdash;
+          setup guides, architecture references, and operational runbooks for
+          every Rock RMS plugin and system we build.
         </p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="serve-system/">Open Serve System Docs</a>
-          <a class="btn btn-ghost" href="serve-system/reference/">View Source Reference</a>
+          <a class="btn btn-primary" href="https://dtschurch.com" target="_blank" rel="noopener">Visit DTSChurch.com</a>
+          <a class="btn btn-ghost" href="projects.html">Browse All Projects</a>
         </div>
       </section>
 
+      <!-- Section 2: Highlighted Projects -->
       <section class="cards reveal">
         <article class="card feature-card">
-          <p class="card-kicker">Primary System</p>
+          <p class="card-kicker">Rock Plugin</p>
+          <div class="card-badges">
+            <span class="badge">Custom Plugin</span>
+            <span class="badge">Obsidian</span>
+            <span class="badge">Special Occasions</span>
+          </div>
           <h2>Serve System</h2>
           <p>
             Volunteer opportunity management, role scheduling, self-service sign-up,
             notification workflows, and release runbooks for Rock RMS.
           </p>
-          <ul class="card-list">
-            <li>Architecture and data model</li>
-            <li>Email and connection-request workflows</li>
-            <li>Migration and release operations guides</li>
-          </ul>
-          <a class="text-link" href="serve-system/">Browse documentation</a>
+          <a class="text-link" href="projects/serve-system/">Browse documentation &rarr;</a>
         </article>
 
         <article class="card feature-card">
           <p class="card-kicker">Rock Plugin</p>
+          <div class="card-badges">
+            <span class="badge">RockShop</span>
+          </div>
           <h2>Mailgun Toolbox</h2>
           <p>
             Mailgun email monitoring dashboard for Rock RMS. Track delivery health,
             manage bounces and complaints, and drill into failure details.
           </p>
-          <ul class="card-list">
-            <li>Overview dashboard with rate cards and charts</li>
-            <li>Bounce and complaint suppression management</li>
-            <li>Per-domain delivery breakdown</li>
-          </ul>
-          <a class="text-link" href="mailgun-toolbox/">Browse documentation</a>
+          <a class="text-link" href="projects/mailgun-toolbox/">Browse documentation &rarr;</a>
         </article>
       </section>
 
+      <!-- Section 3: Quick Links -->
       <section class="timeline reveal">
-        <h2>What is included</h2>
-        <div class="timeline-grid">
-          <article>
-            <h3>Core Docs</h3>
-            <p>System overview, setup, block map, data model, and code locations.</p>
-          </article>
-          <article>
-            <h3>Operational Docs</h3>
-            <p>Migration rehearsal reports, release runbook, and go/no-go checklist.</p>
-          </article>
-          <article>
-            <h3>Workflow Docs</h3>
-            <p>Notification/confirmation email behavior and connection request lifecycle.</p>
-          </article>
+        <h2>Quick links</h2>
+        <p class="footer-note">Jump straight to the most-used documentation pages.</p>
+        <div class="quick-links">
+          <a class="quick-link" href="projects/serve-system/">
+            <span class="quick-link-text">
+              <span class="quick-link-project">Serve System</span>
+              <span class="quick-link-page">Overview &amp; Architecture</span>
+            </span>
+            <span class="quick-link-arrow">&rarr;</span>
+          </a>
+          <a class="quick-link" href="projects/serve-system/email-system.html">
+            <span class="quick-link-text">
+              <span class="quick-link-project">Serve System</span>
+              <span class="quick-link-page">Email Workflows</span>
+            </span>
+            <span class="quick-link-arrow">&rarr;</span>
+          </a>
+          <a class="quick-link" href="projects/serve-system/connection-requests.html">
+            <span class="quick-link-text">
+              <span class="quick-link-project">Serve System</span>
+              <span class="quick-link-page">Connection Requests</span>
+            </span>
+            <span class="quick-link-arrow">&rarr;</span>
+          </a>
+          <a class="quick-link" href="projects/mailgun-toolbox/">
+            <span class="quick-link-text">
+              <span class="quick-link-project">Mailgun Toolbox</span>
+              <span class="quick-link-page">Overview &amp; Dashboard</span>
+            </span>
+            <span class="quick-link-arrow">&rarr;</span>
+          </a>
+          <a class="quick-link" href="projects/mailgun-toolbox/setup.html">
+            <span class="quick-link-text">
+              <span class="quick-link-project">Mailgun Toolbox</span>
+              <span class="quick-link-page">Setup Guide</span>
+            </span>
+            <span class="quick-link-arrow">&rarr;</span>
+          </a>
+          <a class="quick-link" href="projects/mailgun-toolbox/troubleshooting.html">
+            <span class="quick-link-text">
+              <span class="quick-link-project">Mailgun Toolbox</span>
+              <span class="quick-link-page">Troubleshooting</span>
+            </span>
+            <span class="quick-link-arrow">&rarr;</span>
+          </a>
         </div>
       </section>
     </main>

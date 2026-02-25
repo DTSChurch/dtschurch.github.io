@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Guide | DTS Dev Docs</title>
+    <title>Setup Guide | DTS Dev Docs</title>
     <meta
       name="description"
-      content="Guide to using the Mailgun Toolbox dashboard tabs in Rock RMS."
+      content="Configure and use the Mailgun Toolbox dashboard in Rock RMS."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../assets/styles.css" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
   </head>
   <body>
     <div class="site-bg" aria-hidden="true">
@@ -28,32 +28,97 @@
     <main class="page docs-shell">
       <aside class="docs-nav reveal">
         <h2>Mailgun Toolbox</h2>
-        <a href="./">Overview</a>
-        <a href="setup.html">Setup &amp; Configuration</a>
-        <a href="dashboard.html">Dashboard Guide</a>
-        <a href="troubleshooting.html">Troubleshooting &amp; Support</a>
-        <a href="nerd-talk.html">Nerd Talk</a>
+        <a href="./">Intro</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="technical-guides.html">Technical Guides</a>
+        <a href="changelog.html">Changelog</a>
       </aside>
 
       <div class="docs-main">
         <section class="panel reveal">
-          <p class="eyebrow">Dashboard Guide</p>
-          <h1>Using the Mailgun Toolbox dashboard</h1>
+          <p class="eyebrow">Setup Guide</p>
+          <h1>Configuration &amp; Dashboard</h1>
           <p>
-            The Mailgun Toolbox dashboard gives you a complete view of your email health.
-            This guide walks through each tab and explains what to look for.
+            Connect the plugin to your Mailgun account and learn what each dashboard tab shows.
           </p>
         </section>
 
-        <section class="panel reveal">
-          <h2>Date range filter</h2>
+        <section class="panel reveal" id="configuration">
+          <h2>Configuration</h2>
+
+          <h3>1. Verify your Mailgun email transport</h3>
           <p>
-            A date range dropdown appears at the top of the dashboard and applies to all tabs.
-            Choose from preset ranges (Current Month, Previous Month, Last 7 Days, Last 30 Days,
-            Last 90 Days) or select <strong>Custom</strong> to enter your own date range.
+            Before configuring the plugin, make sure Rock is already set up to send email through Mailgun:
           </p>
+          <ol>
+            <li>Go to <strong>Admin Tools &gt; Communications &gt; Communication Transports</strong>.</li>
+            <li>Confirm that <strong>Mailgun HTTP</strong> is listed and marked as active.</li>
+            <li>If Mailgun is not your active transport, configure it first per Rock&rsquo;s documentation.</li>
+          </ol>
           <p class="footer-note">
-            The default range can be changed in <a href="setup.html#configuration">block settings</a>.
+            The Mailgun Toolbox reads stats from the same Mailgun domain that Rock uses to send
+            email. If Rock is not configured to send through Mailgun, the dashboard will have no
+            data to display.
+          </p>
+
+          <h3>2. Set the Mailgun API Key</h3>
+          <ol>
+            <li>Go to <strong>Admin Tools &gt; General Settings &gt; Global Attributes</strong>.</li>
+            <li>Click <strong>Add</strong> to create a new attribute with the key <code>MailgunApiKey</code>.</li>
+            <li>Enter your Mailgun private API key (starts with <code>key-...</code> or is a hex string) as the value.</li>
+            <li>Click <strong>Save</strong>.</li>
+          </ol>
+
+          <h3>3. Set the Mailgun Domain</h3>
+          <ol>
+            <li>In the same Global Attributes page, click <strong>Add</strong> to create a new attribute with the key <code>MailgunDomain</code>.</li>
+            <li>Enter the sending domain configured in Mailgun (e.g. <code>mg.yourchurch.com</code>) as the value.</li>
+            <li>Click <strong>Save</strong>.</li>
+          </ol>
+
+          <h3>4. Configure the block (Optional)</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th>Description</th>
+                  <th>Default</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Default Date Range</strong></td>
+                  <td>Date range filter applied on page load. Options: Current Month, Previous Month, Last 7/30/90 Days.</td>
+                  <td>Current Month</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Verify it&rsquo;s working</h2>
+          <ol>
+            <li>Navigate to <strong>Admin Tools &gt; Installed Plugins &gt; Mailgun Toolbox</strong>.</li>
+            <li>You should see the Overview tab with delivery rate cards and charts.</li>
+            <li>If you see data for the current month, the plugin is correctly configured.</li>
+            <li>If you see zeros or an error message, see the <a href="troubleshooting.html">Troubleshooting page</a>.</li>
+          </ol>
+          <div class="screenshot-placeholder">
+            <strong>Screenshot: Dashboard after successful setup</strong>
+            Replace this with a screenshot of the Overview tab showing populated data.
+          </div>
+        </section>
+
+        <section class="panel reveal" id="dashboard">
+          <h2>Using the dashboard</h2>
+          <p>
+            The dashboard gives you a complete view of your email health.
+            A date range dropdown at the top applies to all tabs &mdash; choose from
+            preset ranges or select <strong>Custom</strong> to enter your own dates.
           </p>
           <div class="screenshot-placeholder">
             <strong>Screenshot: Date range filter dropdown</strong>
@@ -64,7 +129,7 @@
         <section class="panel reveal">
           <h2>Overview tab</h2>
           <p>
-            The Overview tab is your at-a-glance email health summary. It displays:
+            Your at-a-glance email health summary:
           </p>
           <ul>
             <li><strong>Rate cards</strong> &mdash; delivery rate, open rate, click rate, and bounce rate as percentages, plus total counts.</li>
@@ -86,7 +151,7 @@
         <section class="panel reveal">
           <h2>Details tab</h2>
           <p>
-            The Details tab helps you investigate delivery failures:
+            Investigate delivery failures:
           </p>
           <ul>
             <li><strong>Failure severity breakdown</strong> &mdash; permanent failures (messages that could not be delivered) vs. temporary failures (retries that eventually succeeded or were abandoned).</li>
@@ -107,7 +172,7 @@
         <section class="panel reveal">
           <h2>Bounces tab</h2>
           <p>
-            The Bounces tab shows email addresses on the Mailgun suppression list &mdash; addresses
+            Email addresses on the Mailgun suppression list &mdash; addresses
             that previously bounced and will not receive future emails.
           </p>
           <ul>
@@ -130,8 +195,7 @@
         <section class="panel reveal">
           <h2>Historicals tab</h2>
           <p>
-            The Historicals tab shows email volume and outcomes as a time-series table.
-            You can view data at three resolutions:
+            Email volume and outcomes as a time-series table at three resolutions:
           </p>
           <ul>
             <li><strong>Hourly</strong> &mdash; best for investigating recent issues (limited to 48-hour windows).</li>
@@ -150,8 +214,7 @@
         <section class="panel reveal">
           <h2>Domains tab</h2>
           <p>
-            The Domains tab breaks down your email delivery by recipient domain
-            (e.g., gmail.com, outlook.com, yahoo.com). For each domain, you see:
+            Per-recipient-domain breakdown (e.g., gmail.com, outlook.com, yahoo.com):
           </p>
           <ul>
             <li>Total sent count</li>
@@ -173,7 +236,7 @@
       </div>
     </main>
 
-    <script src="../assets/nav.js"></script>
-    <script src="../assets/site.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
   </body>
 </html>

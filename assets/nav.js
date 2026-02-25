@@ -14,8 +14,8 @@
     {
       group: "Rock Plugins",
       items: [
-        { name: "Serve System", href: "/serve-system/" },
-        { name: "Mailgun Toolbox", href: "/mailgun-toolbox/" }
+        { name: "Serve System", href: "/projects/serve-system/" },
+        { name: "Mailgun Toolbox", href: "/projects/mailgun-toolbox/" }
       ]
     }
     // {
@@ -27,65 +27,6 @@
   ];
 
   // ── Helpers ───────────────────────────────────────────────────
-
-  /**
-   * Calculate the relative path to the repository root.
-   * Returns empty string if at root, "../" if one level deep, etc.
-   */
-  function getRepoRoot() {
-    // For production (http/https), use absolute paths
-    if (window.location.protocol !== "file:") {
-      return "";
-    }
-
-    // For local file:// protocol, calculate relative path to repo root
-    var path = window.location.pathname;
-
-    // Count how many directories deep we are from the repo root
-    // Remove the filename first
-    var dir = path.substring(0, path.lastIndexOf('/'));
-
-    // Find dtschurch.github.io in the path
-    var repoIndex = dir.indexOf('/dtschurch.github.io');
-    if (repoIndex === -1) {
-      repoIndex = dir.indexOf('\\dtschurch.github.io');
-    }
-
-    if (repoIndex !== -1) {
-      // Get the path after the repo name
-      var pathAfterRepo = dir.substring(repoIndex + '/dtschurch.github.io'.length);
-      // Count the directory levels
-      var levels = pathAfterRepo.split('/').filter(function(p) { return p.length > 0; }).length;
-
-      // Build relative path
-      var prefix = "";
-      for (var i = 0; i < levels; i++) {
-        prefix += "../";
-      }
-      return prefix;
-    }
-
-    return "";
-  }
-
-  /**
-   * Resolve a path for navigation links.
-   * For file:// protocol, makes paths relative.
-   * For http/https, keeps them absolute.
-   */
-  function resolvePath(path) {
-    if (window.location.protocol === "file:") {
-      var root = getRepoRoot();
-      var resolved = root + path.replace(/^\//, "");
-      // For home link, ensure we get index.html
-      if (path === "/" || path === "") {
-        return resolved + "index.html";
-      }
-      return resolved;
-    }
-    return path;
-  }
-
   function normalizePath(p) {
     return (p || "/").replace(/index\.html$/, "");
   }
@@ -117,7 +58,7 @@
         .map(function (item) {
           var active = isProjectActive(item.href);
           return (
-            '<a href="' + resolvePath(item.href) + '" class="dropdown-link' +
+            '<a href="' + item.href + '" class="dropdown-link' +
             (active ? " is-active" : "") +
             '">' + item.name + "</a>"
           );
@@ -135,7 +76,7 @@
     // Render
     target.className = "topbar";
     target.innerHTML =
-      '<a class="brand" href="' + resolvePath("/") + '"><img src="' + resolvePath("/assets/DTSLogo.png") + '" alt="DTS Churchs" class="brand-logo" /> ' + BRAND_TEXT + "</a>" +
+      '<a class="brand" href="/"><img src="' + BRAND_LOGO + '" alt="DTS Church" class="brand-logo" /> ' + BRAND_TEXT + "</a>" +
       '<button class="menu-toggle" type="button" data-menu-toggle ' +
         'aria-expanded="false" aria-controls="site-nav">Menu</button>' +
       '<nav id="site-nav" class="site-nav" data-menu>' +
