@@ -207,6 +207,49 @@ All documentation pages follow a consistent structure:
 - **Custom domain**: Configured via CNAME file
 - **Reference docs**: Markdown files in `reference/` directories are linked directly (GitHub renders them)
 
+## Standard Documentation Sidebar
+
+Every project documentation site should use this standard sidebar menu structure. This ensures a consistent experience across all DTS plugins and projects.
+
+```
+Project Name
+  Intro                → index.html        (About, features, requirements)
+  Installation         → installation.html  (Rock Shop install, manual install)
+  Setup Guide          → setup.html         (Credentials, configuration, using the dashboard)
+  Troubleshooting      → troubleshooting.html (Gotchas, issues, workarounds, support)
+  Technical Guides     → technical-guides.html (Lava, SQL, internals, block actions)
+  Changelog            → changelog.html     (Version history)
+```
+
+### Sidebar HTML (pages in project root)
+
+```html
+<aside class="docs-nav reveal">
+  <h2>Project Name</h2>
+  <a href="./">Intro</a>
+  <a href="installation.html">Installation</a>
+  <a href="setup.html">Setup Guide</a>
+  <a href="troubleshooting.html">Troubleshooting</a>
+  <a href="technical-guides.html">Technical Guides</a>
+  <a href="changelog.html">Changelog</a>
+</aside>
+```
+
+### Sidebar HTML (pages in subdirectories like `reference/`)
+
+Use `../` prefix for links back to the parent project directory.
+
+### Page content guidelines
+
+| Page | Content |
+|------|---------|
+| **Intro** | What the plugin does, feature overview, requirements, getting started links |
+| **Installation** | Rock Shop steps, manual install (collapsed), what the plugin creates on first run |
+| **Setup Guide** | Transport/credential configuration, verify it works, dashboard tab walkthrough with screenshots |
+| **Troubleshooting** | Common issues table, bounce rate guidance, how to get DTS support (GitHub Issues) |
+| **Technical Guides** | Project structure, block actions, API endpoints, Lava examples, SQL queries, build instructions |
+| **Changelog** | Version history with dates and change descriptions |
+
 ## Common Tasks
 
 ### Update site navigation

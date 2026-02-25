@@ -28,11 +28,12 @@
     <main class="page docs-shell">
       <aside class="docs-nav reveal">
         <h2>Mailgun Toolbox</h2>
-        <a href="./">Overview</a>
-        <a href="setup.html">Setup &amp; Configuration</a>
-        <a href="dashboard.html">Dashboard Guide</a>
-        <a href="troubleshooting.html">Troubleshooting &amp; Support</a>
-        <a href="nerd-talk.html">Nerd Talk</a>
+        <a href="./">Intro</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="technical-guides.html">Technical Guides</a>
+        <a href="changelog.html">Changelog</a>
       </aside>
 
       <div class="docs-main">
@@ -45,23 +46,20 @@
             drill into failure details, and analyze per-domain statistics &mdash; all without
             leaving Rock.
           </p>
-          <p>
-            Requires Rock RMS v16.9+ (Obsidian) and a Mailgun account with API access.
-          </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="setup.html">Setup Guide</a>
-            <a class="btn btn-ghost" href="dashboard.html">Dashboard Guide</a>
+            <a class="btn btn-primary" href="installation.html">Get Started</a>
+            <a class="btn btn-ghost" href="setup.html">Setup Guide</a>
           </div>
         </section>
 
         <section class="panel reveal">
           <h2>What you get</h2>
           <ul class="kv-list">
-            <li><strong>Overview:</strong> See delivery, open, click, and bounce rates at a glance with daily trend charts.</li>
-            <li><strong>Details:</strong> Investigate delivery failures &mdash; see error breakdowns and the most recent failed messages.</li>
-            <li><strong>Bounces:</strong> View and manage the list of bounced email addresses. Remove addresses to allow re-delivery.</li>
-            <li><strong>Historicals:</strong> Explore email volume over time at hourly, daily, or monthly resolution.</li>
-            <li><strong>Domains:</strong> See how email performs per recipient domain (gmail.com, outlook.com, etc.).</li>
+            <li><strong>Overview tab:</strong> See delivery, open, click, and bounce rates at a glance with daily trend charts.</li>
+            <li><strong>Details tab:</strong> Investigate delivery failures &mdash; see error breakdowns and the most recent failed messages.</li>
+            <li><strong>Bounces tab:</strong> View and manage the list of bounced email addresses. Remove addresses to allow re-delivery.</li>
+            <li><strong>Historicals tab:</strong> Explore email volume over time at hourly, daily, or monthly resolution.</li>
+            <li><strong>Domains tab:</strong> See how email performs per recipient domain (gmail.com, outlook.com, etc.).</li>
           </ul>
           <p class="footer-note">
             A date range filter applies across all tabs. You can choose from preset ranges or enter custom dates.
@@ -69,11 +67,20 @@
         </section>
 
         <section class="panel reveal">
+          <h2>Requirements</h2>
+          <ul>
+            <li>Rock RMS v16.9+ (Obsidian)</li>
+            <li>Mailgun account with API access</li>
+            <li>Mailgun configured as your Rock email transport</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
           <h2>Getting started</h2>
           <ol>
-            <li><a href="setup.html"><strong>Install the plugin</strong></a> &mdash; upload the plugin file and restart Rock.</li>
-            <li><a href="setup.html#configuration"><strong>Configure your Mailgun credentials</strong></a> &mdash; set your API key and sending domain.</li>
-            <li><a href="dashboard.html"><strong>Explore the dashboard</strong></a> &mdash; learn what each tab shows and what to look for.</li>
+            <li><a href="installation.html"><strong>Install the plugin</strong></a> &mdash; find it in the Rock Shop and install.</li>
+            <li><a href="setup.html"><strong>Configure your credentials</strong></a> &mdash; set your API key and sending domain.</li>
+            <li><a href="setup.html#dashboard"><strong>Explore the dashboard</strong></a> &mdash; learn what each tab shows and what to look for.</li>
             <li><a href="troubleshooting.html"><strong>Having trouble?</strong></a> &mdash; common issues, bounce rate guidance, and how to get support.</li>
           </ol>
         </section>

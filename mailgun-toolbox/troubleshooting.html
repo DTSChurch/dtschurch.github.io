@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Troubleshooting &amp; Support | DTS Dev Docs</title>
+    <title>Troubleshooting | DTS Dev Docs</title>
     <meta
       name="description"
       content="Troubleshooting guide and support information for the Mailgun Toolbox Rock RMS plugin."
@@ -28,11 +28,12 @@
     <main class="page docs-shell">
       <aside class="docs-nav reveal">
         <h2>Mailgun Toolbox</h2>
-        <a href="./">Overview</a>
-        <a href="setup.html">Setup &amp; Configuration</a>
-        <a href="dashboard.html">Dashboard Guide</a>
-        <a href="troubleshooting.html">Troubleshooting &amp; Support</a>
-        <a href="nerd-talk.html">Nerd Talk</a>
+        <a href="./">Intro</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="technical-guides.html">Technical Guides</a>
+        <a href="changelog.html">Changelog</a>
       </aside>
 
       <div class="docs-main">
@@ -61,9 +62,9 @@
 
           <h3>Steps to address a high bounce rate</h3>
           <ol>
-            <li><strong>Review the Bounces tab</strong> &mdash; go to the <a href="dashboard.html">Bounces tab</a> and look at the addresses on the suppression list. Identify patterns (e.g., many addresses at one domain).</li>
+            <li><strong>Review the Bounces tab</strong> &mdash; go to the <a href="setup.html#dashboard">Bounces tab</a> and look at the addresses on the suppression list. Identify patterns (e.g., many addresses at one domain).</li>
             <li><strong>Clean your people data</strong> &mdash; in Rock, find and update or inactivate person records with invalid email addresses. Use Rock&rsquo;s Data Integrity features to find email duplicates and inactive addresses.</li>
-            <li><strong>Check the Details tab for error patterns</strong> &mdash; the <a href="dashboard.html">Details tab</a> shows the most common error codes. If you see <code>550 5.1.1</code> (user unknown) frequently, you have stale addresses.</li>
+            <li><strong>Check the Details tab for error patterns</strong> &mdash; the <a href="setup.html#dashboard">Details tab</a> shows the most common error codes. If you see <code>550 5.1.1</code> (user unknown) frequently, you have stale addresses.</li>
             <li><strong>Monitor the Domains tab</strong> &mdash; if one domain has a high failure rate, investigate whether that domain is still valid.</li>
             <li><strong>Remove known-bad addresses from Rock</strong> &mdash; mark email addresses as inactive in Rock for people who have permanently invalid addresses.</li>
             <li><strong>Consider an email verification service</strong> &mdash; for large lists, use a third-party email verification tool to validate addresses before sending.</li>
@@ -88,11 +89,11 @@
               <tbody>
                 <tr>
                   <td>&ldquo;Mailgun API key is not configured&rdquo;</td>
-                  <td>Set the <strong>Mailgun API Key</strong> global attribute. See <a href="setup.html#configuration">Configuration</a>.</td>
+                  <td>Set the <strong>Mailgun API Key</strong> global attribute. See <a href="setup.html#configuration">Setup Guide</a>.</td>
                 </tr>
                 <tr>
                   <td>&ldquo;Mailgun domain is not configured&rdquo;</td>
-                  <td>Set the <strong>Mailgun Domain</strong> global attribute. See <a href="setup.html#configuration">Configuration</a>.</td>
+                  <td>Set the <strong>Mailgun Domain</strong> global attribute. See <a href="setup.html#configuration">Setup Guide</a>.</td>
                 </tr>
                 <tr>
                   <td>Stats return zeros</td>

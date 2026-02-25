@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Installation | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="How to install the Mailgun Toolbox plugin for Rock RMS."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Mailgun Toolbox</h2>
+        <a href="./">Intro</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="technical-guides.html">Technical Guides</a>
+        <a href="changelog.html">Changelog</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Installation</p>
+          <h1>Installing the Mailgun Toolbox</h1>
+          <p>
+            The Mailgun Toolbox is available in the Rock Shop. Installation takes just a few minutes.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Install from the Rock Shop</h2>
+          <ol>
+            <li>In Rock, navigate to <strong>Admin Tools &gt; Rock Shop</strong>.</li>
+            <li>Search for <strong>Mailgun Toolbox</strong>.</li>
+            <li>Click <strong>Install</strong> and follow the prompts.</li>
+            <li>Restart Rock (or recycle the application pool) to load the assembly.</li>
+          </ol>
+          <p class="footer-note">
+            Don&rsquo;t see it in the Rock Shop? Contact <a href="https://github.com/DTSChurch/Mailgun-Toolbox/issues">DTS support</a> for assistance.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>What the plugin creates</h2>
+          <p>On first startup the migrations will automatically:</p>
+          <ol>
+            <li>Register the <strong>Mailgun Domain Stats</strong> block type under <strong>DTSChurch &gt; Mail</strong>.</li>
+            <li>Create a <strong>Mailgun Toolbox</strong> page under <strong>Rock Shop / Installed Plugins</strong> with the block already added.</li>
+          </ol>
+          <p>
+            After restart, navigate to <strong>Admin Tools &gt; Installed Plugins &gt; Mailgun Toolbox</strong>.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <details>
+            <summary><strong>Advanced: Manual install</strong></summary>
+            <p>If you need to install the plugin manually, copy the following files:</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Source</th>
+                    <th>Destination</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>com.dtschurch.ManagedMail/bin/Release/net472/com.dtschurch.ManagedMail.dll</code></td>
+                    <td><code>RockWeb/Bin/</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>com.dtschurch.ManagedMail.Obsidian/dist/mailgunDomainStats.obs.js</code></td>
+                    <td><code>RockWeb/Plugins/com_dtschurch/ManagedMail/</code></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="footer-note">
+              Restart Rock after copying the files. The plugin migrations run automatically on startup.
+            </p>
+          </details>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Next step</h2>
+          <p>
+            Once installed, head to the <a href="setup.html">Setup Guide</a> to configure your Mailgun credentials.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script src="../assets/nav.js"></script>
+    <script src="../assets/site.js"></script>
+  </body>
+</html>
