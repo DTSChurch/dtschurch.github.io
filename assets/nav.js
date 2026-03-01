@@ -15,7 +15,8 @@
       group: "Rock Plugins",
       items: [
         { name: "Serve System", href: "/projects/serve-system/" },
-        { name: "Mailgun Toolbox", href: "/projects/mailgun-toolbox/" }
+        { name: "Mailgun Toolbox", href: "/projects/mailgun-toolbox/" },
+        { name: "Mobile App Settings", href: "/projects/mobile-app-settings/" }
       ]
     }
     // {

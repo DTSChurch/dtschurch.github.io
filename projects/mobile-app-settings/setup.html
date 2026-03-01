@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Setup Guide | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="Configure and use the Mobile App Settings dashboard in Rock RMS."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Mobile App Settings</h2>
+        <a href="./">Intro</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="technical-guides.html">Technical Guides</a>
+        <a href="changelog.html">Changelog</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Setup Guide</p>
+          <h1>Configuration &amp; Usage</h1>
+          <p>
+            Configure the block for your mobile app site, then start organizing settings
+            into categories.
+          </p>
+        </section>
+
+        <section class="panel reveal" id="configuration">
+          <h2>Configuration</h2>
+
+          <h3>1. Set the Site ID</h3>
+          <p>
+            The block needs to know which mobile app site to manage settings for.
+            You can configure this in two ways:
+          </p>
+          <ul>
+            <li><strong>Block setting:</strong> Edit the block and use the <strong>Site</strong> picker to select your mobile app site.</li>
+            <li><strong>URL parameter:</strong> Append <code>?SiteId=9</code> to the page URL (useful if you manage multiple sites).</li>
+          </ul>
+          <p class="footer-note">
+            The block setting takes priority. If no block setting is configured, the URL parameter is used as a fallback.
+          </p>
+
+          <h3>2. Block settings</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th>Description</th>
+                  <th>Default</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Site</strong></td>
+                  <td>The mobile app site to manage settings for. Uses a Rock Site Picker field.</td>
+                  <td>None (falls back to <code>?SiteId=</code> URL parameter)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Verify it&rsquo;s working</h2>
+          <ol>
+            <li>Navigate to the <strong>Mobile App Settings</strong> admin page in Rock.</li>
+            <li>You should see the category tree on the left and the settings grid on the right.</li>
+            <li>If the block displays &ldquo;Not Configured,&rdquo; check that the Site ID is set correctly.</li>
+            <li>If you see an empty category tree, that&rsquo;s expected &mdash; you haven&rsquo;t created any categories yet.</li>
+          </ol>
+        </section>
+
+        <section class="panel reveal" id="dashboard">
+          <h2>Using the dashboard</h2>
+          <p>
+            The dashboard is split into two panes: a <strong>category tree</strong> on the left
+            and a <strong>settings grid</strong> on the right. Select a category to view and edit
+            its settings.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Managing categories</h2>
+          <p>
+            Categories organize your settings into logical groups. They can be nested
+            to any depth.
+          </p>
+
+          <h3>Create a category</h3>
+          <ol>
+            <li>Click the <strong>Add Category</strong> button.</li>
+            <li>Enter a <strong>Name</strong>, optional <strong>Description</strong>, and optional <strong>Font Awesome icon class</strong>.</li>
+            <li>To create a sub-category, select a parent category first, then click Add Category.</li>
+            <li>Click <strong>Save</strong>.</li>
+          </ol>
+
+          <h3>Edit or delete a category</h3>
+          <ul>
+            <li>Click the <strong>edit icon</strong> next to a category to modify its name, description, or icon.</li>
+            <li>Click the <strong>delete icon</strong> to remove a category. A confirmation dialog will warn you that all child categories, settings, and values within that category will be permanently deleted.</li>
+          </ul>
+          <p class="footer-note">
+            Deleting a category is recursive &mdash; all child categories, their attributes, and all stored values are removed.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Managing settings</h2>
+          <p>
+            Settings are Rock Attributes scoped to your mobile app site. Each setting
+            has a Name, Key, Field Type, and Value.
+          </p>
+
+          <h3>Add a setting</h3>
+          <ol>
+            <li>Select the category you want to add a setting to.</li>
+            <li>Click the <strong>Add Setting</strong> button in the settings grid.</li>
+            <li>Use the Rock Attribute Editor to define the setting:
+              <ul>
+                <li><strong>Name:</strong> A human-readable label (e.g., &ldquo;Homepage Title&rdquo;).</li>
+                <li><strong>Key:</strong> The identifier used in Lava (e.g., <code>HomepageTitle</code>).</li>
+                <li><strong>Field Type:</strong> Text, Boolean, Date, Integer, or any Rock field type.</li>
+                <li><strong>Default Value:</strong> Optional fallback if no site-specific value is set.</li>
+              </ul>
+            </li>
+            <li>Click <strong>Save</strong>.</li>
+          </ol>
+
+          <h3>Edit a setting value</h3>
+          <p>
+            Click on a setting in the grid to edit its value inline. The editor uses
+            Rock&rsquo;s <code>AttributeValuesContainer</code> component, so each field type
+            gets its native editor (date picker for dates, checkbox for booleans, etc.).
+          </p>
+
+          <h3>Delete a setting</h3>
+          <p>
+            Click the <strong>delete icon</strong> on a setting row to remove the attribute
+            definition and all stored values across all sites.
+          </p>
+        </section>
+
+        <section class="panel reveal" id="lava">
+          <h2>Using settings in Lava</h2>
+          <p>
+            The plugin registers a custom <code>AppSetting</code> Lava filter that lets you
+            access any setting from your templates.
+          </p>
+
+          <h3>Basic usage</h3>
+          <pre><code>{{ Site | AppSetting:'HomepageTitle' }}</code></pre>
+
+          <h3>With a fallback value</h3>
+          <pre><code>{{ Site | AppSetting:'HomepageTitle' | Default:'Welcome' }}</code></pre>
+
+          <h3>Boolean check</h3>
+          <pre><code>{% assign isEnabled = Site | AppSetting:'FeatureEnabled' | AsBoolean %}
+{% if isEnabled %}Feature is on!{% endif %}</code></pre>
+
+          <h3>Date formatting</h3>
+          <pre><code>{% assign launchDate = Site | AppSetting:'LaunchDate' %}
+{{ launchDate | Date:'MMMM d, yyyy' }}</code></pre>
+
+          <h3>Using a Site ID directly</h3>
+          <pre><code>{{ 9 | AppSetting:'HomepageTitle' }}</code></pre>
+
+          <p class="footer-note">
+            The <code>AppSetting</code> filter accepts <code>Site</code> objects, Site IDs (int or string),
+            and <code>SiteCache</code> objects. It falls back to the attribute&rsquo;s default value if
+            no site-specific value is stored.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Lava example generator</h2>
+          <p>
+            The dashboard includes a built-in Lava example generator. Click the
+            <strong>Lava Examples</strong> button to open a modal showing copy-paste
+            snippets for every setting in the current category. Examples are dynamically
+            generated based on the setting&rsquo;s key and field type.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Technical Guides | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="Technical details about the Mobile App Settings plugin architecture, block actions, Lava filter, and data model."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Mobile App Settings</h2>
+        <a href="./">Intro</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="technical-guides.html">Technical Guides</a>
+        <a href="changelog.html">Changelog</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Technical Guides</p>
+          <h1>How the plugin is built</h1>
+          <p>
+            A look under the hood at the Mobile App Settings plugin architecture,
+            block actions, Lava filter, and data model. This page is for the technically curious
+            &mdash; you don&rsquo;t need any of this to use the plugin.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Project structure</h2>
+          <pre><code>com.dtschurch.MobileAppSettings/              # C# Backend (.NET Framework 4.7.2)
+  Blocks/Mobile/                               #   MobileAppSettings block type
+  Constants/                                   #   GUIDs and plugin metadata
+  Lava/                                        #   AppSetting filter + startup registration
+  Migrations/                                  #   Rock database migrations (2)
+  PluginGuid/                                  #   GUID constant wrappers
+  ViewModels/                                  #   Data transfer objects
+
+com.dtschurch.MobileAppSettings.Obsidian/      # Vue 3 Frontend (Obsidian)
+  src/mobileAppSettings.obs                    #   Single-file component (~917 lines)</code></pre>
+          <p>
+            The plugin has two main parts: a C# backend that runs inside Rock and handles
+            category/attribute CRUD, and a Vue 3 frontend component that renders the admin
+            dashboard in Rock&rsquo;s Obsidian shell.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Block actions</h2>
+          <p>
+            The Obsidian frontend calls these block actions on the C# backend to manage
+            categories and settings:
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Action</th>
+                  <th>Parameters</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>GetCategories</code></td>
+                  <td>&mdash;</td>
+                  <td>Returns the full category tree with attributes and values.</td>
+                </tr>
+                <tr>
+                  <td><code>SaveCategory</code></td>
+                  <td><code>CategoryBag</code></td>
+                  <td>Create or update a category. Supports <code>parentCategoryGuid</code> for nesting.</td>
+                </tr>
+                <tr>
+                  <td><code>DeleteCategory</code></td>
+                  <td><code>categoryGuid</code></td>
+                  <td>Recursively deletes a category, its children, attributes, and values.</td>
+                </tr>
+                <tr>
+                  <td><code>GetEditableAttribute</code></td>
+                  <td><code>attributeGuid?</code></td>
+                  <td>Get an attribute definition for editing. Pass null for a new blank attribute.</td>
+                </tr>
+                <tr>
+                  <td><code>SaveEditableAttribute</code></td>
+                  <td><code>editableAttribute, categoryGuid</code></td>
+                  <td>Save an attribute definition and associate it with a category.</td>
+                </tr>
+                <tr>
+                  <td><code>DeleteAttribute</code></td>
+                  <td><code>attributeGuid</code></td>
+                  <td>Delete an attribute and all its stored values.</td>
+                </tr>
+                <tr>
+                  <td><code>SaveAttributeValues</code></td>
+                  <td><code>categoryGuid, values</code></td>
+                  <td>Save attribute values for the current site.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Data model</h2>
+          <p>
+            The plugin uses Rock&rsquo;s native Attribute system &mdash; no custom database tables are created.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Rock Table</th>
+                  <th>How It&rsquo;s Used</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Attribute</code></td>
+                  <td>Each setting is stored as an Attribute with <code>EntityType = Rock.Model.Site</code> and empty qualifiers.</td>
+                </tr>
+                <tr>
+                  <td><code>AttributeValue</code></td>
+                  <td>Site-specific values are stored with <code>EntityId = SiteId</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>Category</code></td>
+                  <td>Categories are stored with <code>EntityType = Rock.Model.Attribute</code>. A hidden root category (<code>Mobile App Settings &gt; Site_{SiteId}</code>) isolates each site&rsquo;s tree.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Lava filter internals</h2>
+          <p>
+            The <code>AppSetting</code> filter is registered via <code>IRockStartup</code> at application
+            startup &mdash; no migration is needed for the filter to be available.
+          </p>
+          <ul>
+            <li><strong>Input types:</strong> Accepts <code>Site</code> objects, <code>SiteCache</code> objects, or Site IDs (int or string).</li>
+            <li><strong>Lookup:</strong> Queries <code>AttributeValue</code> for the given Site ID and attribute key.</li>
+            <li><strong>Fallback:</strong> Returns the attribute&rsquo;s <code>DefaultValue</code> if no site-specific value exists.</li>
+          </ul>
+          <pre><code>// Filter signature
+public static string AppSetting( object input, string key )
+
+// Registration (MobileAppSettingStartup.cs)
+Template.RegisterFilter( typeof( MobileAppSettingLavaFilters ) );</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>ViewModels</h2>
+          <p>
+            Data transfer objects used between the C# backend and the Vue 3 frontend:
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ViewModel</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>MobileAppSettingsInitBag</code></td>
+                  <td>Block initialization payload: <code>IsConfigured</code>, <code>SiteId</code>, <code>EntityTypeName</code>, <code>Categories</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>CategoryBag</code></td>
+                  <td>Category CRUD DTO: <code>Guid</code>, <code>Name</code>, <code>Description</code>, <code>IconCssClass</code>, <code>Order</code>, <code>ParentCategoryGuid</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>CategoryWithAttributesBag</code></td>
+                  <td>Full data model: category fields plus <code>Attributes</code>, <code>AttributeValues</code>, <code>AttributeIds</code>, <code>FieldTypeNames</code>, and recursive <code>Children</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>System GUIDs</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Entity</th>
+                  <th>GUID</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Block Type</td>
+                  <td><code>20C31BBC-93D6-49EA-867A-97D25BB68C08</code></td>
+                </tr>
+                <tr>
+                  <td>Entity Type</td>
+                  <td><code>8504EABE-1AE3-4D5C-BDF8-29DD7427DB69</code></td>
+                </tr>
+                <tr>
+                  <td>Admin Page</td>
+                  <td><code>C37196CA-393A-4E34-85A8-5303CE6668C9</code></td>
+                </tr>
+                <tr>
+                  <td>Block Instance</td>
+                  <td><code>F5AF0FBB-0AD5-4ACF-AF23-34D4282746E4</code></td>
+                </tr>
+                <tr>
+                  <td>Root Category</td>
+                  <td><code>A68FD033-C253-4302-9CF8-F0F018B233FB</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Key source files</h2>
+          <ul>
+            <li><code>Blocks/Mobile/MobileAppSettings.cs</code> &mdash; the Rock block type with all 7 block actions and category/attribute CRUD logic (612 lines).</li>
+            <li><code>Lava/MobileAppSettingLavaFilters.cs</code> &mdash; the <code>AppSetting</code> Lava filter implementation (110 lines).</li>
+            <li><code>Lava/MobileAppSettingStartup.cs</code> &mdash; <code>IRockStartup</code> registration for the Lava filter (24 lines).</li>
+            <li><code>Obsidian/src/mobileAppSettings.obs</code> &mdash; the Vue 3 single-file component for the admin dashboard UI (917 lines).</li>
+            <li><code>Migrations/</code> &mdash; two Rock migrations for entity/block type registration and admin page creation.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Building from source</h2>
+          <pre><code># C# Backend
+dotnet build com.dtschurch.MobileAppSettings/com.dtschurch.MobileAppSettings.csproj -c Release
+
+# Obsidian Frontend
+cd com.dtschurch.MobileAppSettings.Obsidian
+npm install
+npm run build</code></pre>
+          <p class="footer-note">
+            Requires .NET 4.7.2 SDK, Node.js 18+, and Rock RMS v18.1 source.
+            The Rock source path is configurable via the <code>RockWebBinPath</code> MSBuild property.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

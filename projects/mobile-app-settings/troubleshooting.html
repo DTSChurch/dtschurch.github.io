@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Troubleshooting | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="Troubleshooting guide and support information for the Mobile App Settings Rock RMS plugin."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Mobile App Settings</h2>
+        <a href="./">Intro</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="technical-guides.html">Technical Guides</a>
+        <a href="changelog.html">Changelog</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Troubleshooting</p>
+          <h1>Troubleshooting &amp; Support</h1>
+          <p>
+            Solutions for common issues when using the Mobile App Settings plugin.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Common issues</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Problem</th>
+                  <th>Solution</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Block shows &ldquo;Not Configured&rdquo;</td>
+                  <td>Set the <strong>Site</strong> block setting or pass <code>?SiteId=</code> as a URL parameter. See <a href="setup.html#configuration">Setup Guide</a>.</td>
+                </tr>
+                <tr>
+                  <td>Block is not discovered after deploy</td>
+                  <td>Ensure <code>rockplugin.json</code> is configured as an embedded resource in the <code>.csproj</code> file. Restart Rock.</td>
+                </tr>
+                <tr>
+                  <td><code>AppSetting</code> Lava filter not available</td>
+                  <td>Restart Rock after deploying the DLL. The filter registers via <code>IRockStartup</code> on startup, not via migration.</td>
+                </tr>
+                <tr>
+                  <td>Admin page not created after install</td>
+                  <td>Verify the parent page GUID <code>89DBB635-99A7-4ED5-AD61-019881279951</code> exists in your Rock instance. This is the default Rock &ldquo;Installed Plugins&rdquo; page.</td>
+                </tr>
+                <tr>
+                  <td>Settings not saving</td>
+                  <td>Confirm the Site ID is resolving correctly. Check the block settings and ensure the site exists in Rock.</td>
+                </tr>
+                <tr>
+                  <td>Categories from another site appear</td>
+                  <td>Each site has its own isolated category tree under a hidden root category (<code>Mobile App Settings &gt; Site_{SiteId}</code>). Verify the correct Site ID is selected.</td>
+                </tr>
+                <tr>
+                  <td>Lava filter returns empty string</td>
+                  <td>Check the setting key matches exactly (case-sensitive). If no site-specific value exists, the attribute&rsquo;s default value is used. If no default is set, an empty string is returned.</td>
+                </tr>
+                <tr>
+                  <td>Dashboard page is blank or shows a loading spinner</td>
+                  <td>Clear your browser cache and reload. If the issue persists, check the Rock exception log for errors related to &ldquo;MobileAppSettings.&rdquo;</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Getting support</h2>
+          <p>
+            If you&rsquo;re experiencing an issue not covered above, you can get help from the
+            DTS development team.
+          </p>
+          <h3>How to report an issue</h3>
+          <ol>
+            <li>Go to the <a href="https://github.com/DTSChurch/MobileAppSettings/issues">Mobile App Settings GitHub Issues page</a>.</li>
+            <li>Click <strong>New Issue</strong>.</li>
+            <li>Describe the problem, including: what you expected to happen, what actually happened, your Rock version, and any error messages you see.</li>
+            <li>If possible, include a screenshot of the issue.</li>
+          </ol>
+          <p class="footer-note">
+            GitHub Issues is the supported channel for Mobile App Settings support requests.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

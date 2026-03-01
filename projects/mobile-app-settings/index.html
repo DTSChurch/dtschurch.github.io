@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mobile App Settings | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="Mobile App Settings plugin for Rock RMS. Manage dynamic, hierarchical settings for mobile applications through an admin dashboard."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Mobile App Settings</h2>
+        <a href="./">Intro</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="technical-guides.html">Technical Guides</a>
+        <a href="changelog.html">Changelog</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Mobile App Settings</p>
+          <h1>Dynamic settings management for Rock RMS mobile apps</h1>
+          <p>
+            The Mobile App Settings plugin provides a hierarchical settings dashboard
+            inside Rock RMS. Manage titles, hero images, feature flags, and any other
+            configuration values for your mobile app &mdash; all without touching XAML or
+            app code.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="installation.html">Get Started</a>
+            <a class="btn btn-ghost" href="setup.html">Setup Guide</a>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>What you get</h2>
+          <ul class="kv-list">
+            <li><strong>Category tree:</strong> Organize settings into hierarchical categories with icons, descriptions, and drag-and-drop ordering.</li>
+            <li><strong>Settings grid:</strong> View and edit settings by Name, Key, Type, and Value &mdash; all inline from the admin UI.</li>
+            <li><strong>Any Rock field type:</strong> Text, Boolean, Date, Integer, and every other Rock field type is supported out of the box.</li>
+            <li><strong>Per-site isolation:</strong> Each mobile app site manages its own independent settings tree.</li>
+            <li><strong>Lava integration:</strong> Access any setting from Lava templates with the <code>AppSetting</code> filter &mdash; no migration required.</li>
+            <li><strong>Lava example generator:</strong> Built-in modal generates copy-paste Lava snippets for every setting you create.</li>
+          </ul>
+          <p class="footer-note">
+            Settings are stored using Rock&rsquo;s native Attribute system &mdash; no custom database tables required.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Requirements</h2>
+          <ul>
+            <li>Rock RMS v18.1+ (Obsidian)</li>
+            <li>.NET Framework 4.7.2</li>
+            <li>A mobile app site configured in Rock</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Getting started</h2>
+          <ol>
+            <li><a href="installation.html"><strong>Install the plugin</strong></a> &mdash; copy the DLL and Obsidian JS files into your Rock instance.</li>
+            <li><a href="setup.html"><strong>Configure your site</strong></a> &mdash; set the Site ID and start creating categories and settings.</li>
+            <li><a href="setup.html#lava"><strong>Use settings in Lava</strong></a> &mdash; access your settings with the <code>AppSetting</code> filter.</li>
+            <li><a href="troubleshooting.html"><strong>Having trouble?</strong></a> &mdash; common issues and how to get support.</li>
+          </ol>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>
