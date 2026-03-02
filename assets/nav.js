@@ -1,9 +1,10 @@
 /**
- * DTS Dev Docs — Shared Navigation
+ * DTS Dev Docs — Shared Navigation & Project Catalog
  *
- * Single source of truth for the site topbar.
+ * Single source of truth for the site topbar AND the project catalog.
  * To add a project, add an entry to the PROJECTS array below.
  * Every page that includes this script gets the nav automatically.
+ * The catalog page reads window.DTS_CATALOG for search/filter.
  */
 (function () {
   // ── Configuration ─────────────────────────────────────────────
@@ -14,18 +15,48 @@
     {
       group: "Rock Plugins",
       items: [
-        { name: "Serve System", href: "/projects/serve-system/" },
-        { name: "Mailgun Toolbox", href: "/projects/mailgun-toolbox/" },
-        { name: "Mobile App Settings", href: "/projects/mobile-app-settings/" }
+        {
+          name: "Serve System",
+          href: "/projects/serve-system/",
+          desc: "Volunteer opportunity management, role scheduling, self-service sign-up, notification workflows, and release runbooks for Rock RMS.",
+          badges: ["Custom Plugin", "Obsidian", "Special Occasions"]
+        },
+        {
+          name: "Mailgun Toolbox",
+          href: "/projects/mailgun-toolbox/",
+          desc: "Mailgun email monitoring dashboard. Track delivery health, manage bounces and complaints, and drill into failure details.",
+          badges: ["RockShop"]
+        },
+        {
+          name: "Mobile App Settings",
+          href: "/projects/mobile-app-settings/",
+          desc: "Dynamic, hierarchical settings management for mobile applications. Manage titles, feature flags, and configuration values through a Rock admin dashboard.",
+          badges: ["Custom Plugin", "Obsidian", "Lava Filter"]
+        }
       ]
     }
     // {
     //   group: "Workflows",
     //   items: [
-    //     { name: "Example", href: "/example/" }
+    //     { name: "Example", href: "/example/", desc: "", badges: [] }
     //   ]
     // }
   ];
+
+  // ── Expose flat catalog for the catalog page ──────────────────
+  var catalog = [];
+  PROJECTS.forEach(function (g) {
+    g.items.forEach(function (item) {
+      catalog.push({
+        name: item.name,
+        href: item.href,
+        group: g.group,
+        desc: item.desc || "",
+        badges: item.badges || []
+      });
+    });
+  });
+  window.DTS_CATALOG = catalog;
 
   // ── Helpers ───────────────────────────────────────────────────
   function normalizePath(p) {

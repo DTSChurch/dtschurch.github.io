@@ -56,24 +56,8 @@
     <script src="assets/site.js"></script>
     <script>
       (function () {
-        // ── Project data ──────────────────────────────────────────
-        // To add a project, add an entry here AND in nav.js PROJECTS.
-        var CATALOG = [
-          {
-            name: "Serve System",
-            href: "/projects/serve-system/",
-            group: "Rock Plugins",
-            desc: "Volunteer opportunity management, role scheduling, self-service sign-up, notification workflows, and release runbooks for Rock RMS.",
-            badges: ["Custom Plugin", "Obsidian", "Special Occasions"]
-          },
-          {
-            name: "Mailgun Toolbox",
-            href: "/projects/mailgun-toolbox/",
-            group: "Rock Plugins",
-            desc: "Mailgun email monitoring dashboard. Track delivery health, manage bounces and complaints, and drill into failure details.",
-            badges: ["RockShop"]
-          }
-        ];
+        // ── Project data (from nav.js — single source of truth) ──
+        var CATALOG = window.DTS_CATALOG || [];
 
         // ── Gather unique groups ──────────────────────────────────
         var groups = [];
