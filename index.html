@@ -41,103 +41,69 @@
         </div>
       </section>
 
-      <!-- Section 2: Highlighted Projects -->
-      <section class="cards reveal">
-        <article class="card feature-card">
-          <p class="card-kicker">Rock Plugin</p>
-          <div class="card-badges">
-            <span class="badge">Custom Plugin</span>
-            <span class="badge">Obsidian</span>
-            <span class="badge">Special Occasions</span>
-          </div>
-          <h2>Serve System</h2>
-          <p>
-            Volunteer opportunity management, role scheduling, self-service sign-up,
-            notification workflows, and release runbooks for Rock RMS.
-          </p>
-          <a class="text-link" href="projects/serve-system/">Browse documentation &rarr;</a>
-        </article>
+      <!-- Section 2: Highlighted Projects (rendered dynamically from catalog) -->
+      <section class="cards reveal" id="featured-cards"></section>
 
-        <article class="card feature-card">
-          <p class="card-kicker">Rock Plugin</p>
-          <div class="card-badges">
-            <span class="badge">RockShop</span>
-          </div>
-          <h2>Mailgun Toolbox</h2>
-          <p>
-            Mailgun email monitoring dashboard for Rock RMS. Track delivery health,
-            manage bounces and complaints, and drill into failure details.
-          </p>
-          <a class="text-link" href="projects/mailgun-toolbox/">Browse documentation &rarr;</a>
-        </article>
-      </section>
-
-      <!-- Section 3: Quick Links -->
+      <!-- Section 3: Quick Links (rendered dynamically from catalog) -->
       <section class="timeline reveal">
         <h2>Quick links</h2>
         <p class="footer-note">Jump straight to the most-used documentation pages.</p>
-        <div class="quick-links">
-          <a class="quick-link" href="projects/serve-system/">
-            <span class="quick-link-text">
-              <span class="quick-link-project">Serve System</span>
-              <span class="quick-link-page">Overview &amp; Architecture</span>
-            </span>
-            <span class="quick-link-arrow">&rarr;</span>
-          </a>
-          <a class="quick-link" href="projects/serve-system/email-system.html">
-            <span class="quick-link-text">
-              <span class="quick-link-project">Serve System</span>
-              <span class="quick-link-page">Email Workflows</span>
-            </span>
-            <span class="quick-link-arrow">&rarr;</span>
-          </a>
-          <a class="quick-link" href="projects/serve-system/connection-requests.html">
-            <span class="quick-link-text">
-              <span class="quick-link-project">Serve System</span>
-              <span class="quick-link-page">Connection Requests</span>
-            </span>
-            <span class="quick-link-arrow">&rarr;</span>
-          </a>
-          <a class="quick-link" href="projects/mailgun-toolbox/">
-            <span class="quick-link-text">
-              <span class="quick-link-project">Mailgun Toolbox</span>
-              <span class="quick-link-page">Overview &amp; Dashboard</span>
-            </span>
-            <span class="quick-link-arrow">&rarr;</span>
-          </a>
-          <a class="quick-link" href="projects/mailgun-toolbox/setup.html">
-            <span class="quick-link-text">
-              <span class="quick-link-project">Mailgun Toolbox</span>
-              <span class="quick-link-page">Setup Guide</span>
-            </span>
-            <span class="quick-link-arrow">&rarr;</span>
-          </a>
-          <a class="quick-link" href="projects/mailgun-toolbox/troubleshooting.html">
-            <span class="quick-link-text">
-              <span class="quick-link-project">Mailgun Toolbox</span>
-              <span class="quick-link-page">Troubleshooting</span>
-            </span>
-            <span class="quick-link-arrow">&rarr;</span>
-          </a>
-          <a class="quick-link" href="projects/mobile-app-settings/">
-            <span class="quick-link-text">
-              <span class="quick-link-project">Mobile App Settings</span>
-              <span class="quick-link-page">Overview &amp; Setup</span>
-            </span>
-            <span class="quick-link-arrow">&rarr;</span>
-          </a>
-          <a class="quick-link" href="projects/mobile-app-settings/setup.html#lava">
-            <span class="quick-link-text">
-              <span class="quick-link-project">Mobile App Settings</span>
-              <span class="quick-link-page">Lava Filter Usage</span>
-            </span>
-            <span class="quick-link-arrow">&rarr;</span>
-          </a>
-        </div>
+        <div class="quick-links" id="quick-links"></div>
       </section>
     </main>
 
+    <script src="assets/catalog.js"></script>
     <script src="assets/nav.js"></script>
     <script src="assets/site.js"></script>
+    <script>
+      (function () {
+        var catalog = window.DTS_CATALOG || [];
+
+        // ── Featured project cards ──────────────────────────────────
+        var cardsEl = document.getElementById("featured-cards");
+        catalog.forEach(function (p) {
+          if (!p.featured) return;
+
+          var badgesHTML = "";
+          if (p.badges && p.badges.length) {
+            badgesHTML = '<div class="card-badges">';
+            p.badges.forEach(function (b) {
+              badgesHTML += '<span class="badge">' + b + "</span>";
+            });
+            badgesHTML += "</div>";
+          }
+
+          var card = document.createElement("article");
+          card.className = "card feature-card";
+          card.innerHTML =
+            '<p class="card-kicker">' + p.group + "</p>" +
+            badgesHTML +
+            "<h2>" + p.name + "</h2>" +
+            "<p>" + p.desc + "</p>" +
+            '<a class="text-link" href="' + p.href + '">Browse documentation &rarr;</a>';
+
+          cardsEl.appendChild(card);
+        });
+
+        // ── Quick links ─────────────────────────────────────────────
+        var linksEl = document.getElementById("quick-links");
+        catalog.forEach(function (p) {
+          if (!p.quickLinks || !p.quickLinks.length) return;
+
+          p.quickLinks.forEach(function (link) {
+            var a = document.createElement("a");
+            a.className = "quick-link";
+            a.href = link.href;
+            a.innerHTML =
+              '<span class="quick-link-text">' +
+                '<span class="quick-link-project">' + p.name + "</span>" +
+                '<span class="quick-link-page">' + link.page + "</span>" +
+              "</span>" +
+              '<span class="quick-link-arrow">&rarr;</span>';
+            linksEl.appendChild(a);
+          });
+        });
+      })();
+    </script>
   </body>
 </html>

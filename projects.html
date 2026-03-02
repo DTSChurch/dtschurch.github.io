@@ -52,12 +52,16 @@
       </section>
     </main>
 
+    <script src="assets/catalog.js"></script>
     <script src="assets/nav.js"></script>
     <script src="assets/site.js"></script>
     <script>
       (function () {
         // ── Project data (from nav.js — single source of truth) ──
-        var CATALOG = window.DTS_CATALOG || [];
+        // Only show projects with showInCatalog: true
+        var CATALOG = (window.DTS_CATALOG || []).filter(function (p) {
+          return p.showInCatalog !== false;
+        });
 
         // ── Gather unique groups ──────────────────────────────────
         var groups = [];
@@ -98,10 +102,11 @@
             // Group filter
             if (activeGroup && p.group !== activeGroup) return;
 
-            // Search filter — match name, description, or badges
+            // Search filter — only match projects marked searchable
             if (query) {
+              if (p.searchable === false) return;
               var haystack = (
-                p.name + " " + p.desc + " " + p.badges.join(" ")
+                p.name + " " + p.desc + " " + (p.badges || []).join(" ")
               ).toLowerCase();
               if (haystack.indexOf(query) === -1) return;
             }

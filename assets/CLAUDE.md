@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a **static GitHub Pages documentation site** for DTS development documentation. It hosts reference documentation for Rock RMS plugins and systems, including the Serve System and Mailgun Toolbox.
+This is a **static GitHub Pages documentation site** for DTS development documentation. It hosts reference documentation for Rock RMS plugins and systems, including the Serve System, Mailgun Toolbox, and Mobile App Settings.
 
 The site is pure HTML/CSS/JavaScript with no build step required. It uses:
 - Custom CSS with DTS Church design system
@@ -23,21 +23,26 @@ Then open `http://localhost:8080` in your browser.
 
 ### Adding a new project to the site
 
-1. Create a new directory for the project (e.g., `new-project/`)
+1. Create a new directory for the project under `projects/` (e.g., `projects/new-project/`)
 2. Add project documentation HTML files in that directory
-3. Update `assets/nav.js` to add the project to the navigation dropdown:
+3. Add a catalog entry in `assets/catalog.js`:
    ```javascript
-   var PROJECTS = [
-     {
-       group: "Rock Plugins",
-       items: [
-         { name: "Serve System", href: "/serve-system/" },
-         { name: "Mailgun Toolbox", href: "/mailgun-toolbox/" },
-         { name: "New Project", href: "/new-project/" }  // Add here
-       ]
-     }
-   ];
+   {
+     name: "New Project",
+     href: "/projects/new-project/",
+     group: "Rock Plugins",
+     desc: "Short description of the project.",
+     badges: ["Custom Plugin"],
+     showInNav: true,        // appear in topbar Projects dropdown
+     showInCatalog: true,    // appear on Browse All Projects page
+     searchable: true,       // included in catalog search matching
+     featured: false,        // appear as a card on the homepage
+     quickLinks: [           // homepage quick links (optional)
+       { page: "Overview", href: "/projects/new-project/" }
+     ]
+   }
    ```
+   This single entry controls the nav dropdown, catalog page, search, and homepage.
 
 ## Architecture
 
@@ -45,30 +50,49 @@ Then open `http://localhost:8080` in your browser.
 
 ```
 dtschurch.github.io/
-├── index.html                    # Landing page
+├── index.html                    # Landing page (dynamic from catalog)
+├── projects.html                 # Browse All Projects (dynamic from catalog)
 ├── assets/
-│   ├── styles.css                # Global styles (DTS design system)
-│   ├── nav.js                    # Shared navigation (single source of truth)
+│   ├── catalog.js                # Project catalog data (single source of truth)
+│   ├── nav.js                    # Shared navigation (reads catalog.js)
 │   ├── site.js                   # Scroll reveal + sidebar active state
+│   ├── styles.css                # Global styles (DTS design system)
 │   ├── STYLE_GUIDE.md            # Complete design system reference
 │   └── DTSLogo.png
-├── serve-system/
-│   ├── index.html                # Serve System docs portal
-│   ├── email-system.html         # Email workflow docs
-│   ├── connection-requests.html  # Connection request docs
-│   └── reference/                # Mirrored source docs from ../serve-system repo
-├── mailgun-toolbox/
-│   ├── index.html                # Mailgun Toolbox docs portal
-│   ├── setup.html                # Setup instructions
-│   └── reference/                # Mirrored source docs from mailgun toolbox repo
+├── projects/
+│   ├── serve-system/
+│   │   ├── index.html            # Serve System docs portal
+│   │   ├── email-system.html     # Email workflow docs
+│   │   ├── connection-requests.html  # Connection request docs
+│   │   └── reference/            # Mirrored source docs from ../serve-system repo
+│   ├── mailgun-toolbox/
+│   │   ├── index.html            # Mailgun Toolbox docs portal
+│   │   ├── setup.html            # Setup instructions
+│   │   └── reference/            # Mirrored source docs from mailgun toolbox repo
+│   └── mobile-app-settings/
+│       ├── index.html            # Mobile App Settings docs portal
+│       ├── installation.html     # Installation guide
+│       ├── setup.html            # Setup & Lava filter usage
+│       ├── troubleshooting.html  # Troubleshooting & support
+│       ├── technical-guides.html # Architecture, block actions, data model
+│       └── changelog.html        # Version history
 └── CNAME                         # GitHub Pages custom domain
 ```
 
 ### JavaScript Architecture
 
+**catalog.js** — Project catalog data
+- Single source of truth for all project metadata
+- Flat array exposed as `window.DTS_CATALOG`
+- Each entry has visibility flags: `showInNav`, `showInCatalog`, `searchable`, `featured`
+- Optional `quickLinks` array for homepage quick-link entries
+- To add a project, add one entry here — no other files need to change
+- Every page includes this via `<script src="../assets/catalog.js"></script>`
+
 **nav.js** — Shared navigation component
-- Single source of truth for site header/topbar
+- Reads `window.DTS_CATALOG` and filters by `showInNav` to build the topbar
 - Auto-detects active project based on current URL
+- Groups nav items by the `group` field from catalog entries
 - Handles dropdown menu interactions and mobile menu
 - Every page includes this via `<script src="../assets/nav.js"></script>`
 
@@ -76,6 +100,13 @@ dtschurch.github.io/
 - Sidebar active link highlighting for docs pages
 - Scroll-triggered reveal animations using IntersectionObserver
 - Every page includes this via `<script src="../assets/site.js"></script>`
+
+**Script load order** — Every page must include scripts in this order:
+```html
+<script src="../assets/catalog.js"></script>
+<script src="../assets/nav.js"></script>
+<script src="../assets/site.js"></script>
+```
 
 ### CSS Architecture
 
@@ -139,6 +170,7 @@ All documentation pages follow a consistent structure:
       </div>
     </main>
 
+    <script src="../assets/catalog.js"></script>
     <script src="../assets/nav.js"></script>
     <script src="../assets/site.js"></script>
   </body>
@@ -252,14 +284,17 @@ Use `../` prefix for links back to the parent project directory.
 
 ## Common Tasks
 
+### Add a new project to the catalog
+Edit `assets/catalog.js` and add an entry to the `DTS_CATALOG` array. Set the visibility flags to control where it appears (nav, catalog page, search, homepage).
+
 ### Update site navigation
-Edit `assets/nav.js` and modify the `PROJECTS` array.
+The nav is driven by `assets/catalog.js`. Set `showInNav: true` on a catalog entry to include it in the Projects dropdown. The `group` field determines the dropdown section.
 
 ### Add a new documentation page
 1. Copy an existing HTML file as a template
 2. Update the sidebar navigation in `<aside class="docs-nav">`
 3. Add content in `<div class="docs-main">` using `.panel` sections
-4. Ensure both `nav.js` and `site.js` are included at the bottom
+4. Ensure `catalog.js`, `nav.js`, and `site.js` are included at the bottom (in that order)
 
 ### Modify styling
 1. Reference `assets/STYLE_GUIDE.md` for design tokens
