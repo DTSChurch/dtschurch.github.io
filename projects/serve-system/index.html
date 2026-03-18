@@ -74,39 +74,6 @@
         </section>
 
         <section class="panel reveal">
-          <h2>Requirements And Install Paths</h2>
-          <div class="split-grid">
-            <article class="detail-item">
-              <h3>Runtime Requirements</h3>
-              <ul>
-                <li>Rock RMS v17.0 or higher</li>
-                <li>.NET Framework 4.7.2</li>
-                <li>.NET 8 SDK for <code>rock-dev-tool</code></li>
-                <li><code>SparkDevNetwork.Rock.DevTool</code> for local plugin development</li>
-              </ul>
-            </article>
-            <article class="detail-item">
-              <h3>Production Install</h3>
-              <ol>
-                <li>Download the latest plugin package.</li>
-                <li>Open Rock Shop in Rock RMS.</li>
-                <li>Install the package and run pending migrations.</li>
-                <li>Verify Serve pages, blocks, and communication templates are present.</li>
-              </ol>
-            </article>
-            <article class="detail-item">
-              <h3>Development Bootstrap</h3>
-              <pre><code>dotnet tool install --global SparkDevNetwork.Rock.DevTool
-rock-dev-tool env update
-cd serve-system
-dotnet restore
-dotnet build</code></pre>
-              <p>Build output copies into the linked Rock environment automatically when the project is configured correctly.</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="panel reveal">
           <h2>System Model</h2>
           <div class="architecture-map">
             <article class="architecture-node">
@@ -178,24 +145,44 @@ dotnet build</code></pre>
               </thead>
               <tbody>
                 <tr>
-                  <td>Opportunity List</td>
+                  <td>Serve Opportunity List</td>
                   <td>All serve opportunities available to administrators.</td>
                   <td>Used to browse, filter, and open a specific opportunity for review or editing.</td>
                 </tr>
                 <tr>
-                  <td>Opportunity Detail</td>
+                  <td>Serve Opportunity Detail</td>
                   <td>Opportunity setup, roles, notification recipients, and confirmation templates.</td>
                   <td>Used when reviewing how one ministry or event is configured.</td>
                 </tr>
                 <tr>
-                  <td>Instance List And Detail</td>
-                  <td>Concrete occurrences of an opportunity, including schedules, expirations, and shift-time defaults.</td>
+                  <td>Serve Opportunity Instance List</td>
+                  <td>All scheduled instances connected to an opportunity.</td>
+                  <td>Used to browse and open a specific event instance for closer review.</td>
+                </tr>
+                <tr>
+                  <td>Serve Opportunity Instance Detail</td>
+                  <td>Schedules, expirations, and instance-level shift-time defaults or overrides.</td>
                   <td>Used to review what happens for a specific weekend, event, or campaign instance.</td>
                 </tr>
                 <tr>
-                  <td>Sign-Up Management</td>
-                  <td>Volunteer registrations, status changes, and cancellation behavior.</td>
-                  <td>Used to confirm who signed up, what they selected, and how changes are handled afterward.</td>
+                  <td>Serve Opportunity Instance Active List</td>
+                  <td>Active serve instances across opportunities.</td>
+                  <td>Used to review what is currently open or in motion across the system.</td>
+                </tr>
+                <tr>
+                  <td>Serve Opportunity Instance Sign-Up List</td>
+                  <td>Volunteer registrations for a specific instance.</td>
+                  <td>Used to confirm who signed up and how registrations are grouped.</td>
+                </tr>
+                <tr>
+                  <td>Serve Opportunity Instance Sign-Up Detail</td>
+                  <td>Individual sign-up details, adjustments, and status changes.</td>
+                  <td>Used to review or update a single volunteer registration.</td>
+                </tr>
+                <tr>
+                  <td>Volunteer Sign-Up Manager</td>
+                  <td>Manager-facing view of volunteer registrations with streamlined review workflows.</td>
+                  <td>Used by ministry leaders to review sign-ups in a more operational, list-oriented management experience.</td>
                 </tr>
                 <tr>
                   <td>Role Schedule Configurator</td>
@@ -203,7 +190,7 @@ dotnet build</code></pre>
                   <td>Used when teams need to fine-tune staffing and timing at the shift level.</td>
                 </tr>
                 <tr>
-                  <td>Volunteer Sign-Up</td>
+                  <td>Serve Sign-Up</td>
                   <td>The public sign-up experience shown to volunteers and families.</td>
                   <td>Used to review the front-end registration flow and the information a volunteer actually sees.</td>
                 </tr>
