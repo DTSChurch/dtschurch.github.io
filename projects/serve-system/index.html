@@ -33,6 +33,7 @@
         <a href="connection-requests.html">Connection Requests</a>
         <a href="reference/">Reference Library</a>
         <a href="reference/TPCC_ServeSystem_Email_Documentation.md">Reference Email Doc</a>
+        <a href="reference/TPCC_ServeSystem_Shift_Time_And_Expiration_Documentation.md">Reference Shift Time Doc</a>
         <a href="reference/TPCC_ServeSystem_ConnectionRequest_Documentation.md">Reference Connection Doc</a>
       </aside>
 
@@ -54,7 +55,7 @@
           <h2>Core capabilities</h2>
           <ul class="kv-list">
             <li><strong>Serve Opportunities:</strong> define opportunities, roles, campuses, and attributes.</li>
-            <li><strong>Scheduling:</strong> generate and manage instances and shifts with custom timing.</li>
+            <li><strong>Scheduling:</strong> generate and manage instances, shifts, expirations, and schedule or role-based time overrides.</li>
             <li><strong>Volunteer experience:</strong> self-service sign-up and confirmation communication.</li>
             <li><strong>Coordinator operations:</strong> targeted notification emails and connection integration.</li>
             <li><strong>Rock integration:</strong> WebForms legacy blocks and Obsidian block surfaces.</li>
@@ -117,7 +118,7 @@ dotnet build</code></pre>
                 <tr>
                   <td>Serve Opportunity Instance List/Detail</td>
                   <td><code>~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstance*.ascx</code></td>
-                  <td>Create and maintain event/service instances.</td>
+                  <td>Create and maintain instances, schedules, expirations, and instance-level shift-time defaults or overrides.</td>
                 </tr>
                 <tr>
                   <td>Serve Opportunity Instance Sign-Up List/Detail</td>
@@ -127,7 +128,7 @@ dotnet build</code></pre>
                 <tr>
                   <td>Role Schedule Configurator</td>
                   <td><code>~/Plugins/org_tpcc/ServeSystem/RoleScheduleConfigurator.ascx</code></td>
-                  <td>Configure role-level scheduling behavior.</td>
+                  <td>Configure role counts, per-shift expirations, and schedule-scoped shift-time behavior.</td>
                 </tr>
                 <tr>
                   <td>Serve Sign-Up</td>

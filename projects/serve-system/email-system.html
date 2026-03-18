@@ -100,8 +100,13 @@
                 </tr>
                 <tr>
                   <td><code>Campus</code></td>
-                  <td>Selected campus</td>
+                  <td>Selected campus (may be empty for all-campus shifts)</td>
                   <td>Campus from grouped sign-ups</td>
+                </tr>
+                <tr>
+                  <td><code>StaffContact</code></td>
+                  <td>Yes, campus-specific first then default role contact</td>
+                  <td>No</td>
                 </tr>
                 <tr>
                   <td><code>ShiftDetails</code></td>
@@ -120,6 +125,11 @@
                 </tr>
                 <tr>
                   <td><code>People</code> / <code>SignUps</code></td>
+                  <td>No</td>
+                  <td>Yes</td>
+                </tr>
+                <tr>
+                  <td><code>ShiftDetails.SignUps</code></td>
                   <td>No</td>
                   <td>Yes</td>
                 </tr>
@@ -145,7 +155,7 @@
           <h2>Troubleshooting quick list</h2>
           <ul>
             <li>Missing confirmations: verify <code>ConfirmationSystemEmailId</code> and active System Communication.</li>
-            <li>Missing notifications: verify <code>NotificationSystemEmailId</code> and recipient filters.</li>
+            <li>Missing notifications: verify <code>NotificationSystemEmailId</code>, recipient filters, and active group members for group recipients.</li>
             <li>Empty template output: add at least a default content template for fallback.</li>
             <li>Unexpected template: verify role/category/campus specificity precedence.</li>
           </ul>

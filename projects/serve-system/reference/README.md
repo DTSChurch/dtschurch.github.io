@@ -13,6 +13,8 @@ The Serve System plugin provides a complete solution for managing volunteer oppo
 - **Multi-Campus Support** - Campus-specific scheduling and filtering
 - **Automated Notifications** - Confirmation emails to volunteers and notification emails to coordinators
 - **Custom Email Templates** - Hierarchical content templates based on role and campus
+- **Shift Time Overrides** - Schedule defaults plus role and campus-scoped time overrides
+- **Expiration Controls** - Schedule-level and shift-level expiration handling
 
 ## Features
 
@@ -180,11 +182,11 @@ Migrations are automatically applied when Rock starts. To create a new migration
 | Serve Opportunity List | `~/Plugins/org_tpcc/ServeSystem/ServeOpportunityList.ascx` | Grid of all serve opportunities |
 | Serve Opportunity Detail | `~/Plugins/org_tpcc/ServeSystem/ServeOpportunityDetail.ascx` | Create/edit opportunities with roles, recipients, and templates |
 | Serve Opportunity Instance List | `~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstanceList.ascx` | Grid of instances for an opportunity |
-| Serve Opportunity Instance Detail | `~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstanceDetail.ascx` | Create/edit serving instances |
+| Serve Opportunity Instance Detail | `~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstanceDetail.ascx` | Create/edit serving instances, schedules, schedule expirations, and generalized role/campus shift-time overrides |
 | Serve Opportunity Instance Active List | `~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstanceActiveList.ascx` | Active instances across opportunities |
 | Serve Opportunity Instance Sign-Up List | `~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstanceSignUpList.ascx` | Grid of sign-ups for an instance |
 | Serve Opportunity Instance Sign-Up Detail | `~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstanceSignUpDetail.ascx` | View/edit individual sign-up |
-| Role Schedule Configurator | `~/Plugins/org_tpcc/ServeSystem/RoleScheduleConfigurator.ascx` | Configure role schedules for instances |
+| Role Schedule Configurator | `~/Plugins/org_tpcc/ServeSystem/RoleScheduleConfigurator.ascx` | Configure role counts, per-shift expirations, and schedule-scoped shift times for instances |
 | Serve Sign-Up | `~/Plugins/org_tpcc/ServeSystem/SignUp/ServeSignUp.ascx` | Public-facing volunteer sign-up wizard |
 
 ## Data Model
@@ -209,14 +211,49 @@ Sent to volunteers when they sign up. Supports:
 - `{{ Person }}` - The volunteer
 - `{{ ServeOpportunity }}`, `{{ ServeOpportunityInstance }}`, `{{ ServeOpportunityRole }}`, `{{ Campus }}`
 - `{{ ShiftDetails }}` - Array of shift date/times
-- `{{ ContentTemplate }}` - Role/campus-specific content from templates
+- `{{ StaffContact }}` - Role contact resolved by campus-specific first, then default
+- `{{ ContentTemplate }}` - Rendered content from the most specific matching confirmation content template
 
 ### Notification Emails
 Sent to coordinators when sign-ups occur. Supports:
-- All confirmation fields (except ContentTemplate)
+- `{{ Person }}` - The notification recipient
+- `{{ ServeOpportunity }}`, `{{ ServeOpportunityInstance }}`, `{{ ServeOpportunityRole }}`, `{{ Campus }}`
+- `{{ ShiftDetails }}` - Shift groupings with people and sign-up details
 - `{{ NotificationRole }}`, `{{ NotificationCampus }}` - Recipient's filter context
 - `{{ People }}` - All volunteers in notification
 - `{{ SignUps }}` - All sign-up records
+
+For a full communications reference, see [docs/TPCC_ServeSystem_Email_Documentation.md](docs/TPCC_ServeSystem_Email_Documentation.md).
+
+## Shift Times and Expirations
+
+### Shift time sources
+
+Effective shift times resolve from the most specific matching override in this order:
+
+1. Schedule + Role + Campus
+2. Schedule + Role
+3. Role + Campus
+4. Schedule + Campus
+5. Role
+6. Schedule default
+7. Base iCal schedule time
+
+### Which UI manages what
+
+- **Serve Opportunity Instance Detail** manages the schedule default time for each instance schedule, instance-level role defaults across all schedules, and schedule-scoped role overrides for each schedule.
+- When the instance is partitioned by campus, instance detail also supports campus-scoped role defaults across all schedules.
+- When the instance is partitioned by campus, instance detail also manages schedule + role + campus overrides through the campus dropdown on each override row.
+- **Role Schedule Configurator** manages role counts, per-shift expirations, and schedule-scoped shift-time edits in a grid view for the selected campus context.
+
+### Expiration precedence
+
+- Sign-up availability checks **shift expiration first**.
+- If a shift does not have its own expiration, the system falls back to the **instance schedule expiration**.
+- Instance detail edits the **schedule-level expiration**.
+- The configurator expirations tab displays the schedule-level expiration as the fallback when the shift has no explicit expiration, but saving there writes **shift-level expiration values**.
+
+For a fuller scheduling reference, see [docs/TPCC_ServeSystem_Shift_Time_And_Expiration_Documentation.md](docs/TPCC_ServeSystem_Shift_Time_And_Expiration_Documentation.md).
 
 See [docs/TPCC_ServeSystem_Email_Documentation.md](docs/TPCC_ServeSystem_Email_Documentation.md) for complete documentation.
 
@@ -243,4 +280,3 @@ This project follows the [Gitflow Workflow](https://www.atlassian.com/git/tutori
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request targeting `develop`
-

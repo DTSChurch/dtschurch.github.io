@@ -1,544 +1,296 @@
-# Serve System - Notification & Confirmation Email Documentation
+# Serve System - Email Communications Guide
 
 ## Overview
 
-The Serve System includes two distinct email workflows:
-1. **Confirmation Emails** - Sent to volunteers when they sign up
-2. **Notification Emails** - Sent to coordinators/leaders when new sign-ups occur
+The Serve System sends two types of emails when a volunteer signs up:
 
-Both systems support customizable content templates with a hierarchical matching system based on role and campus.
+1. **Confirmation Emails** - Sent to the volunteer confirming their sign-up
+2. **Notification Emails** - Sent to staff/coordinators alerting them of new sign-ups
 
----
-
-## System Architecture
-
-### Email Flow Process
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Person Signs Up                          │
-│              (for Role + Campus + Shift)                    │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ├──────────────────────┬─────────────────────────┐
-                     │                      │                         │
-                     ▼                      ▼                         ▼
-          ┌──────────────────┐  ┌──────────────────────┐  ┌─────────────────┐
-          │ Confirmation     │  │ Notification         │  │ Content         │
-          │ System Email     │  │ System Email         │  │ Template Lookup │
-          │ (configured on   │  │ (configured on       │  │ (hierarchical   │
-          │  Opportunity)    │  │  Opportunity)        │  │  matching)      │
-          └────────┬─────────┘  └─────────┬────────────┘  └────────┬────────┘
-                   │                      │                         │
-                   │                      │                         │
-                   ▼                      ▼                         ▼
-          ┌──────────────────┐  ┌──────────────────────┐  ┌─────────────────┐
-          │ Send to Volunteer│  │ Send to Recipients   │  │ Used in         │
-          │ - Person who     │  │ - Filter by Campus/  │  │ Confirmation    │
-          │   signed up      │  │   Role               │  │ Email as        │
-          │ - Includes       │  │ - Person or Group    │  │ ContentTemplate │
-          │   ContentTemplate│  │ - NO ContentTemplate │  │ merge field     │
-          └──────────────────┘  └──────────────────────┘  └─────────────────┘
-```
+Both use Rock **System Communications** and support Lava merge fields for dynamic content.
 
 ---
 
-## Configuration Locations
+## Quick Setup
 
-### Serve Opportunity Detail Page
+### 1. Configure Staff Contacts (Recommended First)
 
-All email configuration is done at the **Serve Opportunity** level:
+Before setting up emails, assign staff contacts for each role on the **Serve Opportunity Detail** page. These contacts are used in emails (as the sender name/address and as a merge field).
 
-#### 1. Confirmation Email Section
-- **Location:** ServeOpportunityDetail.ascx - "Confirmation Email" panel
-- **Settings:**
-  - **Confirmation System Communication** dropdown - Select the Rock System Communication template
-  - **Content Templates** (nested panel) - Define custom content by role/campus combination
+Each role can have:
+- A **default contact** (person or group) - used for all campuses
+- **Campus-specific contacts** - override the default for that campus
 
-#### 2. Notification Email Section  
-- **Location:** ServeOpportunityDetail.ascx - "Notification Email" panel
-- **Settings:**
-  - **Notification System Communication** dropdown - Select the Rock System Communication template
-  - **Notification Recipients** grid - Define who receives notifications with optional filters
+> When an email is sent, the system finds the most specific contact: campus-specific first, then default.
+
+### 2. Select System Communications
+
+On the Serve Opportunity Detail page, choose:
+- **Confirmation Email Template** - the System Communication sent to volunteers
+- **Notification Email Template** - the System Communication sent to staff/coordinators
+
+A default **"Serve Sign-Up Confirmation"** System Communication is installed with the plugin under the "Serve" category. It is pre-configured to send from the staff contact's email address.
+
+### 3. Add Content Templates (Optional)
+
+Content templates let you customize the confirmation email body per role, role category, and/or campus. The rendered content is available as `{{ ContentTemplate }}` in the confirmation System Communication.
+
+### 4. Add Notification Recipients
+
+Define who receives notification emails, optionally filtered by campus and/or role.
 
 ---
 
 ## Confirmation Emails
 
-### When They're Sent
-Automatically sent immediately after a person successfully signs up for a serve opportunity.
+### When Sent
+Immediately after a volunteer signs up.
 
 ### Who Receives Them
-The person who signed up.
+The volunteer who signed up.
 
-### Configuration Steps
+### Sender (From) Address
 
-1. **Select System Communication Template**
-   - Navigate to Serve Opportunity detail page
-   - Open "Confirmation Email" panel
-   - Select a System Communication from the dropdown
-   - This template defines the email structure (subject, from, etc.)
+The default System Communication uses Lava in the **From** fields:
 
-2. **Create Content Templates (Optional but Recommended)**
-   - Open the nested "Content Templates" panel
-   - Click "Add" to create a new template
-   - Select Role, Role Category, and/or Campus for specificity
-   - Enter Lava template content in the editor
-   - Content template is rendered and available as `{{ ContentTemplate }}` merge field
+| Field | Default Value | Purpose |
+|-------|--------------|---------|
+| **From Email** | `{{ StaffContact.Person.Email }}` | Sends from the staff contact's email, so replies go to them |
+| **From Name** | `{{ StaffContact.Name }}` | Displays the staff contact's name |
 
-### Content Template Hierarchy
+> If no staff contact is configured for the role/campus, these fields will be empty and Rock will fall back to the System Communication's global default or the organization email.
 
-The system uses **hierarchical matching** to select the most specific template:
+You can customize these in **Admin Tools > Communications > System Communications > Serve Sign-Up Confirmation**.
 
-```
-Priority 1: Role + Campus (Most Specific)
-    ↓
-Priority 2: Role Only
-    ↓
-Priority 3: Role Category + Campus
-    ↓
-Priority 4: Role Category Only
-    ↓
-Priority 5: Campus Only
-    ↓
-Priority 6: Default (no role/category/campus specified)
-    ↓
-Priority 7: Empty string (if no templates configured)
-```
+### Available Lava Merge Fields
 
-**Example Scenario:**
+These fields are available in the System Communication **Subject**, **From**, **From Name**, and **Body**:
 
-You have these templates configured:
-- Template A: Role="Auditorium Team", Campus="Northwest"
-- Template B: Role="Auditorium Team", Campus=None
-- Template C: RoleCategory="Kids Ministry", Campus="Northwest"
-- Template D: RoleCategory="Kids Ministry", Campus=None
-- Template E: Role=None, Campus="Northwest"
-- Template F: Role=None, Campus=None (Default)
+| Merge Field | Description |
+|-------------|-------------|
+| `{{ Person.NickName }}` | Volunteer's first name |
+| `{{ Person.FullName }}` | Volunteer's full name |
+| `{{ Person.Email }}` | Volunteer's email |
+| `{{ ServeOpportunity.Name }}` | Name of the serve opportunity (e.g., "Easter Serve 2026") |
+| `{{ ServeOpportunityInstance.Name }}` | Name of the instance (e.g., "Easter Weekend") |
+| `{{ ServeOpportunityRole.Name }}` | The role they signed up for (e.g., "Usher") |
+| `{{ Campus.Name }}` | The campus of their shift (empty when the shift is not campus-specific) |
+| `{{ StaffContact.Name }}` | Staff contact display name (person or group name) |
+| `{{ StaffContact.Type }}` | `"Person"` or `"Group"` |
+| `{{ StaffContact.Person.Email }}` | Staff contact's email address |
+| `{{ StaffContact.Person.FullName }}` | Staff contact's full name |
+| `{{ StaffContact.Group.Name }}` | Staff contact group name (if group-based) |
+| `{{ ContentTemplate }}` | Rendered content template HTML (see below) |
+| `{{ ShiftDetails }}` | List of shift date/time details (see below) |
 
-**Matching Results:**
-- Person signs up for "Auditorium Team" at "Northwest Campus" → Uses **Template A** ✅
-- Person signs up for "Auditorium Team" at "Downtown Campus" → Uses **Template B** (role matches)
-- Person signs up for "Kids Check-In" (category "Kids Ministry") at "Northwest Campus" → Uses **Template C**
-- Person signs up for "Kids Check-In" (category "Kids Ministry") at "Downtown Campus" → Uses **Template D**
-- Person signs up for unrelated category at "Northwest Campus" → Uses **Template E**
-- Person signs up for unrelated category at "Downtown Campus" → Uses **Template F**
-- No templates configured → `{{ ContentTemplate }}` is empty
+#### ShiftDetails
 
-### Available Lava Variables (Confirmation Emails)
+Each item in the `{{ ShiftDetails }}` list contains:
 
-| Variable | Type | Description | Example Usage |
-|----------|------|-------------|---------------|
-| `{{ Person }}` | Person | The volunteer who signed up | `{{ Person.NickName }}` |
-| `{{ ServeOpportunity }}` | ServeOpportunity | The opportunity entity | `{{ ServeOpportunity.Name }}` |
-| `{{ ServeOpportunityInstance }}` | ServeOpportunityInstance | The instance entity | `{{ ServeOpportunityInstance.Name }}` |
-| `{{ ServeOpportunityRole }}` | ServeOpportunityRole | The actual role signed up for | `{{ ServeOpportunityRole.Name }}` |
-| `{{ Campus }}` | Campus | The actual campus of the shift | `{{ Campus.Name }}` |
-| `{{ ShiftDetails }}` | List&lt;object&gt; | Array of shifts signed up for | See below |
-| `{{ ContentTemplate }}` | string (HTML) | Rendered custom content based on role/campus | Direct output |
-| `{{ StaffContact.Type }}` | string | `Person`, `Group`, or empty | `{{ StaffContact.Type }}` |
-| `{{ StaffContact.Name }}` | string | Display name for signer contact | `{{ StaffContact.Name }}` |
-| `{{ StaffContact.Person }}` | Person | Resolved signer person (if configured) | `{{ StaffContact.Person.FullName }}` |
-| `{{ StaffContact.Group }}` | Group | Resolved signer group (if configured) | `{{ StaffContact.Group.Name }}` |
+| Property | Example |
+|----------|---------|
+| `{{ shift.Id }}` | Shift record ID |
+| `{{ shift.SignUpId }}` | Sign-up record ID for this shift |
+| `{{ shift.Date }}` | `"April 20, 2026"` |
+| `{{ shift.StartTime }}` | `"9:00 AM"` |
+| `{{ shift.EndTime }}` | `"12:00 PM"` |
 
-### Subject/From Lava Variables
-
-System Communication **Subject** and **From Name/Address** fields can use the same merge context as the body.
-Commonly-used fields are:
-
-- `{{ Person }}` / `{{ Person.NickName }}`
-- `{{ ServeOpportunity }}`
-- `{{ ServeOpportunityInstance }}`
-- `{{ ServeOpportunityRole }}`
-- `{{ Campus }}`
-- `{{ StaffContact }}`
-
-#### ShiftDetails Object Structure
-
-Each item in the `ShiftDetails` array contains:
+**Example usage:**
 ```lava
-{
-  "Id": 123,              // Shift ID
-  "SignUpId": 456,        // Sign-Up ID
-  "Date": "October 15, 2025",
-  "StartTime": "9:00 AM",
-  "EndTime": "12:00 PM"
-}
-```
-
-### Example Confirmation Email Template
-
-**System Communication Body:**
-```lava
-<h1>You're Confirmed, {{ Person.NickName }}! 🎉</h1>
-
-<p>Thanks for signing up to serve with <strong>{{ ServeOpportunity.Name }}</strong>!</p>
-
-<h2>Your Schedule:</h2>
-<ul>
 {% for shift in ShiftDetails %}
-  <li>
-    <strong>{{ shift.Date }}</strong><br>
-    {{ shift.StartTime }} - {{ shift.EndTime }}
-    {% if Campus %}at {{ Campus.Name }}{% endif %}
-  </li>
+  {{ shift.Date }} from {{ shift.StartTime }} to {{ shift.EndTime }}
 {% endfor %}
-</ul>
-
-<h2>Important Information for {{ ServeOpportunityRole.Name }}</h2>
-{{ ContentTemplate }}
-
-<p>Questions? Contact us at serve@church.org</p>
 ```
 
-**Content Template (Role: "Auditorium Team", Campus: "Northwest"):**
+---
+
+## Content Templates
+
+Content templates allow you to customize the email body based on who is signing up and where. They are configured on the **Serve Opportunity Detail** page under the confirmation email section.
+
+### How Template Matching Works
+
+When a volunteer signs up, the system picks the **most specific** template that matches their role, role category, and campus:
+
+| Priority | Match | Example |
+|----------|-------|---------|
+| 1 (most specific) | Role + Campus | "Usher" at "Northwest" |
+| 2 | Role only | "Usher" at any campus |
+| 3 | Role Category + Campus | "Guest Services" roles at "Northwest" |
+| 4 | Role Category only | "Guest Services" roles at any campus |
+| 5 | Campus only | Any role at "Northwest" |
+| 6 | Default | No role, no category, no campus |
+
+If no template matches, `{{ ContentTemplate }}` will be empty.
+
+### Example Scenario
+
+You have 6 campuses and 20+ roles across several ministries. Instead of creating templates for every role/campus combination (120+ templates), you can use **Role Categories**:
+
+| Template | Role | Role Category | Campus | Content |
+|----------|------|---------------|--------|---------|
+| A | — | Kids Ministry | — | Kids-specific instructions for all campuses |
+| B | — | Guest Services | Northwest | NW-specific guest services info |
+| C | — | Guest Services | — | General guest services info |
+| D | — | — | — | Default fallback for everyone |
+
+- A "Kids Check-In" volunteer at any campus gets **Template A**
+- A "Greeter" (Guest Services) at Northwest gets **Template B**
+- A "Greeter" at Downtown gets **Template C**
+- An "Audio Tech" at any campus gets **Template D**
+
+### Lava in Content Templates
+
+Content templates have access to the same confirmation merge fields listed above (`Person`, `Campus`, `ServeOpportunity`, `ServeOpportunityInstance`, `ServeOpportunityRole`, `ShiftDetails`, `StaffContact`, etc.). The `{{ ContentTemplate }}` field itself is **not** available inside the content template because it is the rendered output of that template.
+
+You can write dynamic content such as:
+
 ```lava
-<div class="role-specific-content">
-  <h3>Setup Instructions</h3>
-  <ul>
-    <li>Arrive 30 minutes before service</li>
-    <li>Check in at the audio booth</li>
-    <li>Parking is available in Lot B</li>
-  </ul>
-  
-  <h3>What to Bring</h3>
-  <ul>
-    <li>Your volunteer badge</li>
-    <li>Comfortable shoes</li>
-  </ul>
-</div>
+<p>Thanks for signing up as <strong>{{ ServeOpportunityRole.Name }}</strong>
+at {{ Campus.Name }}!</p>
+
+{% if StaffContact.Name != empty %}
+<p>Your team lead is {{ StaffContact.Name }}.
+   Questions? Email {{ StaffContact.Person.Email }}.</p>
+{% endif %}
+
+<p>Please arrive 30 minutes before your shift.</p>
 ```
 
 ---
 
 ## Notification Emails
 
-### When They're Sent
-Automatically sent after sign-ups are processed, grouped by opportunity.
+### When Sent
+After sign-ups are processed, grouped by opportunity.
 
 ### Who Receives Them
-Defined by **Notification Recipients** configured on the opportunity. Recipients can be filtered by role and/or campus.
+Staff and coordinators defined as **Notification Recipients** on the Serve Opportunity Detail page.
 
-### Configuration Steps
+### Recipient Filtering
 
-1. **Select System Communication Template**
-   - Navigate to Serve Opportunity detail page
-   - Open "Notification Email" panel
-   - Select a System Communication from the dropdown
+Each recipient can be filtered by campus and/or role:
 
-2. **Add Notification Recipients**
-   - Click "Add" in the Notification Recipients grid
-   - Choose recipient type (Person or Group toggle)
-   - Optionally filter by Campus and/or Role
-   - Save the recipient
+| Recipient | Campus | Role | Receives notifications for... |
+|-----------|--------|------|-------------------------------|
+| Sarah | — | Auditorium Team | All "Auditorium Team" sign-ups at every campus |
+| John | Northwest | — | All sign-ups at Northwest, any role |
+| Maria | Northwest | Kids Check-In | Only "Kids Check-In" at Northwest |
+| Admin Group | — | — | All sign-ups for this opportunity |
 
-### Recipient Filtering Logic
+### Available Lava Merge Fields
 
-Recipients only receive notifications for sign-ups that match their filters:
+| Merge Field | Description |
+|-------------|-------------|
+| `{{ Person.NickName }}` | The notification recipient's name |
+| `{{ ServeOpportunity.Name }}` | The opportunity name |
+| `{{ ServeOpportunityInstance.Name }}` | The instance name |
+| `{{ ServeOpportunityRole.Name }}` | The role from the sign-ups |
+| `{{ Campus.Name }}` | The campus from the sign-ups |
+| `{{ NotificationRole.Name }}` | The recipient's role filter (may be empty) |
+| `{{ NotificationCampus.Name }}` | The recipient's campus filter (may be empty) |
+| `{{ People }}` | List of unique people who signed up |
+| `{{ SignUps }}` | List of all sign-up records |
+| `{{ ShiftDetails }}` | List of shifts with sign-up details |
 
-**Example Configuration:**
+> **Note:** Notification emails do **not** include `{{ ContentTemplate }}`. Content templates are only for confirmation emails.
 
-| Recipient | Campus Filter | Role Filter | Receives Notifications For |
-|-----------|---------------|-------------|---------------------------|
-| Sarah (Auditorium Coordinator) | None | Auditorium Team | All Auditorium Team sign-ups across all campuses |
-| John (Northwest Campus Lead) | Northwest | None | All sign-ups at Northwest campus regardless of role |
-| Maria (Northwest Kids Lead) | Northwest | Kids Ministry | Only Kids Ministry sign-ups at Northwest campus |
-| Admin Group | None | None | All sign-ups for this opportunity |
+#### Notification ShiftDetails
 
-**Matching Process:**
-1. System groups all new sign-ups by opportunity
-2. For each recipient:
-   - If recipient has a campus filter, only include sign-ups from that campus
-   - If recipient has a role filter, only include sign-ups for that role
-   - If recipient has both filters, sign-up must match BOTH
-   - If recipient has no filters, include all sign-ups
-3. If any sign-ups match the recipient's filters, send them one email with all matching sign-ups
+Each shift in the notification `{{ ShiftDetails }}` list includes:
 
-### Available Lava Variables (Notification Emails)
+| Property | Description |
+|----------|-------------|
+| `{{ shift.Id }}` | Shift record ID |
+| `{{ shift.Date }}` | Shift date |
+| `{{ shift.StartTime }}` | Start time |
+| `{{ shift.EndTime }}` | End time |
+| `{{ shift.People }}` | List of people who signed up for this shift |
+| `{{ shift.SignUpIds }}` | List of sign-up IDs |
+| `{{ shift.SignUps }}` | Full sign-up records for that shift |
 
-| Variable | Type | Description | Notes |
-|----------|------|-------------|-------|
-| `{{ ServeOpportunity }}` | ServeOpportunity | The opportunity entity | Always present |
-| `{{ ServeOpportunityInstance }}` | ServeOpportunityInstance | The instance entity | Always present |
-| `{{ ServeOpportunityRole }}` | ServeOpportunityRole | The actual role from the shifts in this notification | Always present (taken from first signup's shift) |
-| `{{ Campus }}` | Campus | The actual campus from the shifts in this notification | May be null if shifts have no campus |
-| `{{ NotificationRole }}` | ServeOpportunityRole | The role filter applied to this recipient | ⚠️ May be null if recipient has no role filter |
-| `{{ NotificationCampus }}` | Campus | The campus filter applied to this recipient | ⚠️ May be null if recipient has no campus filter |
-| `{{ ShiftDetails }}` | List&lt;object&gt; | Array of shifts with new sign-ups | See below |
-| `{{ People }}` | List&lt;Person&gt; | Array of unique people who signed up | Across all shifts in this notification |
-| `{{ SignUps }}` | List&lt;ServeOpportunityInstanceSignUp&gt; | Array of all sign-up objects | All matching sign-ups in this notification |
-| `{{ Person }}` | Person | The notification recipient | Always present |
+---
 
-**Important Notes:**
-- **Notification emails do NOT include `{{ ContentTemplate }}`** - content templates are only for confirmation emails.
-- **`Campus` and `ServeOpportunityRole`** represent the actual campus/role from the shifts being reported. Since signups are filtered by the recipient's filters, all signups will match the filter criteria.
-- **`NotificationCampus` and `NotificationRole`** represent the recipient's configured filters. Use these to display context like "You're receiving this because you coordinate [NotificationRole] at [NotificationCampus]".
+## Example Templates
 
-#### ShiftDetails Object Structure (Notifications)
+### Confirmation Email (System Communication Body)
 
-Each item in the `ShiftDetails` array contains:
 ```lava
-{
-  "Id": 123,                    // Shift ID
-  "SignUpIds": [456, 457, 458], // Array of all sign-up IDs for this shift
-  "SignUps": [...]              // Array of ServeOpportunityInstanceSignUp objects for this shift
-  "People": [...]               // Array of unique Person objects who signed up for this shift
-  "Date": "October 15, 2025",
-  "StartTime": "9:00 AM",
-  "EndTime": "12:00 PM"
-}
-```
+<p>Hi {{ Person.NickName }},</p>
 
-### Example Notification Email Template
+<p>You're confirmed to serve with <strong>{{ ServeOpportunity.Name }}</strong>
+as <strong>{{ ServeOpportunityRole.Name }}</strong>
+{% if Campus %} at {{ Campus.Name }}{% endif %}!</p>
 
-#### Basic Template (Shift Summary)
-```lava
-<h1>New Sign-Ups for {{ ServeOpportunity.Name }}</h1>
-
-<p>Hello {{ Person.NickName }},</p>
-
-<p>You're receiving this notification because new volunteers have signed up for shifts you're coordinating.</p>
-
-{% if NotificationCampus and NotificationRole %}
-  <p><em>You're receiving this for: {{ NotificationRole.Name }} at {{ NotificationCampus.Name }}</em></p>
-{% elsif NotificationCampus %}
-  <p><em>You're receiving this for: {{ NotificationCampus.Name }}</em></p>
-{% elsif NotificationRole %}
-  <p><em>You're receiving this for: {{ NotificationRole.Name }}</em></p>
-{% endif %}
-
-<p><strong>Campus:</strong> {{ Campus.Name }}<br>
-<strong>Role:</strong> {{ ServeOpportunityRole.Name }}</p>
-
-<h2>New Sign-Ups:</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Date & Time</th>
-      <th>Number of Volunteers</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for shift in ShiftDetails %}
-    <tr>
-      <td>{{ shift.Date }}<br>{{ shift.StartTime }} - {{ shift.EndTime }}</td>
-      <td>{{ shift.SignUpIds | Size }} volunteer(s)</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-
-<p>
-  <a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}/page/1234?OpportunityId={{ ServeOpportunity.Id }}">
-    View All Sign-Ups
-  </a>
-</p>
-```
-
-#### Detailed Template (With Names)
-```lava
-<h1>New Sign-Ups for {{ ServeOpportunity.Name }}</h1>
-
-<p>Hello {{ Person.NickName }},</p>
-
-{% if NotificationCampus and NotificationRole %}
-  <p><em>You're coordinating: {{ NotificationRole.Name }} at {{ NotificationCampus.Name }}</em></p>
-{% elsif NotificationCampus %}
-  <p><em>You're coordinating at: {{ NotificationCampus.Name }}</em></p>
-{% elsif NotificationRole %}
-  <p><em>You're coordinating: {{ NotificationRole.Name }}</em></p>
-{% endif %}
-
-<p><strong>Campus:</strong> {{ Campus.Name }}<br>
-<strong>Role:</strong> {{ ServeOpportunityRole.Name }}</p>
-
-<h2>Volunteers Who Signed Up:</h2>
-<p>Total: {{ People | Size }} volunteer(s)</p>
-
-<h3>By Shift:</h3>
-{% for shift in ShiftDetails %}
-  <div style="margin-bottom: 20px;">
-    <h4>{{ shift.Date }} - {{ shift.StartTime }} to {{ shift.EndTime }}</h4>
-    <ul>
-    {% for person in shift.People %}
-      <li>{{ person.FullName }} - {{ person.Email }}</li>
-    {% endfor %}
-    </ul>
-  </div>
-{% endfor %}
-
-<h3>All Volunteers (Unique):</h3>
+{% if ShiftDetails != empty %}
+<p><strong>Your Schedule:</strong></p>
 <ul>
-{% for person in People %}
-  <li>{{ person.FullName }} - {{ person.Email }} - {{ person.MobilePhone | Default:'No phone' }}</li>
+{% for shift in ShiftDetails %}
+  <li>{{ shift.Date }} &mdash; {{ shift.StartTime }} to {{ shift.EndTime }}</li>
 {% endfor %}
 </ul>
+{% endif %}
 
-<p>
-  <a href="{{ 'Global' | Attribute:'InternalApplicationRoot' }}/page/1234?OpportunityId={{ ServeOpportunity.Id }}">
-    View Full Details in Serve System
-  </a>
-</p>
+{% if ContentTemplate and ContentTemplate != empty %}
+{{ ContentTemplate }}
+{% else %}
+<p>We'll send more details as the event approaches.</p>
+{% endif %}
+
+{% if StaffContact.Name != empty %}
+<p>Thanks,<br>{{ StaffContact.Name }}</p>
+{% endif %}
 ```
 
----
+### Notification Email (System Communication Body)
 
-## Technical Implementation
+```lava
+<p>Hi {{ Person.NickName }},</p>
 
-### Code Flow
+<p>New volunteers have signed up for <strong>{{ ServeOpportunity.Name }}</strong>.</p>
 
-#### Confirmation Email Process
-**File:** `ServeOpportunityInstanceSignUpService.cs`  
-**Method:** `SendConfirmationEmailsIfPossible(Person person, List<ServeOpportunityInstanceSignUp> signUps)`
+{% if NotificationRole or NotificationCampus %}
+<p><em>You're receiving this because you coordinate
+  {% if NotificationRole %}{{ NotificationRole.Name }}{% endif %}
+  {% if NotificationRole and NotificationCampus %} at {% endif %}
+  {% if NotificationCampus %}{{ NotificationCampus.Name }}{% endif %}.</em></p>
+{% endif %}
 
-1. **Reload Sign-Ups:** Fresh context prevents disposed ObjectContext errors
-2. **Group by Opportunity:** Multiple sign-ups grouped together
-3. **Load Opportunity & System Communication:** From ConfirmationSystemEmailId
-4. **Build ShiftDetails:** Extract date/time from each shift
-5. **Lookup Content Template:** 
-   ```csharp
-   var templateService = new ServeOpportunityNotificationContentTemplateService(rockContext);
-   var templateContent = templateService.GetMostSpecificTemplate(
-       oppId,
-       actualSignUpRoleId,
-       actualSignUpCampusId
-   );
-   ```
-6. **Render Content Template:** Use ServeHelper.RenderServeTemplate() with merge fields
-7. **Add to Merge Fields:** Include rendered template as "ContentTemplate"
-8. **Send Email:** To the person who signed up
+<p><strong>{{ People | Size }} new volunteer{{ People | Size | Minus:1 | AtLeast:0 | Plus:0 | Default:'s' }}</strong></p>
 
-#### Notification Email Process
-**File:** `ServeOpportunityInstanceSignUpService.cs`  
-**Method:** `SendNotificationEmailsIfPossible(ServeOpportunityNotificationRecipient recipient, List<ServeOpportunityInstanceSignUp> signUps)`
-
-1. **Reload Sign-Ups:** Fresh context
-2. **Filter by Recipient:** Only sign-ups matching recipient's campus/role filters
-3. **Group by Opportunity:** Multiple sign-ups grouped together
-4. **Load Opportunity & System Communication:** From NotificationSystemEmailId
-5. **Build ShiftDetails:** Aggregated by shift with SignUpIds array
-6. **Build Merge Fields:** Use recipient's filter values for Role/Campus
-7. **Resolve Recipients:** 
-   - If PersonId: Single person
-   - If GroupId: All active group members
-8. **Send Email:** To each resolved recipient
-
-### Template Service
-
-**File:** `ServeOpportunityNotificationContentTemplateService.cs`  
-**Method:** `GetMostSpecificTemplate(int opportunityId, int? roleId, int? campusId)`
-
-Implements hierarchical template selection:
-```csharp
-// 1. Try Role + Campus
-var template = GetTemplate(opportunityId, roleId, campusId);
-if (template != null) return template.Content;
-
-// 2. Try Role only
-template = GetTemplate(opportunityId, roleId, null);
-if (template != null) return template.Content;
-
-// 3. Try Campus only
-template = GetTemplate(opportunityId, null, campusId);
-if (template != null) return template.Content;
-
-// 4. Try Default
-template = GetTemplate(opportunityId, null, null);
-if (template != null) return template.Content;
-
-// 5. Return empty
-return string.Empty;
+{% for shift in ShiftDetails %}
+<h4>{{ shift.Date }} &mdash; {{ shift.StartTime }} to {{ shift.EndTime }}</h4>
+<ul>
+{% for person in shift.People %}
+  <li>{{ person.FullName }} ({{ person.Email }})</li>
+{% endfor %}
+</ul>
+{% endfor %}
 ```
-
----
-
-## Best Practices
-
-### Content Templates
-
-1. **Always Create a Default Template**
-   - Ensures all volunteers get consistent information
-   - Role/Campus specific templates can add to or override default
-
-2. **Use Role-Specific Templates For:**
-   - Special training requirements
-   - Role-specific instructions or check-in procedures
-   - Required gear or attire
-   - Different arrival times
-
-3. **Use Campus-Specific Templates For:**
-   - Parking instructions
-   - Building access codes
-   - Campus-specific contacts
-   - Location details
-
-4. **Use Role+Campus Templates For:**
-   - Highly specific scenarios
-   - Different role implementations per campus
-   - Campus-specific role coordinators
-
-### Notification Recipients
-
-1. **Avoid Over-Notifying**
-   - Don't add recipients without filters unless they need ALL notifications
-   - Use role/campus filters to send targeted notifications
-
-2. **Consider Using Groups**
-   - Easier to manage team members
-   - Automatic updates as team membership changes
-   - Good for rotating coordinators
-
-3. **Test Your Filters**
-   - Verify recipients get expected notifications
-   - Check that filters aren't too restrictive
-
-### System Communication Templates
-
-1. **Keep Structure in System Communication**
-   - Header, footer, styling in System Communication
-   - Variable content in ContentTemplate
-
-2. **Always Handle Null Values**
-   ```lava
-   {% if Campus %}
-     <p>Location: {{ Campus.Name }}</p>
-   {% endif %}
-   ```
-
-3. **Provide Fallback Content**
-   ```lava
-   {% if ContentTemplate != '' %}
-     {{ ContentTemplate }}
-   {% else %}
-     <p>Thank you for signing up! We'll send more details soon.</p>
-   {% endif %}
-   ```
 
 ---
 
 ## Troubleshooting
 
-### Confirmation Emails Not Sending
-- ✅ Check ConfirmationSystemEmailId is set on the opportunity
-- ✅ Verify System Communication exists and is active
-- ✅ Check email settings in Rock (SMTP, from address)
-- ✅ Look in Rock Communication History
+### Confirmation emails not sending
+- Verify a **Confirmation Email Template** is selected on the Serve Opportunity
+- Check that the System Communication is **active** in Admin Tools > Communications
+- Review Rock's **Communication History** for errors
+- Check SMTP/email transport settings
 
-### Notification Emails Not Sending
-- ✅ Check NotificationSystemEmailId is set on the opportunity
-- ✅ Verify at least one notification recipient is configured
-- ✅ Check recipient's campus/role filters match the sign-ups
-- ✅ If using a group, verify it has active members
+### Emails showing wrong sender
+- Verify a **Staff Contact** is assigned for the role + campus
+- Check the System Communication's **From** and **From Name** fields use the Lava merge fields (`{{ StaffContact.Person.Email }}` and `{{ StaffContact.Name }}`)
+- If no staff contact is configured, the email will fall back to Rock's default sender
 
-### ContentTemplate is Empty
-- ✅ Verify content templates are configured on the opportunity
-- ✅ Check template matching: does a template exist for the role/campus combination?
-- ✅ Remember: Hierarchy is Role+Campus → Role → Campus → Default
-- ✅ Create a default template (no role, no campus) as a catch-all
+### Content template not appearing
+- Verify a content template exists that matches the volunteer's role/campus
+- Review the [matching priority table](#how-template-matching-works) above
+- Create a **default template** (no role, no category, no campus) as a catch-all
+- Make sure the confirmation System Communication body includes `{{ ContentTemplate }}`
 
-### Wrong Content Template Loading
-- ✅ Understand the hierarchy: most specific template wins
-- ✅ Check if a more specific template exists that's being selected
-- ✅ Review the matching logic in the hierarchy section above
-
----
+### Notification emails not sending
+- Verify a **Notification Email Template** is selected
+- Verify at least one **Notification Recipient** is configured
+- Check that the recipient's campus/role filters match the sign-ups
+- If using a group recipient, verify the group has active members
