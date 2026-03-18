@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../../assets/styles.css" />
@@ -27,68 +27,45 @@
         <a href="./">Overview</a>
         <a href="email-system.html">Email System</a>
         <a href="connection-requests.html">Connection Requests</a>
-        <a href="reference/">Reference Library</a>
+        <a href="shift-times.html">Shift Times &amp; Expirations</a>
       </aside>
 
       <div class="docs-main">
         <section class="panel reveal">
           <p class="eyebrow">Workflow</p>
           <h1>Connection request lifecycle</h1>
-          <p>
-            Serve System can create Rock Connection Requests during sign-up when the selected
-            role has a <code>ConnectionOpportunityId</code> configured.
+          <p class="panel-intro">
+            Serve System can create Rock Connection Requests automatically during sign-up when
+            the selected role has a <code>ConnectionOpportunityId</code>. This allows new
+            volunteers to enter Rock’s connection follow-up process without requiring a separate
+            manual handoff.
           </p>
+          <div class="doc-chip-row">
+            <span class="doc-chip">Optional per role</span>
+            <span class="doc-chip">Duplicate prevention</span>
+            <span class="doc-chip">Family-member aware</span>
+            <span class="doc-chip">Campus-based connector assignment</span>
+          </div>
         </section>
 
         <section class="panel reveal">
-          <h2>Processing logic</h2>
-          <pre><code>On sign-up
-|- if role has no ConnectionOpportunityId -> skip
-|- else check for existing active connection request (person + opportunity)
-|  |- if found -> link sign-up to existing request
-|  |- else optionally evaluate role DataView filter
-|     |- if allowed -> create request and attach all selected shift times
-|     |- if filtered out -> keep sign-up without connection request</code></pre>
-        </section>
-
-        <section class="panel reveal">
-          <h2>Fields set on create</h2>
+          <h2>Role Configuration</h2>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Field</th>
-                  <th>Value source</th>
+                  <th>Setting</th>
+                  <th>Purpose</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><code>PersonAliasId</code></td>
-                  <td>Volunteer primary alias</td>
+                  <td><strong>Connection Opportunity</strong></td>
+                  <td>Enables connection request creation for the role. If blank, sign-ups do not generate requests.</td>
                 </tr>
                 <tr>
-                  <td><code>ConnectionOpportunityId</code></td>
-                  <td>Configured on role</td>
-                </tr>
-                <tr>
-                  <td><code>CampusId</code></td>
-                  <td>Selected campus or person primary campus</td>
-                </tr>
-                <tr>
-                  <td><code>ConnectionState</code></td>
-                  <td>Active</td>
-                </tr>
-                <tr>
-                  <td><code>ConnectionStatusId</code></td>
-                  <td>Default status from connection type</td>
-                </tr>
-                <tr>
-                  <td><code>Comments</code></td>
-                  <td>Aggregated shift date/time text</td>
-                </tr>
-                <tr>
-                  <td><code>ConnectorPersonAliasId</code></td>
-                  <td>Default connector by campus</td>
+                  <td><strong>DataView</strong></td>
+                  <td>Optional filter that restricts which people receive a connection request while still allowing sign-up.</td>
                 </tr>
               </tbody>
             </table>
@@ -96,30 +73,203 @@
         </section>
 
         <section class="panel reveal">
-          <h2>Sign-up cancellation behavior</h2>
-          <p>
-            After cancellation, the service method
-            <code>DeactivateConnectionRequestIfOrphaned</code> deactivates a connection request
-            only when no other active sign-ups still reference it.
-          </p>
-          <ul>
-            <li>Connection state changes to inactive.</li>
-            <li>An activity note is written to the request.</li>
-            <li>If an auto-inactivate status exists, status is updated as well.</li>
-          </ul>
+          <h2>Creation Flow</h2>
+          <div class="process-grid">
+            <article class="process-step">
+              <div class="step-index">1</div>
+              <div class="step-copy">
+                <h3>Collect all selected shifts first</h3>
+                <p>The service gathers every selected shift time before individual sign-up records are processed so the request comment contains the full schedule.</p>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">2</div>
+              <div class="step-copy">
+                <h3>Check whether the role is connection-enabled</h3>
+                <p>If the role has no <code>ConnectionOpportunityId</code>, Serve continues with sign-up but does not create or attach any connection request.</p>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">3</div>
+              <div class="step-copy">
+                <h3>Look for an existing active request</h3>
+                <p>The system queries for an active request matching the volunteer and the role’s connection opportunity.</p>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">4</div>
+              <div class="step-copy">
+                <h3>Evaluate the optional DataView filter</h3>
+                <p>If no active request exists, the role-level DataView is checked. People who fail the filter still get signed up, but their connection request is skipped.</p>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">5</div>
+              <div class="step-copy">
+                <h3>Create and populate the request</h3>
+                <p>Serve writes the request fields, aggregates the full comment, and assigns the default connector based on the selected or inferred campus.</p>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">6</div>
+              <div class="step-copy">
+                <h3>Attach the request to all related sign-ups</h3>
+                <p>All sign-up records for that person in the current operation point at the single request through <code>ConnectionRequestId</code>.</p>
+              </div>
+            </article>
+          </div>
         </section>
 
         <section class="panel reveal">
-          <h2>Implementation source</h2>
-          <ul>
-            <li><code>serve-system/Plugins/org_tpcc/ServeSystem/SignUp/ServeSignUp.ascx.cs</code> (creation flow)</li>
-            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityRole/ServeOpportunityRole.cs</code> (role configuration)</li>
-            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityInstanceSignUp/ServeOpportunityInstanceSignUpService.cs</code> (orphan deactivation)</li>
-          </ul>
-          <p>
-            Canonical long-form documentation is mirrored at
-            <a href="reference/TPCC_ServeSystem_ConnectionRequest_Documentation.md">reference/TPCC_ServeSystem_ConnectionRequest_Documentation.md</a>.
-          </p>
+          <h2>Comment Format</h2>
+          <div class="details-stack">
+            <details class="doc-details" open>
+              <summary>Single Shift</summary>
+              <div class="details-body">
+                <pre><code>Signed up for {RoleName} for {OpportunityName} at January 15, 2026 9:00 AM.</code></pre>
+              </div>
+            </details>
+            <details class="doc-details">
+              <summary>Multiple Shifts</summary>
+              <div class="details-body">
+                <pre><code>Signed up for {RoleName} for {OpportunityName} at:
+- January 15, 2026 9:00 AM
+- January 22, 2026 9:00 AM
+- January 29, 2026 9:00 AM</code></pre>
+              </div>
+            </details>
+            <details class="doc-details">
+              <summary>Family Member Single Shift</summary>
+              <div class="details-body">
+                <pre><code>Signed up for {RoleName} for {OpportunityName} by {PrimaryPersonFullName} at January 15, 2026 9:00 AM.</code></pre>
+              </div>
+            </details>
+            <details class="doc-details">
+              <summary>Family Member Multiple Shifts</summary>
+              <div class="details-body">
+                <pre><code>Signed up for {RoleName} for {OpportunityName} by {PrimaryPersonFullName} at:
+- January 15, 2026 9:00 AM
+- January 22, 2026 9:00 AM</code></pre>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Connection Request Fields</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Value</th>
+                  <th>Source</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>PersonAliasId</code></td>
+                  <td>The volunteer’s primary alias ID</td>
+                  <td><code>person.PrimaryAliasId</code></td>
+                </tr>
+                <tr>
+                  <td><code>ConnectionOpportunityId</code></td>
+                  <td>Configured on the role</td>
+                  <td><code>role.ConnectionOpportunityId</code></td>
+                </tr>
+                <tr>
+                  <td><code>CampusId</code></td>
+                  <td>Selected campus or the person’s primary campus</td>
+                  <td><code>campus?.Id ?? person.PrimaryCampusId</code></td>
+                </tr>
+                <tr>
+                  <td><code>ConnectionState</code></td>
+                  <td><code>Active</code></td>
+                  <td>Always active on creation</td>
+                </tr>
+                <tr>
+                  <td><code>ConnectionStatusId</code></td>
+                  <td>Default status from the connection type</td>
+                  <td>First status where <code>IsDefault == true</code></td>
+                </tr>
+                <tr>
+                  <td><code>Comments</code></td>
+                  <td>All shift times in a single aggregated comment</td>
+                  <td>Built from the selected shifts</td>
+                </tr>
+                <tr>
+                  <td><code>ConnectorPersonAliasId</code></td>
+                  <td>Default connector for the campus</td>
+                  <td><code>ConnectionOpportunity.GetDefaultConnectorPersonAliasId(campusId)</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Family Member Handling</h2>
+          <div class="example-grid">
+            <article class="example-card">
+              <h3>Separate Requests</h3>
+              <p>Family members receive their own connection requests rather than sharing the primary person’s request.</p>
+            </article>
+            <article class="example-card">
+              <h3>Primary Person Attribution</h3>
+              <p>The generated comment includes the primary person name so coordinators know who completed the sign-up.</p>
+            </article>
+            <article class="example-card">
+              <h3>Independent Filtering</h3>
+              <p>The same DataView logic runs for each family member independently.</p>
+            </article>
+            <article class="example-card">
+              <h3>Campus Fallback</h3>
+              <p>If no campus was selected explicitly, the family member’s primary campus is used for defaults and connector assignment.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Duplicate Prevention And Linkage</h2>
+          <div class="split-grid">
+            <article class="detail-item">
+              <h3>Duplicate Prevention</h3>
+              <p>Before creating a new request, Serve looks for any active request where <code>PersonAliasId</code>, <code>ConnectionOpportunityId</code>, and <code>ConnectionState == Active</code> all match. If one exists, the sign-up reuses it.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Sign-Up Linkage</h3>
+              <p><code>ServeOpportunityInstanceSignUp.ConnectionRequestId</code> is nullable. It is populated when a request was created or reused and remains <code>null</code> when the role is not configured or the DataView filter excludes the person.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Sign-Up Cancellation Behavior</h2>
+          <div class="callout">
+            <p><code>DeactivateConnectionRequestIfOrphaned</code> only deactivates the request when no other active sign-ups still point to it. When it does deactivate, the request is marked inactive, an activity note is written, and an auto-inactivate status is applied if one exists.</p>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Troubleshooting</h2>
+          <div class="example-grid">
+            <article class="example-card">
+              <h3>Connection Request Not Created</h3>
+              <p>Check the role’s <code>ConnectionOpportunityId</code>, verify the person passes any configured DataView, and confirm an active request does not already exist for the same person and opportunity.</p>
+            </article>
+            <article class="example-card">
+              <h3>Only One Shift In Comments</h3>
+              <p>If comments show only one shift, verify the running plugin version includes the aggregated shift-time fix before request creation.</p>
+            </article>
+            <article class="example-card">
+              <h3>Wrong Connector</h3>
+              <p>Review campus-specific default connectors on the Rock Connection Opportunity. The plugin calls <code>GetDefaultConnectorPersonAliasId(campusId)</code>.</p>
+            </article>
+            <article class="example-card">
+              <h3>Family Member Missing A Request</h3>
+              <p>Verify the family member passes the DataView filter and has a valid <code>PrimaryAliasId</code>; their request is evaluated independently from the primary person.</p>
+            </article>
+          </div>
         </section>
       </div>
     </main>

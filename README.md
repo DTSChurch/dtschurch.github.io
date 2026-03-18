@@ -36,13 +36,9 @@ Open: `http://localhost:8080`
 
 ## Keeping docs in sync
 
-When source project documentation is updated, sync reference files:
+When source project documentation is updated, update the published HTML pages directly.
 
-```bash
-# Example for Serve System
-cp ../serve-system/README.md projects/serve-system/reference/README.md
-cp ../serve-system/docs/TPCC_ServeSystem_Email_Documentation.md projects/serve-system/reference/
-cp ../serve-system/docs/TPCC_ServeSystem_ConnectionRequest_Documentation.md projects/serve-system/reference/
-```
-
-Then update HTML summary pages in the project directory if behavior changed.
+For Serve System, the source material typically comes from `../serve-system/README.md` and
+`../serve-system/docs/*.md`, but the site now publishes curated HTML pages instead of a
+mirrored `reference/` library. Fold changes into the appropriate page in
+`projects/serve-system/` and preview locally before committing.

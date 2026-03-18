@@ -64,7 +64,7 @@ dtschurch.github.io/
 │   │   ├── index.html            # Serve System docs portal
 │   │   ├── email-system.html     # Email workflow docs
 │   │   ├── connection-requests.html  # Connection request docs
-│   │   └── reference/            # Mirrored source docs from ../serve-system repo
+│   │   └── shift-times.html      # Shift timing and expiration docs
 │   ├── mailgun-toolbox/
 │   │   ├── index.html            # Mailgun Toolbox docs portal
 │   │   ├── setup.html            # Setup instructions
@@ -122,16 +122,9 @@ The site uses the **DTS Church Design System** defined in `assets/STYLE_GUIDE.md
 
 ## Syncing Documentation from Source Repos
 
-When Serve System or other project documentation is updated, sync the reference files:
-
-```bash
-# Example for Serve System
-cp ../serve-system/README.md serve-system/reference/README.md
-cp ../serve-system/docs/TPCC_ServeSystem_Email_Documentation.md serve-system/reference/
-cp ../serve-system/docs/TPCC_ServeSystem_ConnectionRequest_Documentation.md serve-system/reference/
-```
-
-After syncing, update the corresponding HTML summary pages in the project directory if behavior changed.
+When Serve System documentation changes in the source repo, update the corresponding HTML pages
+in `projects/serve-system/` directly. Use `../serve-system/README.md` and
+`../serve-system/docs/*.md` as source material, but publish curated HTML rather than raw markdown mirrors.
 
 ## HTML Page Template
 
@@ -237,7 +230,7 @@ All documentation pages follow a consistent structure:
 - **Mobile responsive**: All pages use responsive breakpoints (768px, 1024px)
 - **GitHub Pages**: Deployed automatically on push to main branch
 - **Custom domain**: Configured via CNAME file
-- **Reference docs**: Markdown files in `reference/` directories are linked directly (GitHub renders them)
+- **Serve System docs**: Publish behavior as native HTML pages, not linked markdown mirrors
 
 ## Standard Documentation Sidebar
 
@@ -266,10 +259,6 @@ Project Name
   <a href="changelog.html">Changelog</a>
 </aside>
 ```
-
-### Sidebar HTML (pages in subdirectories like `reference/`)
-
-Use `../` prefix for links back to the parent project directory.
 
 ### Page content guidelines
 
@@ -302,6 +291,6 @@ The nav is driven by `assets/catalog.js`. Set `showInNav: true` on a catalog ent
 3. Test locally with `python3 -m http.server 8080`
 
 ### Update project documentation
-1. Copy updated markdown files from source repos to `reference/` directories
-2. Update corresponding HTML summary pages if needed
+1. Pull the latest behavior and examples from the source repo docs
+2. Fold those updates into the published HTML pages for the project
 3. Preview changes locally before committing

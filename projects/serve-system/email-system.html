@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../../assets/styles.css" />
@@ -27,111 +27,184 @@
         <a href="./">Overview</a>
         <a href="email-system.html">Email System</a>
         <a href="connection-requests.html">Connection Requests</a>
-        <a href="reference/">Reference Library</a>
+        <a href="shift-times.html">Shift Times &amp; Expirations</a>
       </aside>
 
       <div class="docs-main">
         <section class="panel reveal">
           <p class="eyebrow">Workflow</p>
           <h1>Email system (confirmation + notification)</h1>
-          <p>
+          <p class="panel-intro">
             Serve System sends confirmation emails to volunteers and notification emails to
-            recipients configured per opportunity. Both use Rock System Communications with
-            merge fields provided by the sign-up service.
+            coordinators using Rock System Communications. Both flows share the same sign-up
+            event, but they diverge in recipient resolution, merge fields, and content rules.
           </p>
+          <div class="doc-chip-row">
+            <span class="doc-chip">System Communications</span>
+            <span class="doc-chip">Lava merge fields</span>
+            <span class="doc-chip">Campus-aware staff contacts</span>
+            <span class="doc-chip">Role/category template matching</span>
+          </div>
         </section>
 
         <section class="panel reveal">
-          <h2>Flow summary</h2>
-          <pre><code>Volunteer signs up
-|- confirmation path -> system comm on opportunity -> send to volunteer
-|  |- optional ContentTemplate (hierarchical template match)
-|- notification path -> filter signups by recipient campus/role -> send to people/groups</code></pre>
+          <h2>Setup Checklist</h2>
+          <div class="cards">
+            <article class="card">
+              <p class="card-kicker">1. Staff Contacts</p>
+              <p>Assign a default role contact and optional campus-specific overrides on Serve Opportunity Detail. The most specific contact becomes the sender and merge-field contact.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">2. System Communications</p>
+              <p>Select confirmation and notification templates on the opportunity. The plugin ships with a default <code>Serve Sign-Up Confirmation</code> communication.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">3. Content Templates</p>
+              <p>Optional confirmation content blocks can vary by role, role category, and campus and are rendered into <code>{{ ContentTemplate }}</code>.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">4. Notification Recipients</p>
+              <p>Add people or groups that should receive alerts, optionally filtering them by campus, role, or both.</p>
+            </article>
+          </div>
         </section>
 
         <section class="panel reveal">
-          <h2>Template hierarchy</h2>
-          <p>
-            Content template resolution is implemented in
-            <code>ServeOpportunityNotificationContentTemplateService.GetMostSpecificTemplate</code>
-            with this order:
-          </p>
-          <ol>
-            <li>Role + Campus</li>
-            <li>Role only</li>
-            <li>Role Category + Campus</li>
-            <li>Role Category only</li>
-            <li>Campus only</li>
-            <li>Default template (no role/category/campus)</li>
-          </ol>
+          <h2>Delivery Flow</h2>
+          <div class="process-grid">
+            <article class="process-step">
+              <div class="step-index">1</div>
+              <div class="step-copy">
+                <h3>Volunteer completes sign-up</h3>
+                <p>The sign-up service assembles the selected role, campus, shifts, and related opportunity context for both outbound flows.</p>
+                <div class="step-tags">
+                  <span class="step-tag">Role</span>
+                  <span class="step-tag">Campus</span>
+                  <span class="step-tag">ShiftDetails</span>
+                </div>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">2</div>
+              <div class="step-copy">
+                <h3>Confirmation path resolves staff contact</h3>
+                <p>The plugin selects the most specific role contact, preferring campus-specific contacts before the role default.</p>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">3</div>
+              <div class="step-copy">
+                <h3>Optional content template is matched</h3>
+                <p>Confirmation content is rendered from the most specific template that matches the volunteer’s role, role category, and campus.</p>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">4</div>
+              <div class="step-copy">
+                <h3>Notification recipients are filtered</h3>
+                <p>People and groups configured on the opportunity are filtered against the sign-up’s campus and role before notifications are built.</p>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">5</div>
+              <div class="step-copy">
+                <h3>System Communications are sent</h3>
+                <p>Confirmation goes to the volunteer immediately. Notification emails are grouped by opportunity context and sent to matching staff and coordinators.</p>
+              </div>
+            </article>
+          </div>
         </section>
 
         <section class="panel reveal">
-          <h2>Key merge fields</h2>
+          <h2>Confirmation Emails</h2>
+          <div class="split-grid">
+            <article class="detail-item">
+              <h3>When Sent</h3>
+              <p>Immediately after a volunteer signs up.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Who Receives It</h3>
+              <p>The volunteer who completed the sign-up.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Sender Resolution</h3>
+              <p>The default communication uses the resolved staff contact so replies route to the right ministry owner.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Sender Fields</h2>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Field</th>
-                  <th>Confirmation</th>
-                  <th>Notification</th>
+                  <th>Default Value</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>From Email</code></td>
+                  <td><code>{{ StaffContact.Person.Email }}</code></td>
+                  <td>Sends from the staff contact email so replies route to the assigned contact.</td>
+                </tr>
+                <tr>
+                  <td><code>From Name</code></td>
+                  <td><code>{{ StaffContact.Name }}</code></td>
+                  <td>Displays the resolved staff contact name in the message header.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            <p>If no staff contact is configured for the role and campus, Rock falls back to the System Communication default sender or the organization-level email settings.</p>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Confirmation Merge Fields</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Description</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td><code>Person</code></td>
-                  <td>Volunteer who signed up</td>
-                  <td>Email recipient person</td>
+                  <td>Volunteer who signed up.</td>
                 </tr>
                 <tr>
                   <td><code>ServeOpportunity</code></td>
-                  <td>Yes</td>
-                  <td>Yes</td>
+                  <td>Opportunity metadata such as name and description.</td>
                 </tr>
                 <tr>
                   <td><code>ServeOpportunityInstance</code></td>
-                  <td>Yes</td>
-                  <td>Yes</td>
+                  <td>The specific instance the person joined.</td>
                 </tr>
                 <tr>
                   <td><code>ServeOpportunityRole</code></td>
-                  <td>Selected role</td>
-                  <td>Role from grouped sign-ups</td>
+                  <td>The selected role for this sign-up.</td>
                 </tr>
                 <tr>
                   <td><code>Campus</code></td>
-                  <td>Selected campus (may be empty for all-campus shifts)</td>
-                  <td>Campus from grouped sign-ups</td>
+                  <td>Selected campus, or empty for all-campus shifts.</td>
                 </tr>
                 <tr>
                   <td><code>StaffContact</code></td>
-                  <td>Yes, campus-specific first then default role contact</td>
-                  <td>No</td>
-                </tr>
-                <tr>
-                  <td><code>ShiftDetails</code></td>
-                  <td>List of shift items</td>
-                  <td>Grouped shift objects with people/signups</td>
+                  <td>Resolved role contact, preferring campus-specific contact first and then the role default.</td>
                 </tr>
                 <tr>
                   <td><code>ContentTemplate</code></td>
-                  <td>Yes (if matched)</td>
-                  <td>No</td>
+                  <td>Rendered confirmation content template HTML when a matching template exists.</td>
                 </tr>
                 <tr>
-                  <td><code>NotificationRole</code> / <code>NotificationCampus</code></td>
-                  <td>No</td>
-                  <td>Yes, based on recipient filters</td>
-                </tr>
-                <tr>
-                  <td><code>People</code> / <code>SignUps</code></td>
-                  <td>No</td>
-                  <td>Yes</td>
-                </tr>
-                <tr>
-                  <td><code>ShiftDetails.SignUps</code></td>
-                  <td>No</td>
-                  <td>Yes</td>
+                  <td><code>ShiftDetails</code></td>
+                  <td>List of shift objects for the volunteer’s selected shifts.</td>
                 </tr>
               </tbody>
             </table>
@@ -139,26 +212,369 @@
         </section>
 
         <section class="panel reveal">
-          <h2>Implementation source</h2>
-          <ul>
-            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityInstanceSignUp/ServeOpportunityInstanceSignUpService.cs</code></li>
-            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityNotificationContentTemplate/ServeOpportunityNotificationContentTemplateService.cs</code></li>
-            <li><code>serve-system/org.tpcc.ServeSystem/ServeHelper.cs</code></li>
-          </ul>
-          <p>
-            Canonical long-form documentation is mirrored at
-            <a href="reference/TPCC_ServeSystem_Email_Documentation.md">reference/TPCC_ServeSystem_Email_Documentation.md</a>.
-          </p>
+          <h2>Confirmation ShiftDetails</h2>
+          <div class="split-grid">
+            <article class="detail-item">
+              <strong><code>{{ shift.Id }}</code></strong>
+              <p>Shift record ID.</p>
+            </article>
+            <article class="detail-item">
+              <strong><code>{{ shift.SignUpId }}</code></strong>
+              <p>Sign-up record ID for the shift line item.</p>
+            </article>
+            <article class="detail-item">
+              <strong><code>{{ shift.Date }}</code></strong>
+              <p>Human-readable shift date such as <code>April 20, 2026</code>.</p>
+            </article>
+            <article class="detail-item">
+              <strong><code>{{ shift.StartTime }}</code> / <code>{{ shift.EndTime }}</code></strong>
+              <p>Formatted start and end time strings.</p>
+            </article>
+          </div>
+          <pre><code>{% for shift in ShiftDetails %}
+  {{ shift.Date }} from {{ shift.StartTime }} to {{ shift.EndTime }}
+{% endfor %}</code></pre>
         </section>
 
         <section class="panel reveal">
-          <h2>Troubleshooting quick list</h2>
-          <ul>
-            <li>Missing confirmations: verify <code>ConfirmationSystemEmailId</code> and active System Communication.</li>
-            <li>Missing notifications: verify <code>NotificationSystemEmailId</code>, recipient filters, and active group members for group recipients.</li>
-            <li>Empty template output: add at least a default content template for fallback.</li>
-            <li>Unexpected template: verify role/category/campus specificity precedence.</li>
-          </ul>
+          <h2>Template Matching Priority</h2>
+          <div class="priority-list">
+            <article class="priority-row">
+              <div class="priority-rank">1</div>
+              <div class="priority-copy">
+                <h3>Role + Campus</h3>
+                <p>Most specific match, such as Usher at Northwest.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">2</div>
+              <div class="priority-copy">
+                <h3>Role Only</h3>
+                <p>Applies across campuses when a role-specific template exists.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">3</div>
+              <div class="priority-copy">
+                <h3>Role Category + Campus</h3>
+                <p>Useful for ministry-area patterns that still vary by campus.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">4</div>
+              <div class="priority-copy">
+                <h3>Role Category Only</h3>
+                <p>Applies to all roles in the category when no more specific template exists.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">5</div>
+              <div class="priority-copy">
+                <h3>Campus Only</h3>
+                <p>Use when any role at a campus should share the same instructions.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">6</div>
+              <div class="priority-copy">
+                <h3>Default</h3>
+                <p>No role, category, or campus restriction. This is the universal fallback.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Template Strategy Example</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Template</th>
+                  <th>Role</th>
+                  <th>Role Category</th>
+                  <th>Campus</th>
+                  <th>Content</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>A</td>
+                  <td>&mdash;</td>
+                  <td>Kids Ministry</td>
+                  <td>&mdash;</td>
+                  <td>Kids-specific instructions for every campus.</td>
+                </tr>
+                <tr>
+                  <td>B</td>
+                  <td>&mdash;</td>
+                  <td>Guest Services</td>
+                  <td>Northwest</td>
+                  <td>Northwest-specific guest services details.</td>
+                </tr>
+                <tr>
+                  <td>C</td>
+                  <td>&mdash;</td>
+                  <td>Guest Services</td>
+                  <td>&mdash;</td>
+                  <td>Fallback guest services guidance for any campus.</td>
+                </tr>
+                <tr>
+                  <td>D</td>
+                  <td>&mdash;</td>
+                  <td>&mdash;</td>
+                  <td>&mdash;</td>
+                  <td>Default content for every other volunteer.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Content Template Example</h2>
+          <pre><code>&lt;p&gt;Thanks for signing up as &lt;strong&gt;{{ ServeOpportunityRole.Name }}&lt;/strong&gt;
+at {{ Campus.Name }}!&lt;/p&gt;
+
+{% if StaffContact.Name != empty %}
+&lt;p&gt;Your team lead is {{ StaffContact.Name }}.
+Questions? Email {{ StaffContact.Person.Email }}.&lt;/p&gt;
+{% endif %}
+
+&lt;p&gt;Please arrive 30 minutes before your shift.&lt;/p&gt;</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Notification Emails</h2>
+          <div class="split-grid">
+            <article class="detail-item">
+              <h3>When Sent</h3>
+              <p>After sign-ups are processed and grouped by opportunity context.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Who Receives Them</h3>
+              <p>People or groups configured as notification recipients on the Serve Opportunity.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Template Scope</h3>
+              <p>Notification emails do not receive <code>{{ ContentTemplate }}</code>; that field is confirmation-only.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Recipient Filtering</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Recipient</th>
+                  <th>Campus</th>
+                  <th>Role</th>
+                  <th>Receives Notifications For</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Sarah</td>
+                  <td>&mdash;</td>
+                  <td>Auditorium Team</td>
+                  <td>All Auditorium Team sign-ups across every campus.</td>
+                </tr>
+                <tr>
+                  <td>John</td>
+                  <td>Northwest</td>
+                  <td>&mdash;</td>
+                  <td>All Northwest sign-ups, regardless of role.</td>
+                </tr>
+                <tr>
+                  <td>Maria</td>
+                  <td>Northwest</td>
+                  <td>Kids Check-In</td>
+                  <td>Only Kids Check-In sign-ups at Northwest.</td>
+                </tr>
+                <tr>
+                  <td>Admin Group</td>
+                  <td>&mdash;</td>
+                  <td>&mdash;</td>
+                  <td>Everything for the opportunity.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Notification Merge Fields</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Person</code></td>
+                  <td>The notification recipient.</td>
+                </tr>
+                <tr>
+                  <td><code>ServeOpportunity</code></td>
+                  <td>The opportunity name and related metadata.</td>
+                </tr>
+                <tr>
+                  <td><code>ServeOpportunityInstance</code></td>
+                  <td>The instance associated with the grouped sign-ups.</td>
+                </tr>
+                <tr>
+                  <td><code>ServeOpportunityRole</code></td>
+                  <td>The role represented by the grouped sign-ups.</td>
+                </tr>
+                <tr>
+                  <td><code>Campus</code></td>
+                  <td>The campus represented by the grouped sign-ups.</td>
+                </tr>
+                <tr>
+                  <td><code>NotificationRole</code> / <code>NotificationCampus</code></td>
+                  <td>The recipient’s own filter context, if one was configured.</td>
+                </tr>
+                <tr>
+                  <td><code>People</code></td>
+                  <td>Unique people represented in the notification batch.</td>
+                </tr>
+                <tr>
+                  <td><code>SignUps</code></td>
+                  <td>All sign-up records included in the notification batch.</td>
+                </tr>
+                <tr>
+                  <td><code>ShiftDetails</code></td>
+                  <td>Shift objects that include grouped people and sign-up details.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Notification ShiftDetails</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>{{ shift.Id }}</code></td>
+                  <td>Shift record ID.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ shift.Date }}</code></td>
+                  <td>Formatted shift date.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ shift.StartTime }}</code> / <code>{{ shift.EndTime }}</code></td>
+                  <td>Formatted shift start and end times.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ shift.People }}</code></td>
+                  <td>List of volunteers signed up for the shift.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ shift.SignUpIds }}</code></td>
+                  <td>List of sign-up IDs represented in the shift grouping.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ shift.SignUps }}</code></td>
+                  <td>Full sign-up objects for more detailed template rendering.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Example Templates</h2>
+          <div class="details-stack">
+            <details class="doc-details">
+              <summary>Confirmation Email Body</summary>
+              <div class="details-body">
+                <pre><code>&lt;p&gt;Hi {{ Person.NickName }},&lt;/p&gt;
+
+&lt;p&gt;You're confirmed to serve with &lt;strong&gt;{{ ServeOpportunity.Name }}&lt;/strong&gt;
+as &lt;strong&gt;{{ ServeOpportunityRole.Name }}&lt;/strong&gt;
+{% if Campus %} at {{ Campus.Name }}{% endif %}!&lt;/p&gt;
+
+{% if ShiftDetails != empty %}
+&lt;p&gt;&lt;strong&gt;Your Schedule:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+{% for shift in ShiftDetails %}
+  &lt;li&gt;{{ shift.Date }} &amp;mdash; {{ shift.StartTime }} to {{ shift.EndTime }}&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+{% endif %}
+
+{% if ContentTemplate and ContentTemplate != empty %}
+{{ ContentTemplate }}
+{% else %}
+&lt;p&gt;We'll send more details as the event approaches.&lt;/p&gt;
+{% endif %}
+
+{% if StaffContact.Name != empty %}
+&lt;p&gt;Thanks,&lt;br&gt;{{ StaffContact.Name }}&lt;/p&gt;
+{% endif %}</code></pre>
+              </div>
+            </details>
+            <details class="doc-details">
+              <summary>Notification Email Body</summary>
+              <div class="details-body">
+                <pre><code>&lt;p&gt;Hi {{ Person.NickName }},&lt;/p&gt;
+
+&lt;p&gt;New volunteers have signed up for &lt;strong&gt;{{ ServeOpportunity.Name }}&lt;/strong&gt;.&lt;/p&gt;
+
+{% if NotificationRole or NotificationCampus %}
+&lt;p&gt;&lt;em&gt;You're receiving this because you coordinate
+  {% if NotificationRole %}{{ NotificationRole.Name }}{% endif %}
+  {% if NotificationRole and NotificationCampus %} at {% endif %}
+  {% if NotificationCampus %}{{ NotificationCampus.Name }}{% endif %}.&lt;/em&gt;&lt;/p&gt;
+{% endif %}
+
+{% for shift in ShiftDetails %}
+&lt;h4&gt;{{ shift.Date }} &amp;mdash; {{ shift.StartTime }} to {{ shift.EndTime }}&lt;/h4&gt;
+&lt;ul&gt;
+{% for person in shift.People %}
+  &lt;li&gt;{{ person.FullName }} ({{ person.Email }})&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;
+{% endfor %}</code></pre>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Troubleshooting</h2>
+          <div class="example-grid">
+            <article class="example-card">
+              <h3>Confirmation Emails Not Sending</h3>
+              <p>Verify <code>ConfirmationSystemEmailId</code>, confirm the System Communication is active, review Rock Communication History, and check SMTP transport settings.</p>
+            </article>
+            <article class="example-card">
+              <h3>Wrong Sender</h3>
+              <p>Confirm a staff contact exists for the role and campus and that the communication still uses <code>{{ StaffContact.Person.Email }}</code> and <code>{{ StaffContact.Name }}</code>.</p>
+            </article>
+            <article class="example-card">
+              <h3>Missing Content Template</h3>
+              <p>Check the template priority rules, add a default fallback template, and make sure the communication body includes <code>{{ ContentTemplate }}</code>.</p>
+            </article>
+            <article class="example-card">
+              <h3>Notification Emails Not Sending</h3>
+              <p>Verify a notification template is selected, at least one recipient exists, the filters match the sign-up, and group recipients still have active members.</p>
+            </article>
+          </div>
         </section>
       </div>
     </main>

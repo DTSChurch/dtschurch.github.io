@@ -29,7 +29,8 @@ window.DTS_CATALOG = [
     quickLinks: [
       { page: "Overview & Architecture", href: "/projects/serve-system/" },
       { page: "Email Workflows", href: "/projects/serve-system/email-system.html" },
-      { page: "Connection Requests", href: "/projects/serve-system/connection-requests.html" }
+      { page: "Connection Requests", href: "/projects/serve-system/connection-requests.html" },
+      { page: "Shift Times & Expirations", href: "/projects/serve-system/shift-times.html" }
     ]
   },
   {

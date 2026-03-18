@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serve Shift Times | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Serve System Docs</h2>
+        <a href="./">Overview</a>
+        <a href="email-system.html">Email System</a>
+        <a href="connection-requests.html">Connection Requests</a>
+        <a href="shift-times.html">Shift Times &amp; Expirations</a>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Scheduling</p>
+          <h1>Shift times and expiration behavior</h1>
+          <p class="panel-intro">
+            Serve shift timing is resolved from the most specific matching override record,
+            while sign-up cutoff behavior falls back from shift-level expiration to the
+            instance schedule expiration. Both behaviors are shaped by which admin screen owns
+            which layer of configuration.
+          </p>
+          <div class="doc-chip-row">
+            <span class="doc-chip">Schedule defaults</span>
+            <span class="doc-chip">Role overrides</span>
+            <span class="doc-chip">Campus scoping</span>
+            <span class="doc-chip">Expiration fallback</span>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Shift Time Resolution Order</h2>
+          <div class="priority-list">
+            <article class="priority-row">
+              <div class="priority-rank">1</div>
+              <div class="priority-copy">
+                <h3>Schedule + Role + Campus</h3>
+                <p>Most specific override for a particular schedule, role, and campus combination.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">2</div>
+              <div class="priority-copy">
+                <h3>Schedule + Role</h3>
+                <p>Role override for one schedule across campuses.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">3</div>
+              <div class="priority-copy">
+                <h3>Role + Campus</h3>
+                <p>Role default for a campus across schedules when such records exist.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">4</div>
+              <div class="priority-copy">
+                <h3>Schedule + Campus</h3>
+                <p>Schedule-level campus override when role-specific data is absent.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">5</div>
+              <div class="priority-copy">
+                <h3>Role</h3>
+                <p>Role-wide fallback when schedule and campus detail are not present.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">6</div>
+              <div class="priority-copy">
+                <h3>Schedule Default</h3>
+                <p>Default shift time assigned to the instance schedule.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">7</div>
+              <div class="priority-copy">
+                <h3>Base iCal Schedule Time</h3>
+                <p>Fallback to the underlying schedule definition when no override record matches.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Admin Surface Ownership</h2>
+          <div class="compare-grid">
+            <article class="compare-card">
+              <h3>Serve Opportunity Instance Detail</h3>
+              <p>Owns instance schedules, schedule default times, schedule expirations, all-schedules role defaults, and schedule-scoped role overrides.</p>
+            </article>
+            <article class="compare-card">
+              <h3>Instance Detail In Campus Mode</h3>
+              <p>Also manages campus-specific role defaults across all schedules and schedule + role + campus overrides through the override editor.</p>
+            </article>
+            <article class="compare-card">
+              <h3>Role Schedule Configurator</h3>
+              <p>Owns role counts per schedule cell, schedule/role shift-time edits in the grid, and per-shift expiration updates for the selected campus context.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Current Editing Model</h2>
+          <div class="cards">
+            <article class="card">
+              <p class="card-kicker">All Schedules</p>
+              <p>General role defaults are edited in instance detail and apply across schedules unless something more specific overrides them.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Schedule Defaults</p>
+              <p>Base schedule times are also edited in instance detail and become the fallback for roles without their own override.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Schedule + Role</p>
+              <p>These overrides can be edited in both instance detail and the configurator.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Schedule + Role + Campus</p>
+              <p>These are supported in instance detail when the instance is campus-partitioned and in the configurator for the selected campus.</p>
+            </article>
+          </div>
+          <div class="callout">
+            <p>The resolution service also understands shapes such as <code>Role + Campus</code>, <code>Schedule + Campus</code>, and <code>Role</code>-only fallback records even though the current admin UI does not focus on creating them.</p>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Expiration Precedence</h2>
+          <div class="process-grid">
+            <article class="process-step">
+              <div class="step-index">1</div>
+              <div class="step-copy">
+                <h3>Shift expiration is checked first</h3>
+                <p>If a specific shift has its own expiration, that timestamp decides whether sign-up is still open.</p>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">2</div>
+              <div class="step-copy">
+                <h3>Schedule expiration is the fallback</h3>
+                <p>If the shift does not have an explicit expiration, Serve falls back to the instance schedule expiration.</p>
+              </div>
+            </article>
+            <article class="process-step">
+              <div class="step-index">3</div>
+              <div class="step-copy">
+                <h3>No expiration means sign-up stays open</h3>
+                <p>If neither layer defines an expiration, the shift remains available unless other constraints apply.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Where To Edit Expirations</h2>
+          <div class="split-grid">
+            <article class="detail-item">
+              <h3>Instance Detail</h3>
+              <p>Use this when the whole schedule for the instance should close at the same time, such as every Saturday 5 PM shift closing Friday at noon.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Role Schedule Configurator</h3>
+              <p>Use this when one concrete shift needs its own expiration. The expirations tab shows the schedule-level value as the starting fallback, but saving there writes a shift-level expiration.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Campus Filtering Notes</h2>
+          <div class="callout callout-warm">
+            <p>When an instance is partitioned by campus, instance detail can save overrides for all campuses or one specific campus. The configurator always works in the selected campus context and does not currently expose a separate no-campus editing mode for partitioned instances.</p>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Practical Examples</h2>
+          <div class="example-grid">
+            <article class="example-card">
+              <h3>Schedule Default Only</h3>
+              <p>If Sunday 9 AM has a default of 8:00 AM to 9:00 AM and no role override exists, every role inherits that time range.</p>
+            </article>
+            <article class="example-card">
+              <h3>Role Override For All Campuses</h3>
+              <p>If Greeter has an all-schedules default of 7:30 AM to 9:00 AM, Greeters use that while other roles still use the schedule default.</p>
+            </article>
+            <article class="example-card">
+              <h3>Campus-Specific Role Override</h3>
+              <p>If Northwest Greeters have a campus-specific default of 7:15 AM to 9:00 AM, that beats the all-campus Greeter default for Northwest only.</p>
+            </article>
+            <article class="example-card">
+              <h3>Expiration Fallback</h3>
+              <p>If the schedule expires Friday at noon and one specific shift expires Thursday at 5:00 PM, that one shift closes earlier while the rest follow the schedule rule.</p>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

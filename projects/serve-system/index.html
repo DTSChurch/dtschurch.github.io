@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../../assets/styles.css" />
@@ -31,70 +31,138 @@
         <a href="./">Overview</a>
         <a href="email-system.html">Email System</a>
         <a href="connection-requests.html">Connection Requests</a>
-        <a href="reference/">Reference Library</a>
-        <a href="reference/TPCC_ServeSystem_Email_Documentation.md">Reference Email Doc</a>
-        <a href="reference/TPCC_ServeSystem_Shift_Time_And_Expiration_Documentation.md">Reference Shift Time Doc</a>
-        <a href="reference/TPCC_ServeSystem_ConnectionRequest_Documentation.md">Reference Connection Doc</a>
+        <a href="shift-times.html">Shift Times &amp; Expirations</a>
       </aside>
 
       <div class="docs-main">
         <section class="panel reveal">
           <p class="eyebrow">Serve System</p>
           <h1>Rock RMS volunteer scheduling and sign-up plugin</h1>
-          <p>
-            The Serve System plugin extends Rock RMS with structured volunteer opportunity
-            management, role-based scheduling, self-service sign-up, targeted communications,
-            and coordinator workflows.
+          <p class="panel-intro">
+            Serve System extends Rock RMS with structured volunteer opportunity management,
+            recurring scheduling, self-service sign-up, connection follow-up, and targeted
+            coordinator communications across multi-campus serving environments.
           </p>
-          <p>
-            Codebase source: <code>serve-system/</code>
-          </p>
+          <div class="doc-chip-row">
+            <span class="doc-chip">Rock RMS v17+</span>
+            <span class="doc-chip">.NET Framework 4.7.2</span>
+            <span class="doc-chip">.NET 8 toolchain</span>
+            <span class="doc-chip">Multi-campus scheduling</span>
+          </div>
         </section>
 
         <section class="panel reveal">
-          <h2>Core capabilities</h2>
-          <ul class="kv-list">
-            <li><strong>Serve Opportunities:</strong> define opportunities, roles, campuses, and attributes.</li>
-            <li><strong>Scheduling:</strong> generate and manage instances, shifts, expirations, and schedule or role-based time overrides.</li>
-            <li><strong>Volunteer experience:</strong> self-service sign-up and confirmation communication.</li>
-            <li><strong>Coordinator operations:</strong> targeted notification emails and connection integration.</li>
-            <li><strong>Rock integration:</strong> WebForms legacy blocks and Obsidian block surfaces.</li>
-          </ul>
+          <h2>Who It Serves</h2>
+          <div class="cards">
+            <article class="card">
+              <p class="card-kicker">Administrators</p>
+              <p>Create opportunities, manage roles, apply DataView filters, configure content templates, and generate instance schedules.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Volunteers</p>
+              <p>Browse available opportunities, pick shifts, complete role-specific fields, and receive confirmation with schedule details.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Coordinators</p>
+              <p>Review sign-ups, receive campus or role-filtered notifications, and optionally move people into Rock Connections for follow-up.</p>
+            </article>
+          </div>
         </section>
 
         <section class="panel reveal">
-          <h2>Quick start (development)</h2>
-          <pre><code>dotnet tool install --global SparkDevNetwork.Rock.DevTool
+          <h2>Requirements And Install Paths</h2>
+          <div class="split-grid">
+            <article class="detail-item">
+              <h3>Runtime Requirements</h3>
+              <ul>
+                <li>Rock RMS v17.0 or higher</li>
+                <li>.NET Framework 4.7.2</li>
+                <li>.NET 8 SDK for <code>rock-dev-tool</code></li>
+                <li><code>SparkDevNetwork.Rock.DevTool</code> for local plugin development</li>
+              </ul>
+            </article>
+            <article class="detail-item">
+              <h3>Production Install</h3>
+              <ol>
+                <li>Download the latest plugin package.</li>
+                <li>Open Rock Shop in Rock RMS.</li>
+                <li>Install the package and run pending migrations.</li>
+                <li>Verify Serve pages, blocks, and communication templates are present.</li>
+              </ol>
+            </article>
+            <article class="detail-item">
+              <h3>Development Bootstrap</h3>
+              <pre><code>dotnet tool install --global SparkDevNetwork.Rock.DevTool
 rock-dev-tool env update
 cd serve-system
 dotnet restore
 dotnet build</code></pre>
-          <p class="footer-note">
-            Requirements from current project docs: Rock RMS v17+, .NET Framework 4.7.2,
-            and .NET 8 SDK for toolchain support.
-          </p>
+              <p>Build output copies into the linked Rock environment automatically when the project is configured correctly.</p>
+            </article>
+          </div>
         </section>
 
         <section class="panel reveal">
-          <h2>High-level architecture</h2>
-          <pre><code>ServeOpportunity
-|- Roles (ServeOpportunityRole)
-|  |- optional Connection Opportunity / DataView filters
-|- Notification Recipients
-|- Notification Content Templates
-|- Instances (ServeOpportunityInstance)
-   |- Shifts (ServeOpportunityInstanceShift)
-      |- Sign-Ups (ServeOpportunityInstanceSignUp)</code></pre>
-          <p>
-            Primary implementation namespaces live under
-            <code>org.tpcc.ServeSystem/Model</code>,
-            <code>org.tpcc.ServeSystem/Blocks</code>, and
-            <code>org.tpcc.ServeSystem/Workflow/Actions</code>.
-          </p>
+          <h2>System Model</h2>
+          <div class="architecture-map">
+            <article class="architecture-node">
+              <h3>Serve Opportunity</h3>
+              <p>The root entity that owns role configuration, recipients, templates, and generated instances.</p>
+              <div class="architecture-children">
+                <article class="architecture-node">
+                  <h3>Roles</h3>
+                  <p>Per-role sign-up attributes, age rules, optional connection opportunity settings, and campus-aware defaults.</p>
+                </article>
+                <article class="architecture-node">
+                  <h3>Notification Recipients</h3>
+                  <p>People or groups notified after sign-up, optionally filtered by campus and/or role.</p>
+                </article>
+                <article class="architecture-node">
+                  <h3>Content Templates</h3>
+                  <p>Confirmation content selected by role, role category, and campus specificity.</p>
+                </article>
+                <article class="architecture-node">
+                  <h3>Instances</h3>
+                  <p>Scheduled occurrences that own shifts, expirations, and generated sign-up records.</p>
+                  <div class="architecture-children">
+                    <article class="architecture-node">
+                      <h3>Shifts</h3>
+                      <p>Concrete scheduled serve windows, including effective times and optional shift-level expiration overrides.</p>
+                    </article>
+                    <article class="architecture-node">
+                      <h3>Sign-Ups</h3>
+                      <p>Volunteer registrations tied to roles, shifts, notifications, and optional Rock Connection Requests.</p>
+                    </article>
+                  </div>
+                </article>
+              </div>
+            </article>
+          </div>
         </section>
 
         <section class="panel reveal">
-          <h2>Primary blocks</h2>
+          <h2>Published Guides</h2>
+          <div class="link-grid">
+            <a class="link-card" href="email-system.html">
+              <p class="eyebrow">Messaging</p>
+              <h3>Email System</h3>
+              <p>Confirmation delivery, notification routing, template precedence, merge fields, and example Lava patterns.</p>
+            </a>
+            <a class="link-card" href="connection-requests.html">
+              <p class="eyebrow">Follow-Up</p>
+              <h3>Connection Requests</h3>
+              <p>Role configuration, creation flow, duplicate prevention, family-member handling, and troubleshooting.</p>
+            </a>
+            <a class="link-card" href="shift-times.html">
+              <p class="eyebrow">Scheduling</p>
+              <h3>Shift Times &amp; Expirations</h3>
+              <p>Resolution precedence, admin ownership, campus scoping, and expiration fallback behavior.</p>
+            </a>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Primary Blocks</h2>
           <div class="table-wrap">
             <table>
               <thead>
@@ -141,14 +209,42 @@ dotnet build</code></pre>
         </section>
 
         <section class="panel reveal">
-          <h2>Key source files</h2>
-          <ul>
-            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityInstanceSignUp/ServeOpportunityInstanceSignUpService.cs</code></li>
-            <li><code>serve-system/org.tpcc.ServeSystem/Model/ServeOpportunityNotificationContentTemplate/ServeOpportunityNotificationContentTemplateService.cs</code></li>
-            <li><code>serve-system/org.tpcc.ServeSystem/Workflow/Actions/CancelServeSignUp.cs</code></li>
-            <li><code>serve-system/org.tpcc.ServeSystem/Lava/ServeFilters.cs</code></li>
-            <li><code>serve-system/org.tpcc.ServeSystem/Startup.cs</code></li>
-          </ul>
+          <h2>Project Structure</h2>
+          <div class="compare-grid">
+            <article class="compare-card">
+              <h3>Main Assembly</h3>
+              <p><code>org.tpcc.ServeSystem/</code> contains models, services, helpers, reporting, migrations, and startup wiring.</p>
+            </article>
+            <article class="compare-card">
+              <h3>Block Surfaces</h3>
+              <p><code>Plugins/org_tpcc/ServeSystem/</code> contains the WebForms blocks used to manage opportunities, instances, sign-ups, and public registration.</p>
+            </article>
+            <article class="compare-card">
+              <h3>Packaging</h3>
+              <p><code>plugin.json</code> and <code>plugin-lock.json</code> define distribution metadata and file inventory for Rock packaging.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Build, Package, And Contribute</h2>
+          <div class="split-grid">
+            <article class="detail-item">
+              <h3>Build Commands</h3>
+              <pre><code>cd ServeSystem
+dotnet build
+dotnet build -c Release
+rock-dev-tool plugin pack</code></pre>
+            </article>
+            <article class="detail-item">
+              <h3>Database Migrations</h3>
+              <p>Add migration classes under <code>org.tpcc.ServeSystem/Migrations/</code> and follow Rock naming conventions. Rock applies them at startup.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Branch Workflow</h3>
+              <p>The source repo uses a Gitflow-style structure with <code>main</code>, <code>develop</code>, <code>feature/*</code>, <code>release/*</code>, and <code>hotfix/*</code>.</p>
+            </article>
+          </div>
         </section>
       </div>
     </main>
