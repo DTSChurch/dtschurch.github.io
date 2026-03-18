@@ -573,8 +573,8 @@ code {
 
 .docs-page-toc {
   margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(10, 58, 114, 0.12);
+  padding-top: 0.95rem;
+  border-top: 1px dashed rgba(10, 58, 114, 0.12);
 }
 
 .docs-subnav-label {
@@ -592,10 +592,10 @@ code {
 }
 
 .docs-page-toc-links a {
-  padding: 0.45rem 0.65rem;
-  border: 1px solid transparent;
+  padding: 0.48rem 0.7rem;
+  border: 1px solid rgba(10, 58, 114, 0.08);
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(10, 58, 114, 0.05), rgba(255, 255, 255, 0.95));
+  background: rgba(10, 58, 114, 0.04);
   color: var(--ink-soft);
   font-size: 0.84rem;
   line-height: 1.35;
@@ -608,14 +608,14 @@ code {
   color: var(--brand-deep);
   border-color: rgba(10, 58, 114, 0.2);
   background: #fff;
-  transform: translateX(2px);
+  box-shadow: 0 6px 14px rgba(12, 27, 43, 0.06);
 }
 
 .docs-page-toc-links a.is-current {
   color: var(--brand-deep);
   border-color: rgba(10, 58, 114, 0.22);
-  background: #fff;
-  box-shadow: inset 3px 0 0 var(--brand), 0 8px 18px rgba(12, 27, 43, 0.07);
+  background: linear-gradient(135deg, rgba(10, 58, 114, 0.1), rgba(255, 255, 255, 0.96));
+  box-shadow: 0 8px 18px rgba(12, 27, 43, 0.07);
 }
 
 .docs-main {

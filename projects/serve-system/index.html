@@ -171,83 +171,44 @@ dotnet build</code></pre>
             <table>
               <thead>
                 <tr>
-                  <th>Block</th>
-                  <th>Plugin path</th>
-                  <th>Purpose</th>
+                  <th>Area</th>
+                  <th>What It Covers</th>
+                  <th>Typical Use</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>Serve Opportunity List</td>
-                  <td><code>~/Plugins/org_tpcc/ServeSystem/ServeOpportunityList.ascx</code></td>
-                  <td>List and route into opportunity management.</td>
+                  <td>Opportunity List</td>
+                  <td>All serve opportunities available to administrators.</td>
+                  <td>Used to browse, filter, and open a specific opportunity for review or editing.</td>
                 </tr>
                 <tr>
-                  <td>Serve Opportunity Detail</td>
-                  <td><code>~/Plugins/org_tpcc/ServeSystem/ServeOpportunityDetail.ascx</code></td>
-                  <td>Edit opportunity metadata, roles, recipients, and templates.</td>
+                  <td>Opportunity Detail</td>
+                  <td>Opportunity setup, roles, notification recipients, and confirmation templates.</td>
+                  <td>Used when reviewing how one ministry or event is configured.</td>
                 </tr>
                 <tr>
-                  <td>Serve Opportunity Instance List/Detail</td>
-                  <td><code>~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstance*.ascx</code></td>
-                  <td>Create and maintain instances, schedules, expirations, and instance-level shift-time defaults or overrides.</td>
+                  <td>Instance List And Detail</td>
+                  <td>Concrete occurrences of an opportunity, including schedules, expirations, and shift-time defaults.</td>
+                  <td>Used to review what happens for a specific weekend, event, or campaign instance.</td>
                 </tr>
                 <tr>
-                  <td>Serve Opportunity Instance Sign-Up List/Detail</td>
-                  <td><code>~/Plugins/org_tpcc/ServeSystem/ServeOpportunityInstanceSignUp*.ascx</code></td>
-                  <td>View and manage registrations and cancellation state.</td>
+                  <td>Sign-Up Management</td>
+                  <td>Volunteer registrations, status changes, and cancellation behavior.</td>
+                  <td>Used to confirm who signed up, what they selected, and how changes are handled afterward.</td>
                 </tr>
                 <tr>
                   <td>Role Schedule Configurator</td>
-                  <td><code>~/Plugins/org_tpcc/ServeSystem/RoleScheduleConfigurator.ascx</code></td>
-                  <td>Configure role counts, per-shift expirations, and schedule-scoped shift-time behavior.</td>
+                  <td>Role counts, per-shift expirations, and schedule-specific timing adjustments.</td>
+                  <td>Used when teams need to fine-tune staffing and timing at the shift level.</td>
                 </tr>
                 <tr>
-                  <td>Serve Sign-Up</td>
-                  <td><code>~/Plugins/org_tpcc/ServeSystem/SignUp/ServeSignUp.ascx</code></td>
-                  <td>Public volunteer sign-up entry point.</td>
+                  <td>Volunteer Sign-Up</td>
+                  <td>The public sign-up experience shown to volunteers and families.</td>
+                  <td>Used to review the front-end registration flow and the information a volunteer actually sees.</td>
                 </tr>
               </tbody>
             </table>
-          </div>
-        </section>
-
-        <section class="panel reveal">
-          <h2>Project Structure</h2>
-          <div class="compare-grid">
-            <article class="compare-card">
-              <h3>Main Assembly</h3>
-              <p><code>org.tpcc.ServeSystem/</code> contains models, services, helpers, reporting, migrations, and startup wiring.</p>
-            </article>
-            <article class="compare-card">
-              <h3>Block Surfaces</h3>
-              <p><code>Plugins/org_tpcc/ServeSystem/</code> contains the WebForms blocks used to manage opportunities, instances, sign-ups, and public registration.</p>
-            </article>
-            <article class="compare-card">
-              <h3>Packaging</h3>
-              <p><code>plugin.json</code> and <code>plugin-lock.json</code> define distribution metadata and file inventory for Rock packaging.</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="panel reveal">
-          <h2>Build, Package, And Contribute</h2>
-          <div class="split-grid">
-            <article class="detail-item">
-              <h3>Build Commands</h3>
-              <pre><code>cd ServeSystem
-dotnet build
-dotnet build -c Release
-rock-dev-tool plugin pack</code></pre>
-            </article>
-            <article class="detail-item">
-              <h3>Database Migrations</h3>
-              <p>Add migration classes under <code>org.tpcc.ServeSystem/Migrations/</code> and follow Rock naming conventions. Rock applies them at startup.</p>
-            </article>
-            <article class="detail-item">
-              <h3>Branch Workflow</h3>
-              <p>The source repo uses a Gitflow-style structure with <code>main</code>, <code>develop</code>, <code>feature/*</code>, <code>release/*</code>, and <code>hotfix/*</code>.</p>
-            </article>
           </div>
         </section>
       </div>
