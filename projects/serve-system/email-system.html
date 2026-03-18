@@ -28,6 +28,10 @@
         <a href="email-system.html">Email System</a>
         <a href="connection-requests.html">Connection Requests</a>
         <a href="shift-times.html">Shift Times &amp; Expirations</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
       </aside>
 
       <div class="docs-main">
@@ -175,35 +179,59 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><code>Person</code></td>
-                  <td>Volunteer who signed up.</td>
+                  <td><code>{{ Person.NickName }}</code></td>
+                  <td>Volunteer first name.</td>
                 </tr>
                 <tr>
-                  <td><code>ServeOpportunity</code></td>
-                  <td>Opportunity metadata such as name and description.</td>
+                  <td><code>{{ Person.FullName }}</code></td>
+                  <td>Volunteer full name.</td>
                 </tr>
                 <tr>
-                  <td><code>ServeOpportunityInstance</code></td>
-                  <td>The specific instance the person joined.</td>
+                  <td><code>{{ Person.Email }}</code></td>
+                  <td>Volunteer email address.</td>
                 </tr>
                 <tr>
-                  <td><code>ServeOpportunityRole</code></td>
-                  <td>The selected role for this sign-up.</td>
+                  <td><code>{{ ServeOpportunity.Name }}</code></td>
+                  <td>Name of the serve opportunity.</td>
                 </tr>
                 <tr>
-                  <td><code>Campus</code></td>
-                  <td>Selected campus, or empty for all-campus shifts.</td>
+                  <td><code>{{ ServeOpportunityInstance.Name }}</code></td>
+                  <td>Name of the selected instance.</td>
                 </tr>
                 <tr>
-                  <td><code>StaffContact</code></td>
-                  <td>Resolved role contact, preferring campus-specific contact first and then the role default.</td>
+                  <td><code>{{ ServeOpportunityRole.Name }}</code></td>
+                  <td>Name of the selected role.</td>
                 </tr>
                 <tr>
-                  <td><code>ContentTemplate</code></td>
-                  <td>Rendered confirmation content template HTML when a matching template exists.</td>
+                  <td><code>{{ Campus.Name }}</code></td>
+                  <td>Campus name for the shift, if the shift is campus-specific.</td>
                 </tr>
                 <tr>
-                  <td><code>ShiftDetails</code></td>
+                  <td><code>{{ StaffContact.Name }}</code></td>
+                  <td>Resolved staff contact display name.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ StaffContact.Type }}</code></td>
+                  <td>Whether the contact is a person or a group.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ StaffContact.Person.Email }}</code></td>
+                  <td>Staff contact email address.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ StaffContact.Person.FullName }}</code></td>
+                  <td>Staff contact full name when the contact is person-based.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ StaffContact.Group.Name }}</code></td>
+                  <td>Staff contact group name when the contact is group-based.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ ContentTemplate }}</code></td>
+                  <td>Rendered content-template HTML when a matching template exists.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ ShiftDetails }}</code></td>
                   <td>List of shift objects for the volunteer’s selected shifts.</td>
                 </tr>
               </tbody>
@@ -221,6 +249,18 @@
             <article class="detail-item">
               <strong><code>{{ shift.SignUpId }}</code></strong>
               <p>Sign-up record ID for the shift line item.</p>
+            </article>
+            <article class="detail-item">
+              <strong><code>{{ shift.SignUpIds }}</code></strong>
+              <p>List of sign-up IDs represented by the shift object.</p>
+            </article>
+            <article class="detail-item">
+              <strong><code>{{ shift.SignUps }}</code></strong>
+              <p>Full sign-up records available for more advanced template output.</p>
+            </article>
+            <article class="detail-item">
+              <strong><code>{{ shift.People }}</code></strong>
+              <p>Unique people serving on that shift.</p>
             </article>
             <article class="detail-item">
               <strong><code>{{ shift.Date }}</code></strong>
@@ -406,6 +446,9 @@ Questions? Email {{ StaffContact.Person.Email }}.&lt;/p&gt;
 
         <section class="panel reveal">
           <h2>Notification Merge Fields</h2>
+          <div class="callout">
+            <p>Notification emails include the same common scheduling and context fields as confirmation emails, plus recipient-specific notification fields.</p>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -416,39 +459,55 @@ Questions? Email {{ StaffContact.Person.Email }}.&lt;/p&gt;
               </thead>
               <tbody>
                 <tr>
-                  <td><code>Person</code></td>
-                  <td>The notification recipient.</td>
+                  <td><code>{{ Person.NickName }}</code></td>
+                  <td>The notification recipient’s first name.</td>
                 </tr>
                 <tr>
-                  <td><code>ServeOpportunity</code></td>
-                  <td>The opportunity name and related metadata.</td>
+                  <td><code>{{ ServeOpportunity.Name }}</code></td>
+                  <td>The opportunity name.</td>
                 </tr>
                 <tr>
-                  <td><code>ServeOpportunityInstance</code></td>
-                  <td>The instance associated with the grouped sign-ups.</td>
+                  <td><code>{{ ServeOpportunityInstance.Name }}</code></td>
+                  <td>The instance name.</td>
                 </tr>
                 <tr>
-                  <td><code>ServeOpportunityRole</code></td>
+                  <td><code>{{ ServeOpportunityRole.Name }}</code></td>
                   <td>The role represented by the grouped sign-ups.</td>
                 </tr>
                 <tr>
-                  <td><code>Campus</code></td>
+                  <td><code>{{ Campus.Name }}</code></td>
                   <td>The campus represented by the grouped sign-ups.</td>
                 </tr>
                 <tr>
-                  <td><code>NotificationRole</code> / <code>NotificationCampus</code></td>
+                  <td><code>{{ StaffContact.Name }}</code></td>
+                  <td>Resolved staff contact name from the sign-up role and campus.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ StaffContact.Type }}</code></td>
+                  <td>Whether the resolved contact is a person or a group.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ StaffContact.Person.Email }}</code></td>
+                  <td>Staff contact email address.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ StaffContact.Group.Name }}</code></td>
+                  <td>Staff contact group name when group-based.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ NotificationRole.Name }}</code> / <code>{{ NotificationCampus.Name }}</code></td>
                   <td>The recipient’s own filter context, if one was configured.</td>
                 </tr>
                 <tr>
-                  <td><code>People</code></td>
+                  <td><code>{{ People }}</code></td>
                   <td>Unique people represented in the notification batch.</td>
                 </tr>
                 <tr>
-                  <td><code>SignUps</code></td>
+                  <td><code>{{ SignUps }}</code></td>
                   <td>All sign-up records included in the notification batch.</td>
                 </tr>
                 <tr>
-                  <td><code>ShiftDetails</code></td>
+                  <td><code>{{ ShiftDetails }}</code></td>
                   <td>Shift objects that include grouped people and sign-up details.</td>
                 </tr>
               </tbody>
@@ -470,6 +529,10 @@ Questions? Email {{ StaffContact.Person.Email }}.&lt;/p&gt;
                 <tr>
                   <td><code>{{ shift.Id }}</code></td>
                   <td>Shift record ID.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ shift.SignUpId }}</code></td>
+                  <td>First sign-up ID for the shift as a convenience field.</td>
                 </tr>
                 <tr>
                   <td><code>{{ shift.Date }}</code></td>

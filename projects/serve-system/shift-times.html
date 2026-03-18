@@ -28,6 +28,10 @@
         <a href="email-system.html">Email System</a>
         <a href="connection-requests.html">Connection Requests</a>
         <a href="shift-times.html">Shift Times &amp; Expirations</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
       </aside>
 
       <div class="docs-main">
@@ -37,13 +41,16 @@
           <p class="panel-intro">
             Serve shift timing is resolved from the most specific matching override record,
             while sign-up cutoff behavior falls back from shift-level expiration to the
-            instance schedule expiration. Both behaviors are shaped by which admin screen owns
-            which layer of configuration.
+            instance schedule expiration. The current model now includes exact-role, role-category,
+            campus, all-role, schedule-default, and instance-default behavior layered in a fixed
+            precedence order.
           </p>
           <div class="doc-chip-row">
             <span class="doc-chip">Schedule defaults</span>
             <span class="doc-chip">Role overrides</span>
+            <span class="doc-chip">Role categories</span>
             <span class="doc-chip">Campus scoping</span>
+            <span class="doc-chip">Instance defaults</span>
             <span class="doc-chip">Expiration fallback</span>
           </div>
         </section>
@@ -75,29 +82,71 @@
             <article class="priority-row">
               <div class="priority-rank">4</div>
               <div class="priority-copy">
-                <h3>Schedule + Campus</h3>
-                <p>Schedule-level campus override when role-specific data is absent.</p>
+                <h3>Role</h3>
+                <p>Exact-role fallback when schedule and campus-specific overrides are not present.</p>
               </div>
             </article>
             <article class="priority-row">
               <div class="priority-rank">5</div>
               <div class="priority-copy">
-                <h3>Role</h3>
-                <p>Role-wide fallback when schedule and campus detail are not present.</p>
+                <h3>Schedule + Role Category + Campus</h3>
+                <p>Category-scoped override for one schedule and campus when no exact-role match exists.</p>
               </div>
             </article>
             <article class="priority-row">
               <div class="priority-rank">6</div>
+              <div class="priority-copy">
+                <h3>Schedule + Role Category</h3>
+                <p>Category override for one schedule across campuses.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">7</div>
+              <div class="priority-copy">
+                <h3>Role Category + Campus</h3>
+                <p>Category default for a campus across schedules.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">8</div>
+              <div class="priority-copy">
+                <h3>Role Category</h3>
+                <p>Category-wide fallback when no more specific role or category scope matches.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">9</div>
+              <div class="priority-copy">
+                <h3>Schedule + Campus</h3>
+                <p>Schedule-level campus override when role and category detail are absent.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">10</div>
+              <div class="priority-copy">
+                <h3>Campus</h3>
+                <p>Campus-only fallback that applies across roles and categories.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">11</div>
               <div class="priority-copy">
                 <h3>Schedule Default</h3>
                 <p>Default shift time assigned to the instance schedule.</p>
               </div>
             </article>
             <article class="priority-row">
-              <div class="priority-rank">7</div>
+              <div class="priority-rank">12</div>
+              <div class="priority-copy">
+                <h3>Instance Default</h3>
+                <p>Fallback default stored at the broader instance level.</p>
+              </div>
+            </article>
+            <article class="priority-row">
+              <div class="priority-rank">13</div>
               <div class="priority-copy">
                 <h3>Base iCal Schedule Time</h3>
-                <p>Fallback to the underlying schedule definition when no override record matches.</p>
+                <p>Final fallback to the underlying schedule definition when no override record matches.</p>
               </div>
             </article>
           </div>
@@ -108,11 +157,11 @@
           <div class="compare-grid">
             <article class="compare-card">
               <h3>Serve Opportunity Instance Detail</h3>
-              <p>Owns instance schedules, schedule default times, schedule expirations, all-schedules role defaults, and schedule-scoped role overrides.</p>
+              <p>Owns instance schedules, schedule default shift times, schedule expirations, all-schedules scoped defaults, and schedule-scoped overrides.</p>
             </article>
             <article class="compare-card">
               <h3>Instance Detail In Campus Mode</h3>
-              <p>Also manages campus-specific role defaults across all schedules and schedule + role + campus overrides through the override editor.</p>
+              <p>Also manages exact-role, role-category, and all-role campus variants when the instance is partitioned by campus.</p>
             </article>
             <article class="compare-card">
               <h3>Role Schedule Configurator</h3>
@@ -125,24 +174,32 @@
           <h2>Current Editing Model</h2>
           <div class="cards">
             <article class="card">
-              <p class="card-kicker">All Schedules</p>
-              <p>General role defaults are edited in instance detail and apply across schedules unless something more specific overrides them.</p>
+              <p class="card-kicker">All-Schedules Scoped Defaults</p>
+              <p>Instance detail edits the broad defaults that apply across schedules for exact roles, role categories, or all roles.</p>
             </article>
             <article class="card">
               <p class="card-kicker">Schedule Defaults</p>
-              <p>Base schedule times are also edited in instance detail and become the fallback for roles without their own override.</p>
+              <p>Base schedule times are edited in instance detail and serve as a later fallback when more specific records are absent.</p>
             </article>
             <article class="card">
               <p class="card-kicker">Schedule + Role</p>
-              <p>These overrides can be edited in both instance detail and the configurator.</p>
+              <p>Exact-role overrides can be edited in both instance detail and the configurator.</p>
             </article>
             <article class="card">
-              <p class="card-kicker">Schedule + Role + Campus</p>
-              <p>These are supported in instance detail when the instance is campus-partitioned and in the configurator for the selected campus.</p>
+              <p class="card-kicker">Schedule + Role Category</p>
+              <p>Role-category overrides are edited in instance detail and apply when no exact-role override wins first.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Campus-Scoped Overrides</p>
+              <p>Schedule + role + campus and schedule + all roles + campus overrides are available in instance detail when the instance is campus-partitioned.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Configurator Context</p>
+              <p>The configurator always works in the currently selected campus context when the instance is partitioned by campus.</p>
             </article>
           </div>
           <div class="callout">
-            <p>The resolution service also understands shapes such as <code>Role + Campus</code>, <code>Schedule + Campus</code>, and <code>Role</code>-only fallback records even though the current admin UI does not focus on creating them.</p>
+            <p>The resolution service also understands additional shapes such as <code>Role + Campus</code>, <code>Role Category + Campus</code>, <code>Campus</code>-only, and <code>Instance Default</code> records even though the current admin UI does not foreground every one of those shapes equally.</p>
           </div>
         </section>
 
@@ -212,6 +269,14 @@
             <article class="example-card">
               <h3>Expiration Fallback</h3>
               <p>If the schedule expires Friday at noon and one specific shift expires Thursday at 5:00 PM, that one shift closes earlier while the rest follow the schedule rule.</p>
+            </article>
+            <article class="example-card">
+              <h3>Category Default</h3>
+              <p>If the Guest Services category default is 7:15 AM to 9:00 AM and Greeter belongs to Guest Services, Greeter inherits that category default until a more specific role or schedule override exists.</p>
+            </article>
+            <article class="example-card">
+              <h3>All-Role Campus Default</h3>
+              <p>If Northwest has a schedule-scoped all-role override of 7:45 AM to 9:00 AM, every role at Northwest inherits it unless a role-specific or role-category override is more specific.</p>
             </article>
           </div>
         </section>

@@ -25,6 +25,10 @@ body {
   max-width: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "Work Sans", "Segoe UI", sans-serif;
   color: var(--ink);
@@ -550,7 +554,7 @@ code {
   margin-bottom: 0.6rem;
 }
 
-.docs-nav a {
+.docs-nav > a {
   display: block;
   text-decoration: none;
   color: var(--ink-soft);
@@ -558,19 +562,70 @@ code {
   border-bottom: 1px dashed rgba(10, 58, 114, 0.14);
 }
 
-.docs-nav a:last-child {
+.docs-nav > a:last-of-type {
   border-bottom: none;
 }
 
-.docs-nav a.active,
-.docs-nav a:hover {
+.docs-nav > a.active,
+.docs-nav > a:hover {
   color: var(--brand-deep);
+}
+
+.docs-page-toc {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(10, 58, 114, 0.12);
+}
+
+.docs-subnav-label {
+  margin: 0 0 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.docs-page-toc-links {
+  display: grid;
+  gap: 0.32rem;
+}
+
+.docs-page-toc-links a {
+  padding: 0.45rem 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(10, 58, 114, 0.05), rgba(255, 255, 255, 0.95));
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.35;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease,
+    color 0.2s ease, transform 0.2s ease;
+  border-bottom: none;
+}
+
+.docs-page-toc-links a:hover {
+  color: var(--brand-deep);
+  border-color: rgba(10, 58, 114, 0.2);
+  background: #fff;
+  transform: translateX(2px);
+}
+
+.docs-page-toc-links a.is-current {
+  color: var(--brand-deep);
+  border-color: rgba(10, 58, 114, 0.22);
+  background: #fff;
+  box-shadow: inset 3px 0 0 var(--brand), 0 8px 18px rgba(12, 27, 43, 0.07);
 }
 
 .docs-main {
   display: grid;
   gap: 1rem;
   min-width: 0;
+}
+
+.docs-main .panel[id] {
+  scroll-margin-top: 6.2rem;
 }
 
 .panel {
