@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Serve Lava Filters | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Serve System Docs</h2>
+        <a href="./">Overview</a>
+        <a href="email-system.html">Email System</a>
+        <a href="connection-requests.html">Connection Requests</a>
+        <a href="shift-times.html">Shift Times &amp; Expirations</a>
+        <a href="lava-filters.html">Lava Filters</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Lava</p>
+          <h1>Custom Lava Filters</h1>
+          <p class="panel-intro">
+            Serve System registers two custom Lava filters &mdash;
+            <code>ServeSignUps</code> and <code>ServeSignUpDetails</code> &mdash;
+            that let template authors query sign-up data from any Lava context.
+            Both filters are registered at startup via
+            <code>LavaService.RegisterFilters</code> and are available globally
+            once the plugin is installed.
+          </p>
+          <div class="doc-chip-row">
+            <span class="doc-chip">Global Lava filters</span>
+            <span class="doc-chip">Person-based queries</span>
+            <span class="doc-chip">ID-based lookup</span>
+            <span class="doc-chip">Active-only default</span>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>ServeSignUps</h2>
+          <p>Returns a list of sign-up detail objects for a given person. Pipe a <code>Person</code> object into the filter and optionally pass parameters to narrow results.</p>
+          <pre><code>{% assign signups = Person | ServeSignUps %}
+{% assign signups = Person | ServeSignUps:42 %}
+{% assign signups = Person | ServeSignUps:null,123 %}
+{% assign signups = Person | ServeSignUps:null,null,true %}
+{% assign signups = Person | ServeSignUps:null,null,true,'2026-01-01' %}</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>ServeSignUps Parameters</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Type</th>
+                  <th>Default</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>input</code></td>
+                  <td>Person</td>
+                  <td>&mdash;</td>
+                  <td>The person to query sign-ups for. Piped in as the Lava input object.</td>
+                </tr>
+                <tr>
+                  <td><code>serveOpportunityId</code></td>
+                  <td>int</td>
+                  <td><code>null</code></td>
+                  <td>Filter results to a single serve opportunity.</td>
+                </tr>
+                <tr>
+                  <td><code>serveOpportunityInstanceId</code></td>
+                  <td>int</td>
+                  <td><code>null</code></td>
+                  <td>Filter results to a single serve opportunity instance.</td>
+                </tr>
+                <tr>
+                  <td><code>activeSignUps</code></td>
+                  <td>bool</td>
+                  <td><code>true</code></td>
+                  <td>When true, only includes sign-ups tied to active, non-expired instances and shifts.</td>
+                </tr>
+                <tr>
+                  <td><code>fromDate</code></td>
+                  <td>date string</td>
+                  <td><code>null</code></td>
+                  <td>Only include sign-ups with an occurrence on or after this date.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            <p>When no <code>serveOpportunityId</code>, <code>serveOpportunityInstanceId</code>, or <code>fromDate</code> is provided, the filter automatically defaults <code>fromDate</code> to now &mdash; returning only upcoming sign-ups. Pass an explicit <code>fromDate</code> or a specific ID filter to override this behavior.</p>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>ServeSignUpDetails</h2>
+          <p>Returns a single sign-up detail object by sign-up ID. Pipe the ID directly into the filter.</p>
+          <pre><code>{% assign detail = signupId | ServeSignUpDetails %}</code></pre>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>input</code></td>
+                  <td>int</td>
+                  <td>The sign-up record ID. Returns <code>null</code> if the ID is invalid or not found.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Return Object Reference</h2>
+          <p>Both filters return objects built from <code>BuildSignUpDetails</code>. <code>ServeSignUps</code> returns a list; <code>ServeSignUpDetails</code> returns a single object.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>SignUp</code></td>
+                  <td>ServeOpportunityInstanceSignUp</td>
+                  <td>The full sign-up entity.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.Id</code></td>
+                  <td>int</td>
+                  <td>Shift record ID.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.Date</code></td>
+                  <td>string</td>
+                  <td>Formatted date, e.g. <code>March 19, 2026</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.StartTime</code></td>
+                  <td>string</td>
+                  <td>Formatted start time, e.g. <code>9:00 AM</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.EndTime</code></td>
+                  <td>string</td>
+                  <td>Formatted end time, e.g. <code>10:30 AM</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.StartDateTime</code></td>
+                  <td>DateTime</td>
+                  <td>Shift start as a DateTime for date math and custom formatting.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.EndDateTime</code></td>
+                  <td>DateTime</td>
+                  <td>Shift end as a DateTime.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.Role</code></td>
+                  <td>ServeOpportunityRole</td>
+                  <td>The role entity assigned to the shift.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.RoleName</code></td>
+                  <td>string</td>
+                  <td>Role display name.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.Campus</code></td>
+                  <td>Campus</td>
+                  <td>Campus entity for the shift, if campus-specific.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.CampusName</code></td>
+                  <td>string</td>
+                  <td>Campus display name.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.Schedule</code></td>
+                  <td>ServeOpportunityInstanceSchedule</td>
+                  <td>The schedule entity attached to the shift.</td>
+                </tr>
+                <tr>
+                  <td><code>Shift.TotalSpots</code></td>
+                  <td>int</td>
+                  <td>Total volunteer spots configured for the shift.</td>
+                </tr>
+                <tr>
+                  <td><code>Instance</code></td>
+                  <td>ServeOpportunityInstance</td>
+                  <td>The instance entity that owns the shift.</td>
+                </tr>
+                <tr>
+                  <td><code>InstanceName</code></td>
+                  <td>string</td>
+                  <td>Instance display name.</td>
+                </tr>
+                <tr>
+                  <td><code>Opportunity</code></td>
+                  <td>ServeOpportunity</td>
+                  <td>The top-level opportunity entity.</td>
+                </tr>
+                <tr>
+                  <td><code>OpportunityName</code></td>
+                  <td>string</td>
+                  <td>Opportunity display name.</td>
+                </tr>
+                <tr>
+                  <td><code>Person</code></td>
+                  <td>Person</td>
+                  <td>The person who created the sign-up.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Active Sign-Up Checks</h2>
+          <p>When <code>activeSignUps</code> is <code>true</code> (the default), a sign-up is included only if all of the following are true:</p>
+          <div class="split-grid">
+            <article class="detail-item">
+              <h3>Entity flags are active</h3>
+              <p>The shift, instance, and opportunity all have <code>IsActive == true</code>.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Instance has not ended</h3>
+              <p>If the instance has an <code>EndDateTime</code>, it must be in the future.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Shift has not expired</h3>
+              <p>If the shift has an <code>ExpirationDateTime</code>, it must be in the future.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Schedule has not expired</h3>
+              <p>If the shift's schedule has an <code>ExpirationDateTime</code>, it must be in the future.</p>
+            </article>
+            <article class="detail-item">
+              <h3>Shift end time is in the future</h3>
+              <p>The shift's computed end time must be on or after the current time.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Example Lava Patterns</h2>
+          <div class="details-stack">
+            <details class="doc-details" open>
+              <summary>List upcoming sign-ups for the current person</summary>
+              <div class="details-body">
+                <pre><code>{% assign signups = CurrentPerson | ServeSignUps %}
+{% for item in signups %}
+  &lt;p&gt;
+    &lt;strong&gt;{{ item.OpportunityName }}&lt;/strong&gt; &amp;mdash; {{ item.InstanceName }}&lt;br&gt;
+    {{ item.Shift.Date }} from {{ item.Shift.StartTime }} to {{ item.Shift.EndTime }}&lt;br&gt;
+    Role: {{ item.Shift.RoleName }}
+    {% if item.Shift.CampusName != empty %} | Campus: {{ item.Shift.CampusName }}{% endif %}
+  &lt;/p&gt;
+{% endfor %}</code></pre>
+              </div>
+            </details>
+            <details class="doc-details">
+              <summary>Filter by a specific opportunity</summary>
+              <div class="details-body">
+                <pre><code>{% assign signups = CurrentPerson | ServeSignUps:42 %}
+{% if signups == empty %}
+  &lt;p&gt;You have no upcoming sign-ups for this opportunity.&lt;/p&gt;
+{% else %}
+  &lt;ul&gt;
+  {% for item in signups %}
+    &lt;li&gt;{{ item.Shift.Date }} {{ item.Shift.StartTime }}&lt;/li&gt;
+  {% endfor %}
+  &lt;/ul&gt;
+{% endif %}</code></pre>
+              </div>
+            </details>
+            <details class="doc-details">
+              <summary>Show all sign-up history (including past)</summary>
+              <div class="details-body">
+                <pre><code>{%- comment -%}
+  Pass activeSignUps = false and fromDate = a far-past date
+  to include inactive and historical sign-ups.
+{%- endcomment -%}
+{% assign signups = CurrentPerson | ServeSignUps:null,null,false,'2020-01-01' %}
+{% for item in signups %}
+  &lt;p&gt;
+    {{ item.OpportunityName }} &amp;mdash; {{ item.Shift.Date }}
+    {{ item.Shift.StartTime }} to {{ item.Shift.EndTime }}
+  &lt;/p&gt;
+{% endfor %}</code></pre>
+              </div>
+            </details>
+            <details class="doc-details">
+              <summary>Look up a single sign-up by ID</summary>
+              <div class="details-body">
+                <pre><code>{% assign detail = signupId | ServeSignUpDetails %}
+{% if detail %}
+  &lt;p&gt;{{ detail.Person.FullName }} is signed up for
+  &lt;strong&gt;{{ detail.OpportunityName }}&lt;/strong&gt;
+  on {{ detail.Shift.Date }} at {{ detail.Shift.StartTime }}.&lt;/p&gt;
+{% else %}
+  &lt;p&gt;Sign-up not found.&lt;/p&gt;
+{% endif %}</code></pre>
+              </div>
+            </details>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>
