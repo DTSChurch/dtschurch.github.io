@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jobs &amp; Automation | Appointment System | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Appointment System</h2>
+        <a href="./">Overview</a>
+        <a href="book-appointment.html">Book Appointment Block</a>
+        <a href="lava-templates.html">Lava Templates</a>
+        <a href="lava-filters.html">Lava Filters</a>
+        <a href="block-settings.html">Block Settings</a>
+        <a href="admin-blocks.html">Admin Blocks</a>
+        <a href="jobs.html">Jobs &amp; Automation</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Automation</p>
+          <h1>Jobs &amp; Automation</h1>
+          <p class="panel-intro">
+            Rock Jobs that run on a schedule to handle appointment reminders, follow-up
+            communications, and workflow triggers.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Send Appointment Reminder Communication</h2>
+          <p>
+            Sends reminder emails and/or SMS messages to people with upcoming appointments.
+          </p>
+
+          <h3>Configuration</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Attribute</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Send Reminders</strong></td>
+                  <td>Comma-delimited list of days before an appointment to send a reminder. Example: <code>2,4</code> sends reminders 2 and 4 days before.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Behavior</h3>
+          <ul>
+            <li>Queries appointments within the configured day range from today</li>
+            <li><strong>Excludes cancelled appointments</strong> &mdash; only Pending and Attended statuses receive reminders</li>
+            <li>Uses the <strong>Reminder System Communication</strong> configured on each appointment type</li>
+            <li>Supports both email and SMS channels</li>
+            <li>Skips appointment types without a reminder communication configured</li>
+          </ul>
+
+          <h3>Merge Fields (in System Communication)</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Field</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>{{ Appointment }}</code></td><td>The appointment entity with all navigation properties.</td></tr>
+                <tr><td><code>{{ Person }}</code></td><td>The person the appointment is booked for.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Send Appointment Completed Notification</h2>
+          <p>
+            Sends follow-up communications for appointments that have passed, based on attendance status.
+          </p>
+
+          <h3>Configuration</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Attribute</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>System Email</strong></td>
+                  <td>The system communication template to use for notifications.</td>
+                </tr>
+                <tr>
+                  <td><strong>Days Prior (Pending)</strong></td>
+                  <td>Number of days after an appointment to notify contacts about Pending (no-show) appointments.</td>
+                </tr>
+                <tr>
+                  <td><strong>Days Prior (Attended)</strong></td>
+                  <td>Number of days after an appointment to notify contacts about Attended appointments.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Behavior</h3>
+          <ul>
+            <li>Groups appointments by appointment type and contact</li>
+            <li>Sends a single summary email per contact with all relevant appointments</li>
+            <li>Only processes appointments with Pending or Attended status within the configured day ranges</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Workflow Triggers</h2>
+          <p>In addition to jobs, the system triggers workflows at booking time:</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Event</th><th>Configuration</th><th>Merge Entity</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Appointment Booked</td>
+                  <td><strong>Booked Workflow Type</strong> on the Appointment Type</td>
+                  <td>The Appointment entity</td>
+                </tr>
+                <tr>
+                  <td>Appointment Rescheduled or Cancelled</td>
+                  <td><strong>Rescheduled/Cancelled Workflow Type</strong> on the Appointment Type</td>
+                  <td>The Appointment entity</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

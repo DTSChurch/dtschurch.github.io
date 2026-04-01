@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Appointment System Docs | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="Appointment System technical documentation for Rock RMS."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Appointment System</h2>
+        <a href="./">Overview</a>
+        <a href="book-appointment.html">Book Appointment Block</a>
+        <a href="lava-templates.html">Lava Templates</a>
+        <a href="lava-filters.html">Lava Filters</a>
+        <a href="block-settings.html">Block Settings</a>
+        <a href="admin-blocks.html">Admin Blocks</a>
+        <a href="jobs.html">Jobs &amp; Automation</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Appointment System</p>
+          <h1>Rock RMS appointment booking and scheduling plugin</h1>
+          <p class="panel-intro">
+            Appointment System extends Rock RMS with a complete appointment booking workflow:
+            configurable appointment types, recurring schedules with slot management,
+            public-facing booking with Lava-customizable templates, and automated
+            confirmation and reminder communications.
+          </p>
+          <div class="doc-chip-row">
+            <span class="doc-chip">Rock RMS v17+</span>
+            <span class="doc-chip">.NET Framework 4.7.2</span>
+            <span class="doc-chip">Obsidian (Vue 3)</span>
+            <span class="doc-chip">Lava Templates</span>
+            <span class="doc-chip">Multi-campus</span>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Who It Serves</h2>
+          <div class="cards">
+            <article class="card">
+              <p class="card-kicker">Administrators</p>
+              <p>Create appointment types, configure schedules with slot capacity and duration, set booking thresholds, and manage confirmation and reminder communications.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Public Users</p>
+              <p>Browse available appointment types, select dates and times, provide contact information, and receive confirmation emails with appointment details.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Staff</p>
+              <p>View appointment calendars, manage bookings, track attendance status, and process cancellations or reschedules with automated notifications.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>System Model</h2>
+          <!-- TODO: Replace with actual screenshot of the data model -->
+          <p class="text-muted" style="padding: 40px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Entity relationship diagram]</em>
+          </p>
+          <div class="architecture-map">
+            <article class="architecture-node">
+              <h3>Appointment Type</h3>
+              <p>The root configuration entity that defines a bookable appointment category with campus, location, schedules, booking rules, and communication templates.</p>
+              <div class="architecture-children">
+                <article class="architecture-node">
+                  <h3>Appointment Schedule</h3>
+                  <p>Recurring iCal-based schedules with configurable slot capacity, duration subdivisions, buffer times, and category organization.</p>
+                </article>
+                <article class="architecture-node">
+                  <h3>Appointment Contact</h3>
+                  <p>Staff contacts associated with an appointment type who receive notifications about bookings and changes.</p>
+                </article>
+                <article class="architecture-node">
+                  <h3>Appointments</h3>
+                  <p>Individual booked appointments tied to a person, schedule, date/time, and attendance status (Pending, Attended, Cancelled).</p>
+                </article>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Booking Flow</h2>
+          <!-- TODO: Replace with actual screenshots of each step -->
+          <div class="cards">
+            <article class="card">
+              <p class="card-kicker">Step 1</p>
+              <h3>Select Appointment Type</h3>
+              <p class="text-muted" style="padding: 20px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px; margin-bottom: 12px;">
+                <em>[Placeholder: Screenshot of appointment type cards]</em>
+              </p>
+              <p>Users browse available appointment types displayed as customizable Lava-rendered cards. Optional campus and location filters narrow results. Types with no available slots are visually dimmed.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Step 2</p>
+              <h3>Select Date &amp; Time</h3>
+              <p class="text-muted" style="padding: 20px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px; margin-bottom: 12px;">
+                <em>[Placeholder: Screenshot of date accordion with time slots]</em>
+              </p>
+              <p>Available dates are grouped in an accordion with Lava-customizable time slot cards. Each slot shows availability count with color-coded urgency indicators.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Step 3</p>
+              <h3>Confirm &amp; Book</h3>
+              <p class="text-muted" style="padding: 20px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px; margin-bottom: 12px;">
+                <em>[Placeholder: Screenshot of person information form]</em>
+              </p>
+              <p>Users enter contact information, fill in any appointment-type-specific attributes, and confirm the booking. Existing Rock persons are matched automatically.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Published Guides</h2>
+          <div class="link-grid">
+            <a class="link-card" href="book-appointment.html">
+              <p class="eyebrow">Public Facing</p>
+              <h3>Book Appointment Block</h3>
+              <p>The external booking experience: step-by-step flow, Lava card templates, filtering, panel options, and editing/cancellation support.</p>
+            </a>
+            <a class="link-card" href="lava-templates.html">
+              <p class="eyebrow">Customization</p>
+              <h3>Lava Templates</h3>
+              <p>Appointment type card, slot card, confirmation, header, and CSS templates. Merge fields, entity references, and example patterns.</p>
+            </a>
+            <a class="link-card" href="lava-filters.html">
+              <p class="eyebrow">Lava</p>
+              <h3>Lava Filters</h3>
+              <p>Custom AppointmentById, AppointmentTypeById, AppointmentsByTypeId, UpcomingAppointments, and AppointmentScheduleById filters.</p>
+            </a>
+            <a class="link-card" href="block-settings.html">
+              <p class="eyebrow">Configuration</p>
+              <h3>Block Settings</h3>
+              <p>All block attributes for the Book Appointment block: appointment type picker, templates, filters, panel toggle, and custom CSS.</p>
+            </a>
+            <a class="link-card" href="admin-blocks.html">
+              <p class="eyebrow">Administration</p>
+              <h3>Admin Blocks</h3>
+              <p>Appointment Type, Schedule, Appointment, Contact, and Calendar blocks for managing the system from the Rock admin panel.</p>
+            </a>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Primary Blocks</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Block</th>
+                  <th>What It Covers</th>
+                  <th>Typical Use</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Book Appointment</td>
+                  <td>Public-facing multi-step booking flow with Lava-customizable cards, date/time selection, and person matching.</td>
+                  <td>External page for members and visitors to schedule appointments.</td>
+                </tr>
+                <tr>
+                  <td>Appointment Type List</td>
+                  <td>Grid of all appointment types with campus, location, and active status.</td>
+                  <td>Admin browsing and managing appointment type configurations.</td>
+                </tr>
+                <tr>
+                  <td>Appointment Type Detail</td>
+                  <td>Full configuration: schedules (card picker), campus, location, communications, workflows, and booking rules.</td>
+                  <td>Creating or editing an appointment type with all its associated settings.</td>
+                </tr>
+                <tr>
+                  <td>Appointment Schedule List</td>
+                  <td>Grid of all appointment schedules with recurrence and slot details.</td>
+                  <td>Managing recurring schedule definitions used by appointment types.</td>
+                </tr>
+                <tr>
+                  <td>Appointment Schedule Detail</td>
+                  <td>iCal schedule configuration, slot capacity, duration subdivisions, and buffer times.</td>
+                  <td>Creating or editing a schedule with its recurrence pattern and slot settings.</td>
+                </tr>
+                <tr>
+                  <td>Appointment List</td>
+                  <td>Grid of booked appointments with person, type, date, and attendance status.</td>
+                  <td>Staff reviewing and managing individual appointment bookings.</td>
+                </tr>
+                <tr>
+                  <td>Appointment Detail</td>
+                  <td>Individual appointment view with person info, schedule, status, and available dates for rescheduling.</td>
+                  <td>Viewing or editing a specific appointment booking.</td>
+                </tr>
+                <tr>
+                  <td>Appointment Contact List</td>
+                  <td>Staff contacts associated with an appointment type.</td>
+                  <td>Managing who receives notifications for a given appointment type.</td>
+                </tr>
+                <tr>
+                  <td>Appointment Contact Detail</td>
+                  <td>Individual contact assignment with person picker and admin flag.</td>
+                  <td>Adding or editing a staff contact for an appointment type.</td>
+                </tr>
+                <tr>
+                  <td>Appointment Calendar</td>
+                  <td>Calendar and list views of appointments with filtering by type, campus, and category. PDF export support.</td>
+                  <td>Staff reviewing appointment schedules across date ranges.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Jobs &amp; Automation</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Job</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Send Appointment Reminder Communication</td>
+                  <td>Sends reminder emails/SMS X days before appointments. Configurable day intervals. Excludes cancelled appointments.</td>
+                </tr>
+                <tr>
+                  <td>Send Appointment Completed Notification</td>
+                  <td>Sends follow-up communications for appointments that have passed, filtered by attendance status (Pending or Attended).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

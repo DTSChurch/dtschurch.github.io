@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Blocks | Appointment System | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Appointment System</h2>
+        <a href="./">Overview</a>
+        <a href="book-appointment.html">Book Appointment Block</a>
+        <a href="lava-templates.html">Lava Templates</a>
+        <a href="lava-filters.html">Lava Filters</a>
+        <a href="block-settings.html">Block Settings</a>
+        <a href="admin-blocks.html">Admin Blocks</a>
+        <a href="jobs.html">Jobs &amp; Automation</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Administration</p>
+          <h1>Admin Blocks</h1>
+          <p class="panel-intro">
+            The internal-facing Obsidian blocks for managing appointment types, schedules,
+            appointments, contacts, and calendar views.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Appointment Type Detail</h2>
+          <!-- TODO: Screenshot -->
+          <p class="text-muted" style="padding: 40px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of appointment type detail edit mode]</em>
+          </p>
+          <p>Full configuration for an appointment type:</p>
+          <ul>
+            <li><strong>General:</strong> Name, appointment term (customizable label), category, active status</li>
+            <li><strong>Location &amp; Scheduling:</strong> Campus picker, location picker, schedule card picker (with rich preview showing recurrence, next occurrence, slot capacity, and HTML descriptions), weeks ahead, booking threshold</li>
+            <li><strong>Communications:</strong> Confirmation and reminder system communication pickers</li>
+            <li><strong>Automation:</strong> Booked and rescheduled/cancelled workflow type pickers</li>
+            <li><strong>Additional Details:</strong> Free-text details field, custom attributes</li>
+          </ul>
+
+          <h3>Schedule Picker</h3>
+          <!-- TODO: Screenshot -->
+          <p class="text-muted" style="padding: 40px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of the schedule card picker with multiple selected]</em>
+          </p>
+          <p>
+            Replaces the standard multi-select list box with a card-based checkbox grid.
+            Each card shows the schedule name, HTML description, friendly recurrence text,
+            next occurrence date, category, slot capacity, and duration. Cards are sorted by
+            next start date (upcoming first).
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Appointment Schedule Detail</h2>
+          <!-- TODO: Screenshot -->
+          <p class="text-muted" style="padding: 40px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of appointment schedule detail]</em>
+          </p>
+          <ul>
+            <li>iCal recurrence schedule configuration</li>
+            <li>Available slots per occurrence</li>
+            <li>Slot subdivision (duration in minutes + buffer time)</li>
+            <li>Category assignment</li>
+            <li>Effective start/end dates</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Appointment Detail</h2>
+          <!-- TODO: Screenshot -->
+          <p class="text-muted" style="padding: 40px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of appointment detail view]</em>
+          </p>
+          <ul>
+            <li>Person, appointment type, schedule, and date/time</li>
+            <li>Attendance status management (Pending, Attended, Cancelled)</li>
+            <li>Booking and cancellation notes</li>
+            <li>Connection request association</li>
+            <li>Available dates for rescheduling</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Appointment Calendar</h2>
+          <!-- TODO: Screenshot -->
+          <p class="text-muted" style="padding: 40px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of appointment calendar view]</em>
+          </p>
+          <ul>
+            <li>Calendar and list view modes</li>
+            <li>Filtering by appointment type, campus, and category</li>
+            <li>Date range navigation</li>
+            <li>PDF export with filtered data</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Other Admin Blocks</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Block</th><th>Purpose</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Appointment Type List</td>
+                  <td>Grid of all appointment types. Supports add, delete, and navigation to detail.</td>
+                </tr>
+                <tr>
+                  <td>Appointment Schedule List</td>
+                  <td>Grid of all appointment schedules with name, recurrence, and active status.</td>
+                </tr>
+                <tr>
+                  <td>Appointment List</td>
+                  <td>Grid of booked appointments filtered by appointment type (from URL parameter).</td>
+                </tr>
+                <tr>
+                  <td>Appointment Contact List</td>
+                  <td>Grid of staff contacts for an appointment type.</td>
+                </tr>
+                <tr>
+                  <td>Appointment Contact Detail</td>
+                  <td>Add or edit a staff contact with person picker and admin flag.</td>
+                </tr>
+                <tr>
+                  <td>Schedule Category Exclusion List</td>
+                  <td>Manage date exclusions by category to block out holidays or special dates.</td>
+                </tr>
+                <tr>
+                  <td>Mass Create Schedule Exclusions</td>
+                  <td>Bulk create exclusion dates across multiple schedules at once.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

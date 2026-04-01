@@ -34,6 +34,24 @@ window.DTS_CATALOG = [
     ]
   },
   {
+    name: "Appointment System",
+    href: "/projects/appointment-system/",
+    group: "Rock Plugins",
+    desc: "Appointment booking, scheduling, and management plugin for Rock RMS. Supports customizable Lava templates, multi-campus filtering, and Obsidian blocks.",
+    badges: ["Custom Plugin", "Obsidian", "Lava Templates"],
+    showInNav: true,
+    showInCatalog: true,
+    searchable: true,
+    featured: true,
+    quickLinks: [
+      { page: "Overview & Architecture", href: "/projects/appointment-system/" },
+      { page: "Book Appointment Block", href: "/projects/appointment-system/book-appointment.html" },
+      { page: "Lava Templates", href: "/projects/appointment-system/lava-templates.html" },
+      { page: "Lava Filters", href: "/projects/appointment-system/lava-filters.html" },
+      { page: "Block Settings", href: "/projects/appointment-system/block-settings.html" }
+    ]
+  },
+  {
     name: "Mailgun Toolbox",
     href: "/projects/mailgun-toolbox/",
     group: "Rock Plugins",

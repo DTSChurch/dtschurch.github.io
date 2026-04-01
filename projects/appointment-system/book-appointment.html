@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book Appointment Block | Appointment System | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Appointment System</h2>
+        <a href="./">Overview</a>
+        <a href="book-appointment.html">Book Appointment Block</a>
+        <a href="lava-templates.html">Lava Templates</a>
+        <a href="lava-filters.html">Lava Filters</a>
+        <a href="block-settings.html">Block Settings</a>
+        <a href="admin-blocks.html">Admin Blocks</a>
+        <a href="jobs.html">Jobs &amp; Automation</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Public Facing</p>
+          <h1>Book Appointment Block</h1>
+          <p class="panel-intro">
+            The Book Appointment block is the external-facing booking experience. It guides users
+            through a multi-step flow: selecting an appointment type, choosing a date and time,
+            entering contact information, and confirming the booking.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Multi-Step Flow</h2>
+          <p>The block walks users through up to five steps depending on context:</p>
+
+          <h3>Step 1: Appointment Type Selection</h3>
+          <!-- TODO: Screenshot -->
+          <p class="text-muted" style="padding: 40px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of appointment type cards with filters]</em>
+          </p>
+          <ul>
+            <li>Displays appointment types as a responsive card grid</li>
+            <li>Each card is rendered via the <strong>Appointment Type Card Template</strong> (Lava)</li>
+            <li>Cards show availability count and are disabled when no slots exist</li>
+            <li>Optional campus and location filter dropdowns (enabled via block settings)</li>
+            <li>Skipped entirely when the appointment type is predetermined via block attribute or URL parameter</li>
+          </ul>
+
+          <h3>Step 2: Date &amp; Time Selection</h3>
+          <!-- TODO: Screenshot -->
+          <p class="text-muted" style="padding: 40px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of date accordion with slot pills]</em>
+          </p>
+          <ul>
+            <li>Available dates grouped in an accordion (first date expanded by default)</li>
+            <li>Time slots rendered via the <strong>Slot Card Template</strong> (Lava)</li>
+            <li>Slots show availability with color-coded indicators (scarce, limited, open)</li>
+            <li>Respects booking threshold (hours before appointment that changes are blocked)</li>
+            <li>Supports slot subdivision (e.g., a 2-hour schedule divided into 30-minute slots)</li>
+          </ul>
+
+          <h3>Step 3: Person Information</h3>
+          <!-- TODO: Screenshot -->
+          <p class="text-muted" style="padding: 40px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of person information form]</em>
+          </p>
+          <ul>
+            <li>First name, last name, email (required), phone (configurable)</li>
+            <li>Auto-fills from the current logged-in person</li>
+            <li>Displays appointment-type-specific attributes (configured per type)</li>
+            <li>Optional notes field</li>
+            <li>Person matching uses Rock's built-in FindPerson logic</li>
+          </ul>
+
+          <h3>Step 4: Success Confirmation</h3>
+          <!-- TODO: Screenshot -->
+          <p class="text-muted" style="padding: 40px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of success confirmation]</em>
+          </p>
+          <ul>
+            <li>Rendered via the <strong>Confirmation Template</strong> (Lava)</li>
+            <li>Confirmation email sent automatically if configured on the appointment type</li>
+          </ul>
+
+          <h3>Step 5: Cancellation (when applicable)</h3>
+          <ul>
+            <li>Shown when the user navigates with <code>?Cancel=true</code> and a valid appointment GUID</li>
+            <li>Optional cancellation reason text field</li>
+            <li>Only available if the appointment type allows cancellation</li>
+            <li>Sends cancellation notification email and launches rescheduled workflow</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>URL Parameters</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>AppointmentTypeId</code></td>
+                  <td>Pre-selects an appointment type (supports both integer ID and IdKey). Skips step 1.</td>
+                </tr>
+                <tr>
+                  <td><code>Appointment</code></td>
+                  <td>GUID of an existing appointment to edit or reschedule.</td>
+                </tr>
+                <tr>
+                  <td><code>Cancel</code></td>
+                  <td>Set to <code>true</code> to show the cancellation flow for the specified appointment.</td>
+                </tr>
+                <tr>
+                  <td><code>CampusId</code></td>
+                  <td>Pre-filters appointment types to a specific campus.</td>
+                </tr>
+                <tr>
+                  <td><code>Category</code></td>
+                  <td>Filters appointment types by category name.</td>
+                </tr>
+                <tr>
+                  <td><code>ConnectionRequestId</code></td>
+                  <td>Associates the booked appointment with a Rock Connection Request.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Entity Reference Conventions</h2>
+          <p>
+            The block follows Rock's standard Obsidian conventions for entity references.
+            No raw integer IDs are exposed to the client:
+          </p>
+          <ul>
+            <li><strong>ListItemBag</strong> (Value = Guid, Text = name) for cross-entity references in display bags</li>
+            <li><strong>Guid</strong> for entity references in save operations and block action parameters</li>
+            <li><strong>IdKey</strong> only for the entity's own identity in card bags</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

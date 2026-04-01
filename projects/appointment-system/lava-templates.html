@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lava Templates | Appointment System | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Appointment System</h2>
+        <a href="./">Overview</a>
+        <a href="book-appointment.html">Book Appointment Block</a>
+        <a href="lava-templates.html">Lava Templates</a>
+        <a href="lava-filters.html">Lava Filters</a>
+        <a href="block-settings.html">Block Settings</a>
+        <a href="admin-blocks.html">Admin Blocks</a>
+        <a href="jobs.html">Jobs &amp; Automation</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Customization</p>
+          <h1>Lava Templates</h1>
+          <p class="panel-intro">
+            The Book Appointment block uses Lava templates for card rendering,
+            confirmation screens, headers, and CSS. Each template is resolved server-side
+            with entity-rich merge fields and injected into the Vue component.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Appointment Type Card Template</h2>
+          <p>
+            Renders the content of each appointment type card on the selection screen (Step 1).
+            The block manages the grid layout, click handling, and disabled state &mdash;
+            this template only controls what appears inside each card.
+          </p>
+
+          <h3>Merge Fields</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>{{ AppointmentType.Title }}</code></td><td>String</td><td>The appointment type name.</td></tr>
+                <tr><td><code>{{ AppointmentType.Campus }}</code></td><td>Campus Entity</td><td>Full Rock Campus entity. Access <code>.Name</code>, <code>.ShortCode</code>, etc.</td></tr>
+                <tr><td><code>{{ AppointmentType.Location }}</code></td><td>Location Entity</td><td>Full Rock Location entity. Access <code>.Name</code>, <code>.Street1</code>, etc.</td></tr>
+                <tr><td><code>{{ AppointmentType.AvailableSlotsCount }}</code></td><td>Integer</td><td>Total number of bookable slots across all schedules.</td></tr>
+                <tr><td><code>{{ AppointmentType.IdKey }}</code></td><td>String</td><td>The entity's obfuscated IdKey.</td></tr>
+                <tr><td><code>{{ AppointmentType.Guid }}</code></td><td>Guid</td><td>The entity's Guid.</td></tr>
+                <tr><td><code>{{ CurrentPerson }}</code></td><td>Person Entity</td><td>The currently logged-in person (null if anonymous).</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Default Template</h3>
+          <!-- TODO: Screenshot of rendered default card -->
+          <p class="text-muted" style="padding: 20px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of default appointment type card]</em>
+          </p>
+          <pre><code>&lt;div class="appointment-type-card-accent"&gt;&lt;/div&gt;
+&lt;div class="appointment-type-card-body"&gt;
+    &lt;div class="appointment-type-card-header"&gt;
+        &lt;span class="appointment-type-icon"&gt;&lt;i class="fa fa-calendar-check"&gt;&lt;/i&gt;&lt;/span&gt;
+        {% if AppointmentType.Campus != '' %}
+            &lt;span class="appointment-type-campus-badge"&gt;{{ AppointmentType.Campus }}&lt;/span&gt;
+        {% endif %}
+    &lt;/div&gt;
+    &lt;h5 class="appointment-type-title"&gt;{{ AppointmentType.Title }}&lt;/h5&gt;
+    {% if AppointmentType.Location != '' %}
+        &lt;p class="appointment-type-location"&gt;&lt;i class="fa fa-map-marker-alt"&gt;&lt;/i&gt; {{ AppointmentType.Location }}&lt;/p&gt;
+    {% endif %}
+    &lt;div class="appointment-type-slots-info"&gt;
+        {% if AppointmentType.AvailableSlotsCount &gt; 0 %}
+            &lt;span class="appointment-type-slots-available"&gt;{{ AppointmentType.AvailableSlotsCount }} {{ 'slot' | PluralizeForQuantity:AppointmentType.AvailableSlotsCount }} available&lt;/span&gt;
+        {% else %}
+            &lt;span class="appointment-type-slots-none"&gt;No slots available&lt;/span&gt;
+        {% endif %}
+    &lt;/div&gt;
+    {% if AppointmentType.AvailableSlotsCount &gt; 0 %}
+        &lt;div class="appointment-type-cta"&gt;Schedule &lt;i class="fa fa-arrow-right"&gt;&lt;/i&gt;&lt;/div&gt;
+    {% endif %}
+&lt;/div&gt;</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Slot Card Template</h2>
+          <p>
+            Renders the content of each time slot pill inside the date accordion (Step 2).
+            The block manages the grid layout and click handling.
+          </p>
+
+          <h3>Merge Fields</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>{{ Slot.Time }}</code></td><td>String</td><td>Formatted time (e.g., "9:00 AM" or "9:00 AM - 9:30 AM" for subdivided slots).</td></tr>
+                <tr><td><code>{{ Slot.SlotsAvailable }}</code></td><td>String</td><td>"Unlimited" or a number string (e.g., "3").</td></tr>
+                <tr><td><code>{{ Slot.SlotsAvailableCount }}</code></td><td>Integer</td><td>Numeric remaining count (for conditional styling).</td></tr>
+                <tr><td><code>{{ Slot.Date }}</code></td><td>String</td><td>Date in yyyy-MM-dd format.</td></tr>
+                <tr><td><code>{{ Slot.Schedule }}</code></td><td>Schedule Entity</td><td>Full AppointmentSchedule entity.</td></tr>
+                <tr><td><code>{{ CurrentPerson }}</code></td><td>Person Entity</td><td>The currently logged-in person.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Default Template</h3>
+          <!-- TODO: Screenshot of rendered default slot pill -->
+          <p class="text-muted" style="padding: 20px; text-align: center; border: 2px dashed #dee2e6; border-radius: 8px;">
+            <em>[Placeholder: Screenshot of default slot pill]</em>
+          </p>
+          <pre><code>&lt;div class="slot-pill-time"&gt;{{ Slot.Time }}&lt;/div&gt;
+&lt;div class="slot-pill-availability{% if Slot.SlotsAvailable == 'Unlimited' %} open{% elseif Slot.SlotsAvailableCount &lt;= 2 %} scarce{% elseif Slot.SlotsAvailableCount &lt;= 5 %} limited{% endif %}"&gt;
+    {% if Slot.SlotsAvailable == 'Unlimited' %}Open{% else %}{{ Slot.SlotsAvailable }} left{% endif %}
+&lt;/div&gt;</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Confirmation Template</h2>
+          <p>
+            Renders the success screen after a booking is confirmed (Step 4).
+          </p>
+
+          <h3>Merge Fields</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>{{ Appointment }}</code></td><td>Appointment Entity</td><td>The booked appointment (when available).</td></tr>
+                <tr><td><code>{{ AppointmentType }}</code></td><td>AppointmentType Entity</td><td>The appointment type (when predetermined).</td></tr>
+                <tr><td><code>{{ Person }}</code></td><td>Person Entity</td><td>The person who booked.</td></tr>
+                <tr><td><code>{{ CurrentPerson }}</code></td><td>Person Entity</td><td>The logged-in user.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Header Template</h2>
+          <p>
+            Renders HTML above the entire booking flow. Useful for branding, instructions,
+            or context-specific messaging.
+          </p>
+
+          <h3>Merge Fields</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>{{ AppointmentType }}</code></td><td>AppointmentType Entity</td><td>The predetermined type (null if not set).</td></tr>
+                <tr><td><code>{{ CurrentPerson }}</code></td><td>Person Entity</td><td>The logged-in user.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Custom CSS</h2>
+          <p>
+            The <strong>Custom CSS</strong> block attribute injects a <code>&lt;style&gt;</code> tag
+            into the page. The default value provides all card and slot styling. Override any class
+            to match your theme. Key CSS classes:
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Class</th><th>Element</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>.appointment-type-card</code></td><td>Outer card container (flex, border, hover)</td></tr>
+                <tr><td><code>.appointment-type-card-accent</code></td><td>Left color accent bar</td></tr>
+                <tr><td><code>.appointment-type-card-body</code></td><td>Card content area</td></tr>
+                <tr><td><code>.appointment-type-title</code></td><td>Card title</td></tr>
+                <tr><td><code>.appointment-type-campus-badge</code></td><td>Campus pill badge</td></tr>
+                <tr><td><code>.appointment-type-location</code></td><td>Location line with icon</td></tr>
+                <tr><td><code>.appointment-type-slots-available</code></td><td>Green slot count</td></tr>
+                <tr><td><code>.appointment-type-slots-none</code></td><td>Muted "No slots" text</td></tr>
+                <tr><td><code>.appointment-type-cta</code></td><td>"Schedule" call-to-action</td></tr>
+                <tr><td><code>.appointment-type-card--disabled</code></td><td>Disabled card state (no slots)</td></tr>
+                <tr><td><code>.slot-pill</code></td><td>Time slot card container</td></tr>
+                <tr><td><code>.slot-pill-time</code></td><td>Slot time text</td></tr>
+                <tr><td><code>.slot-pill-availability</code></td><td>Slot availability text</td></tr>
+                <tr><td><code>.slot-pill-availability.scarce</code></td><td>Red (2 or fewer left)</td></tr>
+                <tr><td><code>.slot-pill-availability.limited</code></td><td>Amber (5 or fewer left)</td></tr>
+                <tr><td><code>.slot-pill-availability.open</code></td><td>Green (unlimited)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

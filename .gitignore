@@ -1,2 +1,69 @@
-.claude
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+docs/private
 
+Example
+
+# Visual Studio cache/options
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Build results
+*.dll
+*.pdb
+*.exe
+!packages/**/*.dll
+!packages/**/*.exe
+
+# Rock specific
+Rock/
+RockWeb/
+*.rock
+
+# IDE
+.DS_Store
+.claude/
+
+# Environment files
+environment.json
+
+# Node
+node_modules/
+package-lock.json
+dist/

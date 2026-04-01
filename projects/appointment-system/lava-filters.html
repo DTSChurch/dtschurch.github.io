@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lava Filters | Appointment System | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Appointment System</h2>
+        <a href="./">Overview</a>
+        <a href="book-appointment.html">Book Appointment Block</a>
+        <a href="lava-templates.html">Lava Templates</a>
+        <a href="lava-filters.html">Lava Filters</a>
+        <a href="block-settings.html">Block Settings</a>
+        <a href="admin-blocks.html">Admin Blocks</a>
+        <a href="jobs.html">Jobs &amp; Automation</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Lava</p>
+          <h1>Lava Filters</h1>
+          <p class="panel-intro">
+            Custom Lava filters for querying appointment data in any Lava template &mdash;
+            system communications, HTML blocks, mobile pages, or workflow entry forms.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>AppointmentById</h2>
+          <p>Returns a single <code>Appointment</code> entity by its integer Id.</p>
+          <pre><code>{{ 42 | AppointmentById }}</code></pre>
+          <h3>Input</h3>
+          <p>Integer or string-parsable appointment Id.</p>
+          <h3>Returns</h3>
+          <p>An <code>Appointment</code> entity with full navigation properties:</p>
+          <ul>
+            <li><code>.PersonAlias.Person</code> &mdash; the person who booked</li>
+            <li><code>.AppointmentType</code> &mdash; the appointment type configuration</li>
+            <li><code>.Schedule</code> &mdash; the appointment schedule</li>
+            <li><code>.AppointmentDate</code> &mdash; the booked date/time</li>
+            <li><code>.AttendanceStatus</code> &mdash; Pending, Attended, or Cancelled</li>
+            <li><code>.BookingNotes</code>, <code>.CancellationNotes</code></li>
+          </ul>
+          <h3>Example</h3>
+          <pre><code>{% assign appointment = Workflow.AppointmentId | AppointmentById %}
+{% if appointment %}
+    &lt;p&gt;{{ appointment.PersonAlias.Person.FullName }} has an appointment
+    on {{ appointment.AppointmentDate | Date:'dddd, MMMM d \a\t h:mm tt' }}
+    for {{ appointment.AppointmentType.Name }}.&lt;/p&gt;
+{% endif %}</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>AppointmentTypeById</h2>
+          <p>Returns a single <code>AppointmentType</code> entity by its integer Id.</p>
+          <pre><code>{{ 5 | AppointmentTypeById }}</code></pre>
+          <h3>Input</h3>
+          <p>Integer or string-parsable appointment type Id.</p>
+          <h3>Returns</h3>
+          <p>An <code>AppointmentType</code> entity with:</p>
+          <ul>
+            <li><code>.Name</code>, <code>.AppointmentTerm</code></li>
+            <li><code>.Campus</code> &mdash; full Campus entity</li>
+            <li><code>.Location</code> &mdash; full Location entity</li>
+            <li><code>.Category</code> &mdash; full Category entity</li>
+            <li><code>.CanCancelOrEdit</code>, <code>.HoursToChange</code>, <code>.WeeksAhead</code></li>
+            <li><code>.ConfirmationSystemEmail</code>, <code>.ReminderSystemEmail</code></li>
+            <li><code>.WorkflowType</code>, <code>.RescheduledWorkflowType</code></li>
+          </ul>
+          <h3>Example</h3>
+          <pre><code>{% assign type = 5 | AppointmentTypeById %}
+&lt;h3&gt;{{ type.Name }}&lt;/h3&gt;
+&lt;p&gt;Campus: {{ type.Campus.Name }} | Location: {{ type.Location.Name }}&lt;/p&gt;
+&lt;p&gt;Book up to {{ type.WeeksAhead }} weeks ahead.&lt;/p&gt;</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>AppointmentScheduleById</h2>
+          <p>Returns a single <code>AppointmentSchedule</code> entity by its integer Id.</p>
+          <pre><code>{{ 10 | AppointmentScheduleById }}</code></pre>
+          <h3>Input</h3>
+          <p>Integer or string-parsable schedule Id.</p>
+          <h3>Returns</h3>
+          <p>An <code>AppointmentSchedule</code> entity with:</p>
+          <ul>
+            <li><code>.Name</code>, <code>.Description</code></li>
+            <li><code>.FriendlyScheduleText</code> &mdash; human-readable recurrence</li>
+            <li><code>.AvailableSlots</code> &mdash; slots per occurrence (0 = unlimited)</li>
+            <li><code>.SlotDurationMinutes</code>, <code>.BufferTimeMinutes</code></li>
+            <li><code>.EffectiveStartDate</code>, <code>.EffectiveEndDate</code></li>
+            <li><code>.Category</code> &mdash; full Category entity</li>
+          </ul>
+          <h3>Example</h3>
+          <pre><code>{% assign schedule = 10 | AppointmentScheduleById %}
+&lt;p&gt;{{ schedule.Name }}: {{ schedule.FriendlyScheduleText }}&lt;/p&gt;
+&lt;p&gt;{{ schedule.AvailableSlots }} slots per occurrence&lt;/p&gt;</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>AppointmentsByTypeId</h2>
+          <p>Returns all appointments for a given appointment type, ordered by date descending.</p>
+          <pre><code>{{ 5 | AppointmentsByTypeId }}</code></pre>
+          <h3>Input</h3>
+          <p>Integer or string-parsable appointment type Id.</p>
+          <h3>Returns</h3>
+          <p>A list of <code>Appointment</code> entities (newest first). Includes all statuses.</p>
+          <h3>Example</h3>
+          <pre><code>{% assign appointments = appointmentTypeId | AppointmentsByTypeId %}
+&lt;h4&gt;Recent Bookings ({{ appointments | Size }})&lt;/h4&gt;
+&lt;ul&gt;
+{% for apt in appointments limit:10 %}
+    &lt;li&gt;{{ apt.PersonAlias.Person.FullName }}
+        &amp;mdash; {{ apt.AppointmentDate | Date:'MMM d, yyyy h:mm tt' }}
+        ({{ apt.AttendanceStatus }})&lt;/li&gt;
+{% endfor %}
+&lt;/ul&gt;</code></pre>
+        </section>
+
+        <section class="panel reveal">
+          <h2>UpcomingAppointments</h2>
+          <p>
+            Returns upcoming (non-cancelled) appointments for a person, ordered by date ascending.
+            Accepts a <code>Person</code> object or a person Id.
+          </p>
+          <pre><code>{{ CurrentPerson | UpcomingAppointments }}</code></pre>
+          <h3>Input</h3>
+          <p>A Rock <code>Person</code> entity or an integer person Id.</p>
+          <h3>Returns</h3>
+          <p>
+            A list of <code>Appointment</code> entities where the appointment date is in the future
+            and the status is not Cancelled. Ordered by appointment date ascending (soonest first).
+          </p>
+          <h3>Example &mdash; Person Profile Badge</h3>
+          <pre><code>{% assign upcoming = CurrentPerson | UpcomingAppointments %}
+{% if upcoming != empty %}
+    &lt;span class="badge badge-info"&gt;
+        {{ upcoming | Size }} upcoming {{ 'appointment' | PluralizeForQuantity:upcoming.Size }}
+    &lt;/span&gt;
+{% endif %}</code></pre>
+
+          <h3>Example &mdash; My Appointments Page</h3>
+          <pre><code>{% assign upcoming = CurrentPerson | UpcomingAppointments %}
+{% if upcoming != empty %}
+    &lt;div class="panel panel-default"&gt;
+        &lt;div class="panel-heading"&gt;&lt;h3&gt;Your Upcoming Appointments&lt;/h3&gt;&lt;/div&gt;
+        &lt;div class="panel-body"&gt;
+            {% for apt in upcoming %}
+                &lt;div class="d-flex justify-content-between align-items-center py-2 border-bottom"&gt;
+                    &lt;div&gt;
+                        &lt;strong&gt;{{ apt.AppointmentType.Name }}&lt;/strong&gt;
+                        &lt;br&gt;&lt;small class="text-muted"&gt;{{ apt.AppointmentDate | Date:'dddd, MMMM d, yyyy \a\t h:mm tt' }}&lt;/small&gt;
+                        &lt;br&gt;&lt;small class="text-muted"&gt;{{ apt.AppointmentType.Location.Name }}&lt;/small&gt;
+                    &lt;/div&gt;
+                    &lt;div&gt;
+                        &lt;a href="/book-appointment?Appointment={{ apt.Guid }}" class="btn btn-xs btn-default"&gt;Edit&lt;/a&gt;
+                        &lt;a href="/book-appointment?Appointment={{ apt.Guid }}&amp;Cancel=true" class="btn btn-xs btn-danger"&gt;Cancel&lt;/a&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            {% endfor %}
+        &lt;/div&gt;
+    &lt;/div&gt;
+{% else %}
+    &lt;p class="text-muted"&gt;You have no upcoming appointments.&lt;/p&gt;
+{% endif %}</code></pre>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>
