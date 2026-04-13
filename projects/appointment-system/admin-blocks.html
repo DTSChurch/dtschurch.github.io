@@ -56,8 +56,22 @@
             <li><strong>Location &amp; Scheduling:</strong> Campus picker, location picker, schedule card picker (with rich preview showing recurrence, next occurrence, slot capacity, and HTML descriptions), weeks ahead, booking threshold</li>
             <li><strong>Communications:</strong> Confirmation and reminder system communication pickers</li>
             <li><strong>Automation:</strong> Booked and rescheduled/cancelled workflow type pickers</li>
-            <li><strong>Additional Details:</strong> Free-text details field, custom attributes</li>
+            <li><strong>Description &amp; Details:</strong> Description and additional details fields, both using a <strong>Code Editor</strong> with Lava mode (supports HTML + Lava syntax with syntax highlighting). Custom attributes.</li>
           </ul>
+
+          <h3>Description &amp; Details Fields</h3>
+          <p>
+            Both the <strong>Description</strong> and <strong>Additional Details</strong> fields use the
+            Obsidian <code>CodeEditor</code> control in Lava mode, providing syntax highlighting for HTML
+            and Lava merge fields. The Description is intended for public-facing content (rendered on
+            appointment type cards via the Lava template), while Additional Details is for internal
+            notes or instructions visible only in the admin view.
+          </p>
+          <p>
+            Because these fields support Lava, you can include dynamic content such as
+            <code>{{ CurrentPerson.NickName }}</code> or conditional logic with
+            <code>{% if ... %}</code> blocks.
+          </p>
 
           <h3>Schedule Picker</h3>
           <!-- TODO: Screenshot -->
@@ -79,6 +93,7 @@
             <em>[Placeholder: Screenshot of appointment schedule detail]</em>
           </p>
           <ul>
+            <li>Description field using a <strong>Code Editor</strong> with Lava mode (HTML + Lava syntax)</li>
             <li>iCal recurrence schedule configuration</li>
             <li>Available slots per occurrence</li>
             <li>Slot subdivision (duration in minutes + buffer time)</li>

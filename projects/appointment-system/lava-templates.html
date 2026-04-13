@@ -54,18 +54,25 @@
           </p>
 
           <h3>Merge Fields</h3>
+          <p>
+            <code>{{ AppointmentType }}</code> is the <strong>full AppointmentType entity</strong> &mdash;
+            all entity properties and navigation properties are accessible directly.
+          </p>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr><th>Field</th><th>Type</th><th>Description</th></tr>
               </thead>
               <tbody>
-                <tr><td><code>{{ AppointmentType.Title }}</code></td><td>String</td><td>The appointment type name.</td></tr>
+                <tr><td><code>{{ AppointmentType.Name }}</code></td><td>String</td><td>The appointment type name.</td></tr>
+                <tr><td><code>{{ AppointmentType.Description }}</code></td><td>String (HTML/Lava)</td><td>Public-facing description. Supports HTML and Lava content.</td></tr>
                 <tr><td><code>{{ AppointmentType.Campus }}</code></td><td>Campus Entity</td><td>Full Rock Campus entity. Access <code>.Name</code>, <code>.ShortCode</code>, etc.</td></tr>
                 <tr><td><code>{{ AppointmentType.Location }}</code></td><td>Location Entity</td><td>Full Rock Location entity. Access <code>.Name</code>, <code>.Street1</code>, etc.</td></tr>
-                <tr><td><code>{{ AppointmentType.AvailableSlotsCount }}</code></td><td>Integer</td><td>Total number of bookable slots across all schedules.</td></tr>
+                <tr><td><code>{{ AppointmentType.AdditionalDetails }}</code></td><td>String (HTML/Lava)</td><td>Internal details/instructions (HTML + Lava).</td></tr>
+                <tr><td><code>{{ AppointmentType.AppointmentTerm }}</code></td><td>String</td><td>Custom term (e.g., "Appointment", "Meeting").</td></tr>
                 <tr><td><code>{{ AppointmentType.IdKey }}</code></td><td>String</td><td>The entity's obfuscated IdKey.</td></tr>
                 <tr><td><code>{{ AppointmentType.Guid }}</code></td><td>Guid</td><td>The entity's Guid.</td></tr>
+                <tr><td><code>{{ AvailableSlotsCount }}</code></td><td>Integer</td><td>Total number of bookable slots across all schedules (computed, top-level merge field).</td></tr>
                 <tr><td><code>{{ CurrentPerson }}</code></td><td>Person Entity</td><td>The currently logged-in person (null if anonymous).</td></tr>
               </tbody>
             </table>
@@ -80,22 +87,25 @@
 &lt;div class="appointment-type-card-body"&gt;
     &lt;div class="appointment-type-card-header"&gt;
         &lt;span class="appointment-type-icon"&gt;&lt;i class="fa fa-calendar-check"&gt;&lt;/i&gt;&lt;/span&gt;
-        {% if AppointmentType.Campus != '' %}
-            &lt;span class="appointment-type-campus-badge"&gt;{{ AppointmentType.Campus }}&lt;/span&gt;
+        {% if AppointmentType.Campus != null %}
+            &lt;span class="appointment-type-campus-badge"&gt;{{ AppointmentType.Campus.Name }}&lt;/span&gt;
         {% endif %}
     &lt;/div&gt;
-    &lt;h5 class="appointment-type-title"&gt;{{ AppointmentType.Title }}&lt;/h5&gt;
-    {% if AppointmentType.Location != '' %}
-        &lt;p class="appointment-type-location"&gt;&lt;i class="fa fa-map-marker-alt"&gt;&lt;/i&gt; {{ AppointmentType.Location }}&lt;/p&gt;
+    &lt;h5 class="appointment-type-title"&gt;{{ AppointmentType.Name }}&lt;/h5&gt;
+    {% if AppointmentType.Description != '' %}
+        &lt;div class="appointment-type-description"&gt;{{ AppointmentType.Description }}&lt;/div&gt;
+    {% endif %}
+    {% if AppointmentType.Location != null %}
+        &lt;p class="appointment-type-location"&gt;&lt;i class="fa fa-map-marker-alt"&gt;&lt;/i&gt; {{ AppointmentType.Location.Name }}&lt;/p&gt;
     {% endif %}
     &lt;div class="appointment-type-slots-info"&gt;
-        {% if AppointmentType.AvailableSlotsCount &gt; 0 %}
-            &lt;span class="appointment-type-slots-available"&gt;{{ AppointmentType.AvailableSlotsCount }} {{ 'slot' | PluralizeForQuantity:AppointmentType.AvailableSlotsCount }} available&lt;/span&gt;
+        {% if AvailableSlotsCount &gt; 0 %}
+            &lt;span class="appointment-type-slots-available"&gt;{{ AvailableSlotsCount }} {{ 'slot' | PluralizeForQuantity:AvailableSlotsCount }} available&lt;/span&gt;
         {% else %}
             &lt;span class="appointment-type-slots-none"&gt;No slots available&lt;/span&gt;
         {% endif %}
     &lt;/div&gt;
-    {% if AppointmentType.AvailableSlotsCount &gt; 0 %}
+    {% if AvailableSlotsCount &gt; 0 %}
         &lt;div class="appointment-type-cta"&gt;Schedule &lt;i class="fa fa-arrow-right"&gt;&lt;/i&gt;&lt;/div&gt;
     {% endif %}
 &lt;/div&gt;</code></pre>
@@ -196,6 +206,7 @@
                 <tr><td><code>.appointment-type-card-accent</code></td><td>Left color accent bar</td></tr>
                 <tr><td><code>.appointment-type-card-body</code></td><td>Card content area</td></tr>
                 <tr><td><code>.appointment-type-title</code></td><td>Card title</td></tr>
+                <tr><td><code>.appointment-type-description</code></td><td>Description HTML content area</td></tr>
                 <tr><td><code>.appointment-type-campus-badge</code></td><td>Campus pill badge</td></tr>
                 <tr><td><code>.appointment-type-location</code></td><td>Location line with icon</td></tr>
                 <tr><td><code>.appointment-type-slots-available</code></td><td>Green slot count</td></tr>
