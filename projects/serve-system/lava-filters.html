@@ -40,10 +40,10 @@
           <p class="eyebrow">Lava</p>
           <h1>Custom Lava Filters</h1>
           <p class="panel-intro">
-            Serve System registers two custom Lava filters &mdash;
-            <code>ServeSignUps</code> and <code>ServeSignUpDetails</code> &mdash;
-            that let template authors query sign-up data from any Lava context.
-            Both filters are registered at startup via
+            Serve System registers custom Lava filters including
+            <code>ServeSignUps</code>, <code>UpcomingAndActiveSignUps</code>, and
+            <code>ServeSignUpDetails</code>. They let template authors query sign-up
+            data from any Lava context. Filters are registered at startup via
             <code>LavaService.RegisterFilters</code> and are available globally
             once the plugin is installed.
           </p>
@@ -51,18 +51,45 @@
             <span class="doc-chip">Global Lava filters</span>
             <span class="doc-chip">Person-based queries</span>
             <span class="doc-chip">ID-based lookup</span>
-            <span class="doc-chip">Active-only default</span>
+            <span class="doc-chip">Upcoming schedule preset</span>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>UpcomingAndActiveSignUps</h2>
+          <p>
+            Use <code>UpcomingAndActiveSignUps</code> for volunteer-facing schedule
+            lists. It is a named preset over the same shared sign-up query pipeline used
+            by <code>ServeSignUps</code>.
+          </p>
+          <pre><code>{% assign signups = CurrentPerson | UpcomingAndActiveSignUps %}</code></pre>
+          <p>
+            This preset returns non-canceled sign-ups where the opportunity, instance,
+            role, and shift are active. It intentionally ignores instance expiration and
+            uses the scheduled shift date as the cutoff.
+          </p>
+          <div class="callout">
+            <p>
+              A shift scheduled for April 19 remains visible through April 19 at
+              11:59 PM and stops appearing on April 20. This keeps today's confirmed
+              shift visible even after the sign-up window or instance expiration closes.
+            </p>
           </div>
         </section>
 
         <section class="panel reveal">
           <h2>ServeSignUps</h2>
-          <p>Returns a list of sign-up detail objects for a given person. Pipe a <code>Person</code> object into the filter and optionally pass parameters to narrow results.</p>
+          <p>
+            Returns a list of sign-up detail objects for a given person. Use this as the
+            generic filter when a template needs opportunity, instance, active-state, or
+            date filtering.
+          </p>
           <pre><code>{% assign signups = Person | ServeSignUps %}
 {% assign signups = Person | ServeSignUps:42 %}
 {% assign signups = Person | ServeSignUps:null,123 %}
 {% assign signups = Person | ServeSignUps:null,null,true %}
-{% assign signups = Person | ServeSignUps:null,null,true,'2026-01-01' %}</code></pre>
+{% assign signups = Person | ServeSignUps:null,null,null,false %}
+{% assign signups = Person | ServeSignUps:null,null,false,true,'2026-03-18' %}</code></pre>
         </section>
 
         <section class="panel reveal">
@@ -97,10 +124,16 @@
                   <td>Filter results to a single serve opportunity instance.</td>
                 </tr>
                 <tr>
-                  <td><code>activeSignUps</code></td>
+                  <td><code>activeShiftsOnly</code></td>
+                  <td>bool</td>
+                  <td><code>false</code></td>
+                  <td>When true, only includes sign-ups tied to active shifts.</td>
+                </tr>
+                <tr>
+                  <td><code>activeInstanceOnly</code></td>
                   <td>bool</td>
                   <td><code>true</code></td>
-                  <td>When true, only includes sign-ups tied to active, non-expired instances and shifts.</td>
+                  <td>When true, requires active opportunity and instance and respects the instance end date.</td>
                 </tr>
                 <tr>
                   <td><code>fromDate</code></td>
@@ -112,7 +145,12 @@
             </table>
           </div>
           <div class="callout">
-            <p>When no <code>serveOpportunityId</code>, <code>serveOpportunityInstanceId</code>, or <code>fromDate</code> is provided, the filter automatically defaults <code>fromDate</code> to now &mdash; returning only upcoming sign-ups. Pass an explicit <code>fromDate</code> or a specific ID filter to override this behavior.</p>
+            <p>
+              <code>ServeSignUps</code> remains backward-compatible with its existing
+              positional parameters, but internally it now uses a shared options-based
+              query pipeline. Use <code>UpcomingAndActiveSignUps</code> for the mobile
+              schedule preset.
+            </p>
           </div>
         </section>
 
@@ -250,27 +288,26 @@
 
         <section class="panel reveal">
           <h2>Active Sign-Up Checks</h2>
-          <p>When <code>activeSignUps</code> is <code>true</code> (the default), a sign-up is included only if all of the following are true:</p>
+          <p>
+            <code>UpcomingAndActiveSignUps</code> includes a sign-up only if all of the
+            following are true:
+          </p>
           <div class="split-grid">
             <article class="detail-item">
               <h3>Entity flags are active</h3>
-              <p>The shift, instance, and opportunity all have <code>IsActive == true</code>.</p>
+              <p>The opportunity, instance, role, and shift all have <code>IsActive == true</code>.</p>
             </article>
             <article class="detail-item">
-              <h3>Instance has not ended</h3>
-              <p>If the instance has an <code>EndDateTime</code>, it must be in the future.</p>
+              <h3>Sign-up is not canceled</h3>
+              <p>The sign-up must not have a <code>CanceledDateTime</code>.</p>
             </article>
             <article class="detail-item">
-              <h3>Shift has not expired</h3>
-              <p>If the shift has an <code>ExpirationDateTime</code>, it must be in the future.</p>
+              <h3>Schedule date is current or future</h3>
+              <p>The shift's scheduled date must be today or later.</p>
             </article>
             <article class="detail-item">
-              <h3>Schedule has not expired</h3>
-              <p>If the shift's schedule has an <code>ExpirationDateTime</code>, it must be in the future.</p>
-            </article>
-            <article class="detail-item">
-              <h3>Shift end time is in the future</h3>
-              <p>The shift's computed end time must be on or after the current time.</p>
+              <h3>Instance expiration is ignored</h3>
+              <p>The scheduled shift date, not the instance expiration, controls when the row disappears.</p>
             </article>
           </div>
         </section>
@@ -281,7 +318,7 @@
             <details class="doc-details" open>
               <summary>List upcoming sign-ups for the current person</summary>
               <div class="details-body">
-                <pre><code>{% assign signups = CurrentPerson | ServeSignUps %}
+                <pre><code>{% assign signups = CurrentPerson | UpcomingAndActiveSignUps %}
 {% for item in signups %}
   &lt;p&gt;
     &lt;strong&gt;{{ item.OpportunityName }}&lt;/strong&gt; &amp;mdash; {{ item.InstanceName }}&lt;br&gt;
@@ -311,10 +348,10 @@
               <summary>Show all sign-up history (including past)</summary>
               <div class="details-body">
                 <pre><code>{%- comment -%}
-  Pass activeSignUps = false and fromDate = a far-past date
-  to include inactive and historical sign-ups.
+  Pass activeInstanceOnly = false and fromDate = a far-past date
+  to include inactive-instance and historical sign-ups.
 {%- endcomment -%}
-{% assign signups = CurrentPerson | ServeSignUps:null,null,false,'2020-01-01' %}
+{% assign signups = CurrentPerson | ServeSignUps:null,null,false,false,'2020-01-01' %}
 {% for item in signups %}
   &lt;p&gt;
     {{ item.OpportunityName }} &amp;mdash; {{ item.Shift.Date }}
