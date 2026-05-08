@@ -232,8 +232,47 @@
                   <td>Rendered content-template HTML when a matching template exists.</td>
                 </tr>
                 <tr>
+                  <td><code>{{ InstanceConfirmationDetails }}</code></td>
+                  <td>Pre-rendered Lava from <code>ServeOpportunityInstance.ConfirmationDetails</code>. Already evaluated against the same merge fields, so the outer System Communication can include it directly without recursive Lava evaluation.</td>
+                </tr>
+                <tr>
+                  <td><code>{{ InstanceNotificationDetails }}</code></td>
+                  <td>Pre-rendered Lava from <code>ServeOpportunityInstance.NotificationDetails</code>. Available alongside <code>InstanceConfirmationDetails</code> in case a content template needs to reference either source.</td>
+                </tr>
+                <tr>
                   <td><code>{{ ShiftDetails }}</code></td>
                   <td>List of shift objects for the volunteer’s selected shifts.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            <p><code>InstanceConfirmationDetails</code> and <code>InstanceNotificationDetails</code> are added to the merge dictionary <em>before</em> the content template renders, so a content template can reference them via <code>{{ InstanceConfirmationDetails }}</code> as well. The raw, un-rendered text remains available at <code>{{ ServeOpportunityInstance.ConfirmationDetails }}</code> and <code>{{ ServeOpportunityInstance.NotificationDetails }}</code>.</p>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Per-Instance Detail Fields</h2>
+          <p>Each Serve Opportunity Instance carries two Lava-bearing detail fields edited on the Instance Detail block. They are pre-rendered into merge fields so the System Communication body and content templates do not need to evaluate Lava recursively.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Instance Field</th>
+                  <th>Pre-Rendered Merge Field</th>
+                  <th>Typical Use</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ConfirmationDetails</code></td>
+                  <td><code>{{ InstanceConfirmationDetails }}</code></td>
+                  <td>Per-instance confirmation copy — arrival instructions, parking, what to wear, etc.</td>
+                </tr>
+                <tr>
+                  <td><code>NotificationDetails</code></td>
+                  <td><code>{{ InstanceNotificationDetails }}</code></td>
+                  <td>Per-instance coordinator notes — internal context that is helpful when reviewing sign-ups.</td>
                 </tr>
               </tbody>
             </table>
