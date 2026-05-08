@@ -53,6 +53,23 @@ window.DTS_CATALOG = [
     ]
   },
   {
+    name: "Planning Center Sync",
+    href: "/projects/pco-sync/",
+    group: "Rock Plugins",
+    desc: "One-way sync from Planning Center Online into Rock RMS — People, Groups, Service Teams, and Campuses. Scheduled job, mapping editor, and per-run history.",
+    badges: ["Custom Plugin", "Obsidian", "Scheduled Job"],
+    showInNav: true,
+    showInCatalog: true,
+    searchable: true,
+    featured: true,
+    quickLinks: [
+      { page: "Overview & Architecture", href: "/projects/pco-sync/" },
+      { page: "Blocks", href: "/projects/pco-sync/blocks.html" },
+      { page: "Sync Job", href: "/projects/pco-sync/sync-job.html" },
+      { page: "Data Model", href: "/projects/pco-sync/data-model.html" }
+    ]
+  },
+  {
     name: "Mailgun Toolbox",
     href: "/projects/mailgun-toolbox/",
     group: "Rock Plugins",

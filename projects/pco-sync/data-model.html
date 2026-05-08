@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Model | Planning Center Sync | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Planning Center Sync</h2>
+        <a href="./">Overview</a>
+        <a href="blocks.html">Blocks</a>
+        <a href="sync-job.html">Sync Job</a>
+        <a href="data-model.html">Data Model</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Schema</p>
+          <h1>Data Model</h1>
+          <p class="panel-intro">
+            The plugin adds three custom tables to the Rock database. All three live in the
+            <code>dbo</code> schema with the <code>_com_dts_</code> prefix and are tagged
+            with the Rock domain <strong>DTS &gt; Planning Center</strong>.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Table</th><th>Purpose</th><th>Cardinality</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>_com_dts_RockLinkPlanningCenter_EntityMap</code></td>
+                  <td>Links between PCO entities and Rock entities (Person, Group, Campus, GroupMember).</td>
+                  <td>One row per linked entity.</td>
+                </tr>
+                <tr>
+                  <td><code>_com_dts_RockLinkPlanningCenter_SyncLog</code></td>
+                  <td>Run history for the sync job &mdash; counts, status, duration, errors.</td>
+                  <td>One row per sync run (or partial / failed run).</td>
+                </tr>
+                <tr>
+                  <td><code>_com_dts_PlanningCenter_Settings</code></td>
+                  <td>Singleton settings record &mdash; API credentials and sync policy.</td>
+                  <td>Exactly one row.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>EntityMap</h2>
+          <p>
+            The single linking table. One <code>EntityMap</code> row represents one
+            &ldquo;this PCO thing is the same as that Rock thing&rdquo; relationship,
+            scoped by the Rock <code>EntityType</code> on the Rock side and a string
+            <code>PlanningCenterEntityType</code> on the PCO side.
+          </p>
+
+          <h3>Columns</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>PlanningCenterEntityType</code></td><td><code>nvarchar(50)</code>, required</td><td>One of <code>Person</code>, <code>Group</code>, <code>Team</code>, <code>Campus</code>, <code>GroupMember</code>.</td></tr>
+                <tr><td><code>PlanningCenterEntityId</code></td><td><code>nvarchar(50)</code>, required</td><td>The PCO-side identifier.</td></tr>
+                <tr><td><code>PlanningCenterName</code></td><td><code>nvarchar(200)</code></td><td>Cached display name from PCO so the UI does not have to refetch.</td></tr>
+                <tr><td><code>PlanningCenterModifiedDateTime</code></td><td><code>datetime</code>, nullable</td><td>Last-modified timestamp pulled from PCO. Reserved for future delta-sync logic.</td></tr>
+                <tr><td><code>EntityTypeId</code></td><td><code>int</code>, required, FK &rarr; <code>EntityType</code></td><td>The Rock entity type the link resolves to. For Person mappings this is <strong><code>PersonAlias</code></strong>, not <code>Person</code>.</td></tr>
+                <tr><td><code>EntityId</code></td><td><code>int</code>, required</td><td>The primary key of the linked Rock entity.</td></tr>
+                <tr><td><code>ParentEntityMapId</code></td><td><code>int</code>, nullable, FK &rarr; <code>EntityMap.Id</code></td><td>For <code>GroupMember</code> rows, points to the parent Group / Team mapping. Self-referential.</td></tr>
+                <tr><td><code>AdditionalData</code></td><td><code>nvarchar(max)</code></td><td>Free-form JSON. Used today for PCO team-position &rarr; Rock GroupRole mappings on Service Team rows.</td></tr>
+                <tr><td><code>LastSyncDateTime</code></td><td><code>datetime</code>, nullable</td><td>Most recent successful sync of this mapping.</td></tr>
+                <tr><td><code>SyncStatus</code></td><td><code>nvarchar(20)</code></td><td>One of <code>Synced</code>, <code>Mapped</code>, <code>Syncing</code>, <code>Error</code>, <code>Pending</code>.</td></tr>
+                <tr><td><code>ErrorMessage</code></td><td><code>nvarchar(max)</code></td><td>Last error if <code>SyncStatus = "Error"</code>. Cleared on the next successful run.</td></tr>
+                <tr><td><code>IsActive</code></td><td><code>bit</code>, required</td><td>The sync job only iterates rows where <code>IsActive = 1</code>. Default <code>1</code>.</td></tr>
+                <tr><td colspan="3"><em>Plus the standard Rock entity columns: <code>Id</code>, <code>Guid</code>, <code>CreatedDateTime</code>, <code>ModifiedDateTime</code>, <code>CreatedByPersonAliasId</code>, <code>ModifiedByPersonAliasId</code>, <code>ForeignKey</code>, <code>ForeignGuid</code>, <code>ForeignId</code>.</em></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Relationships</h3>
+          <ul>
+            <li><strong>EntityType</strong> &mdash; required FK, no cascade delete. Identifies which Rock entity type the link resolves to.</li>
+            <li><strong>ParentEntityMap</strong> &mdash; optional self-FK, no cascade delete. <code>GroupMember</code> rows point at their owning Group / Team mapping; deleting a parent does <em>not</em> cascade to child rows in v1.</li>
+          </ul>
+
+          <h3>Why Person mappings target PersonAlias</h3>
+          <p>
+            Person rows in Rock can be merged. Merging rewrites the surviving
+            <code>Person</code>&rsquo;s primary alias but preserves the merged-away aliases
+            pointing at the surviving record. By storing the link against the
+            <code>PersonAlias</code>, a PCO Person stays correctly resolved to the surviving
+            Rock <code>Person</code> after a merge without any sync-side cleanup.
+          </p>
+
+          <h3>Conventions</h3>
+          <ul>
+            <li>Group &harr; PCO Group: <code>EntityTypeId = Group</code>, <code>PlanningCenterEntityType = "Group"</code>.</li>
+            <li>Group &harr; PCO Service Team: <code>EntityTypeId = Group</code>, <code>PlanningCenterEntityType = "Team"</code>.</li>
+            <li>Campus &harr; PCO Campus: <code>EntityTypeId = Campus</code>, <code>PlanningCenterEntityType = "Campus"</code>.</li>
+            <li>PersonAlias &harr; PCO Person: <code>EntityTypeId = PersonAlias</code>, <code>PlanningCenterEntityType = "Person"</code>.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>SyncLog</h2>
+          <p>
+            One row per sync run. Created when the job starts (with
+            <code>Status = "Running"</code>) and updated to a terminal status when the run
+            ends. Powers the Sync History block.
+          </p>
+
+          <h3>Columns</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>JobId</code></td><td><code>int</code>, nullable</td><td>The Rock <code>ServiceJob.Id</code> that triggered the run, when applicable.</td></tr>
+                <tr><td><code>SyncPhase</code></td><td><code>nvarchar(50)</code>, required</td><td>One of <code>People</code>, <code>Groups</code>, <code>GroupMembers</code>, <code>All</code>. v1 always writes <code>"All"</code>.</td></tr>
+                <tr><td><code>StartDateTime</code></td><td><code>datetime</code>, required</td><td>When the run started.</td></tr>
+                <tr><td><code>EndDateTime</code></td><td><code>datetime</code>, nullable</td><td>When the run ended. <code>NULL</code> while in progress.</td></tr>
+                <tr><td><code>RecordsProcessed</code></td><td><code>int</code></td><td>Created + updated + skipped, summed across People, Groups, and Members.</td></tr>
+                <tr><td><code>RecordsCreated</code></td><td><code>int</code></td><td>Total new rows created across all three buckets.</td></tr>
+                <tr><td><code>RecordsUpdated</code></td><td><code>int</code></td><td>Total existing rows updated across all three buckets.</td></tr>
+                <tr><td><code>RecordsSkipped</code></td><td><code>int</code></td><td>Total rows skipped across all three buckets.</td></tr>
+                <tr><td><code>RecordsErrored</code></td><td><code>int</code></td><td>Total per-record errors across all three buckets.</td></tr>
+                <tr><td><code>Status</code></td><td><code>nvarchar(20)</code>, required</td><td><code>Running</code>, <code>Completed</code>, <code>CompletedWithErrors</code>, or <code>Failed</code>.</td></tr>
+                <tr><td><code>ErrorDetails</code></td><td><code>nvarchar(max)</code></td><td>Up to the first 50 per-record error messages joined by newline, or the fatal exception message for <code>Failed</code> runs.</td></tr>
+                <tr><td colspan="3"><em>Plus the standard Rock entity columns.</em></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>
+            <code>DurationSeconds</code> is <strong>not stored</strong>; it is computed in the
+            block layer as <code>EndDateTime - StartDateTime</code>.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>PlanningCenterSettings</h2>
+          <p>
+            Singleton table. The block UI enforces a single row by always upserting the first
+            existing record. There is no schema-level constraint preventing additional rows
+            &mdash; readers consistently call <code>.FirstOrDefault()</code>.
+          </p>
+
+          <h3>Columns</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Column</th><th>Type</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>ApiApplicationId</code></td><td><code>nvarchar(100)</code>, required</td><td>PCO Application ID. Stored in plain text.</td></tr>
+                <tr><td><code>ApiSecret</code></td><td><code>nvarchar(500)</code>, required</td><td>PCO Secret &mdash; <strong>encrypted</strong> via <code>Rock.Security.Encryption</code> before save. Decrypted only at API-call time.</td></tr>
+                <tr><td><code>DefaultConnectionStatusValueId</code></td><td><code>int</code>, nullable, FK &rarr; <code>DefinedValue</code></td><td>Connection Status applied to brand-new Person rows created by the sync.</td></tr>
+                <tr><td><code>OverwriteWithPlanningCenter</code></td><td><code>bit</code></td><td>EF default is <code>0</code> (false). The Obsidian block defaults a brand-new form to <code>true</code>, so a freshly configured tenant lands at &ldquo;PCO wins.&rdquo;</td></tr>
+                <tr><td colspan="3"><em>Plus the standard Rock entity columns.</em></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Migrations</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Migration</th><th>Number / Rock Version</th><th>Effect</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>001_CreateEntityMapTable</code></td><td>1 / 17.2</td><td>Creates <code>_com_dts_RockLinkPlanningCenter_EntityMap</code>, including the FK to <code>EntityType</code> and the self-FK for <code>ParentEntityMapId</code>.</td></tr>
+                <tr><td><code>002_CreateSyncLogTable</code></td><td>2 / 17.2</td><td>Creates <code>_com_dts_RockLinkPlanningCenter_SyncLog</code>.</td></tr>
+                <tr><td><code>003_CreateSettingsTable</code></td><td>3 / 17.2</td><td>Creates <code>_com_dts_PlanningCenter_Settings</code> with the FK to <code>DefinedValue</code> for the connection status.</td></tr>
+                <tr><td><code>004_AddPages</code></td><td>4 / 17.2.4</td><td>Registers the four block types under <strong>DTS &gt; Planning Center</strong>, creates the <strong>RockLink</strong> admin section with Settings / Groups / People child pages, and places the Entity Link block on Person Profile and Group Viewer.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

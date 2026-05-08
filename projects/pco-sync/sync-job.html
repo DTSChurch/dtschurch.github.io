@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sync Job | Planning Center Sync | DTS Dev Docs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Planning Center Sync</h2>
+        <a href="./">Overview</a>
+        <a href="blocks.html">Blocks</a>
+        <a href="sync-job.html">Sync Job</a>
+        <a href="data-model.html">Data Model</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Automation</p>
+          <h1>SyncPlanningCenter Job</h1>
+          <p class="panel-intro">
+            <code>com.dts.RockLinkPlanningCenter.Jobs.SyncPlanningCenter</code> is the
+            single Rock Job that drives the sync. It reads the singleton settings record,
+            walks every active group/team mapping in <code>EntityMap</code>, delegates the
+            actual work to <code>PlanningCenterSyncService</code>, and writes a
+            <code>SyncLog</code> row for every run.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Configuration</h2>
+          <p>
+            The job is registered as a Rock Service Job. Schedule and run history are managed
+            from <strong>Admin Tools &rarr; System Settings &rarr; Jobs Administration</strong>,
+            and the Settings block links directly to it via the &ldquo;Job Schedule&rdquo;
+            shortcut. The block&rsquo;s <strong>Run Sync Now</strong> button enqueues a
+            <code>RunJobNowTransaction</code> against this job.
+          </p>
+
+          <h3>Job Attributes</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Attribute</th><th>Type</th><th>Default</th><th>Description</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Command Timeout</strong></td>
+                  <td>Integer (seconds)</td>
+                  <td>180</td>
+                  <td>Maximum time the SQL command may run for any operation in the sync. Applied to <code>RockContext.Database.CommandTimeout</code>.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Inputs Read From Settings</h3>
+          <ul>
+            <li><code>ApiApplicationId</code> &mdash; PCO Application ID.</li>
+            <li><code>ApiSecret</code> &mdash; encrypted secret; decrypted via <code>Rock.Security.Encryption.DecryptString</code> at run start.</li>
+            <li><code>DefaultConnectionStatusValueId</code> &mdash; applied to newly created people.</li>
+            <li><code>OverwriteWithPlanningCenter</code> &mdash; conflict policy.</li>
+          </ul>
+          <p>
+            If credentials are missing, the job aborts <strong>before</strong> any PCO calls,
+            writes a <code>Failed</code> <code>SyncLog</code> row with the reason, and throws
+            so the failure is visible in the Rock Jobs grid.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Run Lifecycle</h2>
+          <ol>
+            <li>Open a single <code>RockContext</code> with the configured command timeout.</li>
+            <li>Insert a <code>SyncLog</code> row with <code>Status = "Running"</code>, <code>SyncPhase = "All"</code>, and <code>StartDateTime = now</code>.</li>
+            <li>Load settings; abort to <code>Failed</code> if credentials are unset.</li>
+            <li>Decrypt the API secret.</li>
+            <li>Query <code>EntityMap</code> for active rows where <code>EntityTypeId = Group</code> and <code>PlanningCenterEntityType IN ("Group", "Team")</code>. Exit cleanly to <code>Completed</code> if there are none.</li>
+            <li>Construct one <code>PlanningCenterSyncService</code> for the run.</li>
+            <li>For each mapping, dispatch to <code>SyncPlanningCenterGroup</code> (PCO Group) or <code>SyncServiceTeam</code> (PCO Team). The service handles person upsert, member upsert, and role mapping. Status messages flow back to <code>UpdateLastStatusMessage</code> so the Jobs grid shows live progress.</li>
+            <li>Aggregate the per-mapping counters back onto the job&rsquo;s totals (people / groups / members &mdash; added / updated / skipped / errored).</li>
+            <li>Build the <code>Result</code> string (multi-line summary, plus the first 10 error messages and an &ldquo;and N more&rdquo; tail when applicable).</li>
+            <li>Update the <code>SyncLog</code> row with final counts and either <code>Completed</code> or <code>CompletedWithErrors</code>.</li>
+          </ol>
+        </section>
+
+        <section class="panel reveal">
+          <h2>What Each Mapping Does</h2>
+          <div class="cards">
+            <article class="card">
+              <p class="card-kicker">PCO Group</p>
+              <h3>SyncPlanningCenterGroup</h3>
+              <p>Fetches the group from PCO Groups, syncs every member as a Person (creating or updating per the overwrite policy), then upserts each membership into the linked Rock Group.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">PCO Service Team</p>
+              <h3>SyncServiceTeam</h3>
+              <p>Fetches the team and its team members from PCO Services, syncs each as a Person, then upserts each membership into the linked Rock Group. PCO team-position &rarr; Rock GroupRole mapping (stored in <code>EntityMap.AdditionalData</code>) is applied if configured.</p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Cross-cutting</p>
+              <h3>Person Resolution</h3>
+              <p>Linked people are resolved through the <code>PersonAlias</code> <code>EntityMap</code>. Brand-new people fall through to <code>FindPerson</code> for first-time matching by name/email/phone, then a new <code>EntityMap</code> row is written so the link survives future runs.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Counters Tracked Per Run</h2>
+          <p>The job aggregates three buckets, each with four sub-counts:</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Bucket</th>
+                  <th>Added</th>
+                  <th>Updated</th>
+                  <th>Skipped</th>
+                  <th>Errors</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>People</td><td>New Person rows created</td><td>Existing Person rows touched</td><td>Linked Person rows skipped (e.g. nothing changed under non-overwrite policy)</td><td>Person upsert failures</td></tr>
+                <tr><td>Groups</td><td>Reserved (groups are pre-mapped, not created)</td><td>Incremented per mapping processed</td><td>Mappings skipped</td><td>Mapping-level failures</td></tr>
+                <tr><td>Members</td><td>New <code>GroupMember</code> rows</td><td>Existing memberships updated</td><td>Memberships skipped</td><td>Membership upsert failures</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            The <code>SyncLog</code> row stores collapsed totals: <code>RecordsCreated</code>,
+            <code>RecordsUpdated</code>, <code>RecordsSkipped</code>, <code>RecordsErrored</code>,
+            and a derived <code>RecordsProcessed</code> = created + updated + skipped (across
+            all three buckets).
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Error Handling</h2>
+          <ul>
+            <li><strong>Per-record errors</strong> are caught inside the sync service, recorded onto the relevant counter, and pushed onto an in-memory <code>ErrorMessages</code> list. They do <em>not</em> abort the run.</li>
+            <li><strong>The first 10 errors</strong> are echoed into the job&rsquo;s <code>Result</code> string. <strong>The first 50</strong> are persisted into <code>SyncLog.ErrorDetails</code>.</li>
+            <li><strong>Per-mapping fatal errors</strong> mark the mapping&rsquo;s <code>SyncStatus = "Error"</code> with the exception message in <code>EntityMap.ErrorMessage</code>.</li>
+            <li><strong>Run-level failures</strong> (e.g. credentials missing, fatal exception bubbling out of the loop) write <code>Status = "Failed"</code> on the <code>SyncLog</code> and rethrow so Rock&rsquo;s job runner records the failure.</li>
+            <li><strong>End-of-run status</strong> is <code>CompletedWithErrors</code> if any per-record errors were collected, otherwise <code>Completed</code>.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Manual Trigger From The Settings Block</h2>
+          <p>
+            The Settings block exposes <strong>Run Sync Now</strong> for ad-hoc runs. Behavior:
+          </p>
+          <ul>
+            <li>Looks up the service job by class name (<code>com.dts.RockLinkPlanningCenter.Jobs.SyncPlanningCenter</code>).</li>
+            <li>Refuses to enqueue if the job&rsquo;s <code>LastStatus</code> is <code>Running</code>.</li>
+            <li>Otherwise calls <code>new RunJobNowTransaction(syncJob.Id).Enqueue()</code>, which schedules the run on Rock&rsquo;s transaction queue. The block returns immediately; the UI polls <code>RefreshSyncStatus</code> for live updates.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Scope &amp; Non-Goals</h2>
+          <ul>
+            <li>The job <strong>only</strong> processes <code>EntityMap</code> rows scoped to Rock Groups linked to PCO Groups or Service Teams. Person and Campus mappings are created and consumed during a run; they are not iterated as a top-level phase.</li>
+            <li>There is no incremental-only mode in v1 &mdash; each active mapping is fully reconciled on every run.</li>
+            <li>The job does not pull attendance or volunteer schedules.</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>
