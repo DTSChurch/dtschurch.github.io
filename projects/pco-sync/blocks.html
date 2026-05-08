@@ -36,40 +36,34 @@
           <p class="eyebrow">Reference</p>
           <h1>Blocks</h1>
           <p class="panel-intro">
-            Planning Center Sync ships four Obsidian (Vue 3) blocks under the
-            <strong>DTS &gt; Planning Center</strong> category. All four are installed
-            automatically by migration <code>004_AddPages</code> &mdash; you should not need
-            to wire them up manually unless you are placing the Entity Link block on a custom
-            page.
+            The plugin ships four admin blocks under the
+            <strong>DTS &gt; Planning Center</strong> category. All four are installed and
+            placed on their default pages automatically &mdash; you only need to add a block
+            yourself if you want the Entity Link to appear on a custom detail page.
           </p>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Block</th>
-                  <th>Obsidian File</th>
-                  <th>Installed On</th>
+                  <th>Where It&rsquo;s Installed</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>Planning Center Settings</td>
-                  <td><code>planningCenterSettings.obs</code></td>
                   <td>RockLink &rsaquo; Settings</td>
                 </tr>
                 <tr>
                   <td>Planning Center Entity Mapping</td>
-                  <td><code>planningCenterEntityMapping.obs</code></td>
                   <td>RockLink &rsaquo; Groups, RockLink &rsaquo; People</td>
                 </tr>
                 <tr>
                   <td>Planning Center Entity Link</td>
-                  <td><code>planningCenterEntityLink.obs</code></td>
                   <td>Person Profile, Group Viewer</td>
                 </tr>
                 <tr>
                   <td>Planning Center Sync History</td>
-                  <td><code>planningCenterSyncHistory.obs</code></td>
                   <td>Available; not auto-placed in v1</td>
                 </tr>
               </tbody>
@@ -80,15 +74,12 @@
         <section class="panel reveal">
           <h2>Planning Center Settings</h2>
           <p>
-            Single-tenant configuration block. Persists API credentials and sync policy to the
-            <code>_com_dts_PlanningCenter_Settings</code> table (singleton row). Also exposes
-            campus mapping shortcuts and manual job control.
+            Central configuration block. This is where you connect Rock to Planning Center,
+            decide how conflicts are resolved, set the default Connection Status for new
+            people, manage your campus mappings, and trigger a sync on demand.
           </p>
 
-          <h3>Block Attributes</h3>
-          <p>This block has no configurable block attributes &mdash; configuration lives in the singleton settings record.</p>
-
-          <h3>What It Manages</h3>
+          <h3>What you configure</h3>
           <div class="table-wrap">
             <table>
               <thead>
@@ -97,222 +88,174 @@
               <tbody>
                 <tr>
                   <td><strong>Application ID</strong></td>
-                  <td>Planning Center API Application ID. Stored in plain text in <code>ApiApplicationId</code>.</td>
+                  <td>Your Planning Center API Application ID.</td>
                 </tr>
                 <tr>
                   <td><strong>Secret</strong></td>
-                  <td>PCO API Secret. <strong>Encrypted at rest</strong> via <code>Rock.Security.Encryption</code> before write; decrypted on read for API calls.</td>
+                  <td>Your Planning Center API Secret. Encrypted before it&rsquo;s saved &mdash; once entered, it is not displayed again in plain text.</td>
                 </tr>
                 <tr>
                   <td><strong>Overwrite With Planning Center</strong></td>
-                  <td>When on, PCO data overwrites Rock fields on existing linked records. When off, only missing fields are filled in. Default <code>true</code> in the initial form, <code>false</code> in the EF default.</td>
+                  <td>When on, PCO data overwrites the corresponding Rock fields on linked records. When off, Rock data is preserved and only missing fields get filled in.</td>
                 </tr>
                 <tr>
                   <td><strong>Default Connection Status</strong></td>
-                  <td>Defined Value GUID from <code>PERSON_CONNECTION_STATUS</code>. Applied to new people created during sync.</td>
+                  <td>Connection Status assigned to brand-new people created by the sync.</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <h3>Block Actions</h3>
+          <h3>Actions on this block</h3>
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Action</th><th>Behavior</th></tr>
+                <tr><th>Button</th><th>What it does</th></tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><code>SaveSettings</code></td>
-                  <td>Encrypts the secret, upserts the singleton settings row, and resolves the connection status GUID to <code>DefaultConnectionStatusValueId</code>.</td>
+                  <td><strong>Save</strong></td>
+                  <td>Stores your credentials and sync policy.</td>
                 </tr>
                 <tr>
-                  <td><code>TestConnection</code></td>
-                  <td>Issues a <code>GET people/v2</code> against <code>api.planningcenteronline.com</code> using HTTP Basic auth with the saved credentials. Returns <em>Connected</em> on 2xx, otherwise the HTTP status and reason.</td>
+                  <td><strong>Test Connection</strong></td>
+                  <td>Reaches out to Planning Center with the saved credentials and reports whether the connection succeeded.</td>
                 </tr>
                 <tr>
-                  <td><code>RunSyncNow</code></td>
-                  <td>Looks up the <code>SyncPlanningCenter</code> service job and enqueues a <code>RunJobNowTransaction</code>. Refuses if <code>LastStatus = "Running"</code>.</td>
+                  <td><strong>Run Sync Now</strong></td>
+                  <td>Queues the Planning Center sync job to run right away. Disabled if a sync is already in progress.</td>
                 </tr>
                 <tr>
-                  <td><code>RefreshSyncStatus</code></td>
-                  <td>Returns <code>LastRunDateTime</code>, <code>LastStatus</code>, <code>LastStatusMessage</code>, and <code>LastRunDurationSeconds</code> from the service job for status polling.</td>
-                </tr>
-                <tr>
-                  <td><code>GetCampusMappings</code></td>
-                  <td>Lists existing <code>EntityMap</code> rows where <code>PlanningCenterEntityType = "Campus"</code>, joined to the Rock <code>Campus</code> for display.</td>
-                </tr>
-                <tr>
-                  <td><code>GetPcoCampuses</code></td>
-                  <td><code>GET people/v2/campuses</code> against PCO. Returns ID + name as <code>ListItemBag</code>s.</td>
-                </tr>
-                <tr>
-                  <td><code>GetRockCampuses</code></td>
-                  <td>Returns active Rock campuses from <code>CampusCache</code>.</td>
-                </tr>
-                <tr>
-                  <td><code>SaveCampusMapping</code></td>
-                  <td>Upserts an <code>EntityMap</code> row of type <code>Campus</code> linking a PCO campus ID to a Rock campus ID. Sets <code>SyncStatus = "Mapped"</code>.</td>
-                </tr>
-                <tr>
-                  <td><code>DeleteCampusMapping</code></td>
-                  <td>Removes an existing campus <code>EntityMap</code> row by <code>IdKey</code>.</td>
+                  <td><strong>Job Schedule</strong></td>
+                  <td>Shortcut into the Rock Job Scheduler to view or change the sync&rsquo;s schedule.</td>
                 </tr>
               </tbody>
             </table>
           </div>
+
+          <h3>Last Sync Status panel</h3>
+          <p>
+            The block surfaces the most recent run&rsquo;s date, status, status message, and
+            duration. After clicking <em>Run Sync Now</em>, this panel refreshes automatically
+            so you can watch progress without leaving the page.
+          </p>
+
+          <h3>Campus mapping</h3>
+          <p>
+            The block also includes a campus mapping editor. It pulls the list of campuses
+            from Planning Center, lets you pick the matching Rock campus for each, and saves
+            the link. You can edit or remove a campus mapping here at any time.
+          </p>
         </section>
 
         <section class="panel reveal">
           <h2>Planning Center Entity Mapping</h2>
           <p>
-            Unified mapping editor for People, Groups, and Service Teams. The same block is
-            placed on both the <strong>Groups</strong> and <strong>People</strong> admin
-            pages; the <em>Entity Type Filter</em> attribute is what scopes each instance.
+            The mapping editor for People, Groups, and Service Teams. The same block lives on
+            both the <strong>Groups</strong> and <strong>People</strong> admin pages; each
+            instance is scoped to the type of mapping that page is responsible for.
           </p>
 
-          <h3>Block Attributes</h3>
+          <h3>Block settings</h3>
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Attribute</th><th>Type</th><th>Description</th></tr>
+                <tr><th>Setting</th><th>Description</th></tr>
               </thead>
               <tbody>
                 <tr>
                   <td><strong>Entity Type Filter</strong></td>
-                  <td>EntityType</td>
-                  <td>Optional. Restricts the block to a single Rock entity type (e.g. <code>Group</code> for the Groups page, <code>PersonAlias</code> for the People page). Leave blank to show every mapping type.</td>
+                  <td>Optional. Restricts the block to a single type of mapping (e.g. only Group mappings on the Groups page). Leave blank to show every type.</td>
                 </tr>
                 <tr>
                   <td><strong>Person Detail Page</strong></td>
-                  <td>LinkedPage</td>
-                  <td>Optional. Page to navigate to when a person row is clicked. Typically the Person Profile.</td>
+                  <td>Optional. The page to navigate to when a person row is clicked &mdash; typically the Person Profile.</td>
                 </tr>
                 <tr>
                   <td><strong>Group Detail Page</strong></td>
-                  <td>LinkedPage</td>
-                  <td>Optional. Page to navigate to when a group row is clicked. Typically the Group Viewer.</td>
+                  <td>Optional. The page to navigate to when a group row is clicked &mdash; typically the Group Viewer.</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          <h3>Mapping Types It Handles</h3>
+          <h3>Mapping types it handles</h3>
           <ul>
-            <li><strong>Group</strong> &mdash; Rock Group <span aria-hidden="true">↔</span> PCO Group.</li>
-            <li><strong>Team</strong> &mdash; Rock Group <span aria-hidden="true">↔</span> PCO Service Team. Supports per-team-position role mapping into Rock Group Roles, persisted as JSON in <code>EntityMap.AdditionalData</code>.</li>
-            <li><strong>Person</strong> &mdash; Rock <code>PersonAlias</code> <span aria-hidden="true">↔</span> PCO Person. Created automatically by the sync; surfaced here for inspection and manual cleanup.</li>
+            <li><strong>Group</strong> &mdash; Rock Group <span aria-hidden="true">↔</span> Planning Center Group.</li>
+            <li><strong>Service Team</strong> &mdash; Rock Group <span aria-hidden="true">↔</span> Planning Center Service Team. Supports mapping each PCO team position to a Rock group role.</li>
+            <li><strong>Person</strong> &mdash; Rock Person <span aria-hidden="true">↔</span> Planning Center Person. Created automatically by the sync; surfaced here so you can review or clean up links.</li>
           </ul>
 
-          <h3>Caching</h3>
-          <p>
-            PCO Service Types and Teams are cached in-memory under
-            <code>PlanningCenter_ServiceTypesWithTeams</code> for one hour to avoid hammering
-            the PCO API during configuration. The cache is refreshed automatically when the
-            entry expires.
+          <h3>What you can do here</h3>
+          <ul>
+            <li>Create a new mapping by picking a Rock Group and the matching PCO Group or Service Team.</li>
+            <li>For Service Team mappings, configure which PCO team position becomes which Rock group role.</li>
+            <li>Activate or deactivate a mapping. Inactive mappings are skipped by the sync without losing the link.</li>
+            <li>Remove a mapping you no longer want synced.</li>
+          </ul>
+
+          <p class="text-muted" style="font-style: italic;">
+            Planning Center service types and teams are cached for an hour to keep the editor responsive &mdash;
+            if you don&rsquo;t see a brand-new team yet, wait a few minutes and reload.
           </p>
         </section>
 
         <section class="panel reveal">
           <h2>Planning Center Entity Link</h2>
           <p>
-            Inline display block. Reads the page&rsquo;s <code>Person</code> or
-            <code>Group</code> context, looks up an active <code>EntityMap</code> entry, and
-            renders a deep link into Planning Center if one is found. Returns
-            <code>isVisible = false</code> (renders nothing) when no mapping exists, so it is
-            safe to place on any detail page.
+            A small inline block that appears on Person Profile and Group Viewer pages. When
+            the record being viewed is linked to a Planning Center counterpart, the block
+            shows a Planning Center logo and a deep link straight to the matching record in
+            PCO. When there&rsquo;s no link for the current record, the block stays hidden, so
+            it&rsquo;s safe to leave on every detail page.
           </p>
 
-          <h3>Page Parameters Recognized</h3>
+          <h3>What it links to</h3>
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Param</th><th>Resolves To</th></tr>
+                <tr><th>Linked Record</th><th>Opens</th></tr>
               </thead>
               <tbody>
-                <tr><td><code>PersonId</code> / <code>PersonGuid</code> / <code>Person</code></td><td>Rock Person (the <code>Person</code> param accepts IdKey, GUID, or integer ID).</td></tr>
-                <tr><td><code>GroupId</code> / <code>GroupGuid</code> / <code>Group</code></td><td>Rock Group (same fallback chain).</td></tr>
+                <tr><td>Person</td><td>The matching person in <strong>Planning Center People</strong>.</td></tr>
+                <tr><td>Service Team</td><td>The matching team in <strong>Planning Center Services</strong>.</td></tr>
+                <tr><td>Group</td><td>The matching group&rsquo;s member list in <strong>Planning Center Groups</strong>.</td></tr>
               </tbody>
             </table>
           </div>
 
-          <h3>Deep Link Targets</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>PCO Entity Type</th><th>URL Pattern</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Person</td>
-                  <td><code>https://people.planningcenteronline.com/people/{pcoId}</code></td>
-                </tr>
-                <tr>
-                  <td>Team</td>
-                  <td><code>https://services.planningcenteronline.com/teams/{pcoId}</code></td>
-                </tr>
-                <tr>
-                  <td>Group</td>
-                  <td><code>https://groups.planningcenteronline.com/groups/{pcoId}/members?...</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3>Person Mapping Note</h3>
+          <h3>Sync Now (Group Viewer only)</h3>
           <p>
-            Person mappings are stored against <code>PersonAlias</code>, not <code>Person</code>.
-            The block resolves the current <code>Person</code> to all of their alias IDs and
-            looks up the <code>EntityMap</code> by the alias set, so a Person who has been
-            merged in Rock still resolves correctly.
+            On the Group Viewer, the block also includes a <strong>Sync Now</strong> button.
+            Clicking it runs the sync for just that one group right away &mdash; useful when
+            you&rsquo;ve made a change in Planning Center and want it reflected in Rock
+            without waiting for the next scheduled run. Add and update counts are reported
+            inline when the run finishes.
           </p>
-
-          <h3>Block Actions</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Action</th><th>Behavior</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>SyncGroup</code></td>
-                  <td>Synchronously runs <code>PlanningCenterSyncService.SyncServiceTeam</code> or <code>SyncPlanningCenterGroup</code> for the single mapping shown on the page. Updates <code>SyncStatus</code> on the <code>EntityMap</code> and returns add/update counts. Used by the &ldquo;Sync Now&rdquo; affordance on the Group Viewer.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </section>
 
         <section class="panel reveal">
           <h2>Planning Center Sync History</h2>
           <p>
-            Read-only grid of past <code>SyncLog</code> rows ordered by <code>StartDateTime</code>
-            descending. Each row shows the sync phase, start/end time, computed duration, status,
-            and per-bucket counts (processed / created / updated / skipped / errored). A detail
-            view exposes the full <code>ErrorDetails</code> blob.
+            A read-only grid of every past sync run, newest first. Use it to confirm a sync
+            actually ran, see how many records were touched, and dig into errors when
+            something looks off.
           </p>
 
-          <h3>Block Attributes</h3>
-          <p>None. The block reads directly from the <code>_com_dts_RockLinkPlanningCenter_SyncLog</code> table.</p>
+          <h3>Columns shown</h3>
+          <ul>
+            <li>Sync phase</li>
+            <li>Start &amp; end date/time, plus computed duration</li>
+            <li>Status &mdash; Running, Completed, Completed With Errors, or Failed</li>
+            <li>Records processed, created, updated, skipped, and errored</li>
+            <li>Error details (in the row detail view)</li>
+          </ul>
 
-          <h3>Block Actions</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Action</th><th>Behavior</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><code>GetGridData</code></td>
-                  <td>Returns every <code>SyncLog</code> row, projected to <code>SyncLogBag</code> with computed <code>DurationSeconds</code>.</td>
-                </tr>
-                <tr>
-                  <td><code>GetSyncLogDetails</code></td>
-                  <td>Returns a single <code>SyncLog</code> row by <code>IdKey</code> for the detail panel.</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <p>
+            The grid is the easiest place to confirm at a glance whether the most recent run
+            finished cleanly. Clicking a row opens a detail view with the full error message,
+            when applicable.
+          </p>
         </section>
       </div>
     </main>

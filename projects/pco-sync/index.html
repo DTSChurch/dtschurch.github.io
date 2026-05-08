@@ -6,7 +6,7 @@
     <title>Planning Center Sync Docs | DTS Dev Docs</title>
     <meta
       name="description"
-      content="Planning Center Sync technical documentation for Rock RMS — one-way sync of People, Groups, Service Teams, and Campuses from Planning Center Online into Rock."
+      content="Planning Center Sync documentation — one-way sync of People, Groups, Service Teams, and Campuses from Planning Center Online into Rock RMS."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -43,18 +43,16 @@
           <p class="eyebrow">Planning Center Sync</p>
           <h1>One-way sync from Planning Center Online into Rock RMS</h1>
           <p class="panel-intro">
-            Planning Center Sync (<code>com.dts.RockLinkPlanningCenter</code>) pulls People,
-            Groups, Service Teams, and Campuses from Planning Center Online (PCO) into Rock on
-            a configurable schedule. PCO is treated as the source of truth; Rock is the
-            destination. Mappings, conflict policy, and run history are managed through
-            Obsidian admin blocks.
+            Planning Center Sync pulls People, Groups, Service Teams, and Campuses from
+            Planning Center Online (PCO) into Rock on a configurable schedule. PCO is treated
+            as the source of truth; Rock is the destination. You manage the connection,
+            mappings, conflict policy, and run history from a small set of admin pages
+            installed under <strong>Admin Tools &rarr; RockLink</strong>.
           </p>
           <div class="doc-chip-row">
             <span class="doc-chip">Custom Plugin</span>
             <span class="doc-chip">Rock RMS v17.2+</span>
-            <span class="doc-chip">.NET Framework 4.7.2</span>
-            <span class="doc-chip">Obsidian (Vue 3)</span>
-            <span class="doc-chip">PCO REST API</span>
+            <span class="doc-chip">Scheduled Job</span>
           </div>
         </section>
 
@@ -63,15 +61,15 @@
           <div class="cards">
             <article class="card">
               <p class="card-kicker">People</p>
-              <p>Name, email, phone, address, birthdate, gender, photo, and campus. New people are created with the configured default Connection Status; existing people are matched via <code>EntityMap</code> or first-time matched with <code>FindPerson</code>.</p>
+              <p>Name, email, phone, address, birthdate, gender, photo, and campus. New people are created with the Connection Status you choose; existing people are matched to their Planning Center counterpart and kept in step.</p>
             </article>
             <article class="card">
               <p class="card-kicker">Groups &amp; Service Teams</p>
-              <p>Rock Group <span aria-hidden="true">↔</span> PCO Group <em>or</em> PCO Service Team mapping, including group members and per-team-position role mapping.</p>
+              <p>Rock Group <span aria-hidden="true">↔</span> PCO Group <em>or</em> PCO Service Team, including group members. For Service Teams, you can map each PCO team position to a Rock group role.</p>
             </article>
             <article class="card">
               <p class="card-kicker">Campuses</p>
-              <p>Rock Campus <span aria-hidden="true">↔</span> PCO Campus mapping. Used to assign synced people and groups to the correct Rock campus.</p>
+              <p>Rock Campus <span aria-hidden="true">↔</span> PCO Campus. Used to assign synced people and groups to the correct Rock campus.</p>
             </article>
           </div>
         </section>
@@ -79,31 +77,31 @@
         <section class="panel reveal">
           <h2>What It Does Not Sync (v1)</h2>
           <ul>
-            <li><strong>Attendance records</strong> — not pulled from PCO.</li>
-            <li><strong>Volunteer schedules</strong> — scheduled assignments (e.g. &ldquo;Person X serving on Date Y&rdquo;) are not imported.</li>
-            <li><strong>Bi-directional sync</strong> — Rock does not push changes back to PCO. The flow is PCO &rarr; Rock only.</li>
+            <li><strong>Attendance records</strong> &mdash; not pulled from PCO.</li>
+            <li><strong>Volunteer schedules</strong> &mdash; scheduled assignments (e.g.&nbsp;&ldquo;Person X serving on Date Y&rdquo;) are not imported.</li>
+            <li><strong>Bi-directional sync</strong> &mdash; Rock does not push changes back to PCO. The flow is PCO &rarr; Rock only.</li>
           </ul>
-          <p>These are on the future-enhancements list and are not committed for v1.</p>
+          <p>These are on the future-enhancements list and are not part of v1.</p>
         </section>
 
         <section class="panel reveal">
           <h2>How It Works</h2>
           <div class="architecture-map">
             <article class="architecture-node">
-              <h3>1. Configure credentials</h3>
-              <p>Enter the PCO Application ID and Secret in the <strong>Planning Center Settings</strong> block. The secret is encrypted at rest. Use <em>Test Connection</em> to validate.</p>
+              <h3>1. Configure the connection</h3>
+              <p>Enter your Planning Center API Application ID and Secret in the <strong>Settings</strong> page. The secret is encrypted before it&rsquo;s saved. Use <em>Test Connection</em> to verify the credentials work.</p>
             </article>
             <article class="architecture-node">
-              <h3>2. Map entities</h3>
-              <p>In the <strong>Planning Center Entity Mapping</strong> block, link Rock Groups to PCO Groups or Service Teams, map Rock Campuses to PCO Campuses, and (for Service Teams) map PCO team positions to Rock group roles.</p>
+              <h3>2. Map your data</h3>
+              <p>On the <strong>Groups</strong> page, link each Rock Group to the matching PCO Group or Service Team. On the <strong>Settings</strong> page, link each Rock Campus to the matching PCO Campus. For Service Teams, optionally map each team position to a Rock group role.</p>
             </article>
             <article class="architecture-node">
-              <h3>3. Scheduled job runs</h3>
-              <p>The <code>SyncPlanningCenter</code> Rock Job runs on its configured schedule (or via <em>Run Sync Now</em>). It walks every active mapping, fetches updated PCO data, resolves to a Rock entity through <code>EntityMap</code>, and creates or updates records per the overwrite policy.</p>
+              <h3>3. Let the sync run</h3>
+              <p>The Planning Center sync job runs on a schedule you configure (or on demand via <em>Run Sync Now</em>). It walks every active mapping, fetches the latest data from PCO, and creates or updates the matching Rock records based on your overwrite policy.</p>
             </article>
             <article class="architecture-node">
-              <h3>4. Inspect history</h3>
-              <p>The <strong>Planning Center Sync History</strong> block surfaces every job run with counts (added / updated / skipped / errored), duration, and error details for diagnostics.</p>
+              <h3>4. Review history</h3>
+              <p>The <strong>Sync History</strong> view shows every run with totals (added / updated / skipped / errored), duration, status, and any error details for diagnostics.</p>
             </article>
           </div>
         </section>
@@ -121,110 +119,64 @@
               <tbody>
                 <tr>
                   <td><strong>Overwrite With Planning Center</strong></td>
-                  <td>When on, PCO data overwrites Rock fields on existing linked records. When off, Rock data is preserved and only missing fields get filled in.</td>
+                  <td>When on, PCO data overwrites the corresponding fields on linked Rock records. When off, Rock data is preserved and only missing fields get filled in.</td>
                 </tr>
                 <tr>
                   <td><strong>Default Connection Status</strong></td>
-                  <td>Connection status assigned to brand-new people created by the sync.</td>
+                  <td>The Connection Status assigned to brand-new people created by the sync.</td>
                 </tr>
                 <tr>
                   <td><strong>Active mappings</strong></td>
-                  <td>Only mappings flagged <code>IsActive</code> are processed. Deactivating a mapping pauses sync for that group/team without deleting the link.</td>
+                  <td>Only mappings flagged as active are processed. Deactivating a mapping pauses sync for that group/team without removing the link.</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <h3>Behavior nuance</h3>
+          <h3>Behavior worth knowing</h3>
           <ul>
-            <li>People already linked via <code>EntityMap</code> keep their <strong>Rock name</strong> on subsequent syncs — Rock is treated as authoritative for the name once linked. Other fields still update per the overwrite policy.</li>
-            <li>First-time linking via <code>FindPerson</code> (name / email / phone match) does still apply PCO names — that is how a brand-new link gets seeded.</li>
-            <li>The <code>EntityMap</code> for a Person links the PCO person to a Rock <code>PersonAlias</code> (not the <code>Person</code> directly), so merges in Rock continue to resolve correctly.</li>
+            <li>Once a person has been linked to a Planning Center record, the sync <strong>preserves their Rock name</strong> on later runs &mdash; Rock is treated as authoritative for the name from that point on. Other fields still update per the overwrite policy.</li>
+            <li>The very first time a person is matched to PCO (by name, email, or phone), the PCO name <em>is</em> applied &mdash; that&rsquo;s how a brand-new link gets seeded.</li>
+            <li>If a Rock person is later merged with another, the Planning Center link follows the surviving record automatically &mdash; no cleanup needed.</li>
           </ul>
         </section>
 
         <section class="panel reveal">
-          <h2>Architecture</h2>
-          <div class="architecture-map">
-            <article class="architecture-node">
-              <h3>Backend &mdash; com.dts.PlanningCenterSync</h3>
-              <p>C# / .NET Framework 4.7.2. Contains the PCO REST client, the <code>PlanningCenterSyncService</code>, EF migrations, blocks, and the scheduled job. Compiles to <code>com.dts.RockLinkPlanningCenter.dll</code>.</p>
-              <div class="architecture-children">
-                <article class="architecture-node">
-                  <h3>SyncPlanningCenter Job</h3>
-                  <p>Rock Job that orchestrates the sync run, writes a <code>SyncLog</code> record, and aggregates per-mapping counts.</p>
-                </article>
-                <article class="architecture-node">
-                  <h3>PlanningCenterSyncService</h3>
-                  <p>Per-mapping logic: <code>SyncPlanningCenterGroup</code>, <code>SyncServiceTeam</code>, person upsert, member upsert, role mapping.</p>
-                </article>
-                <article class="architecture-node">
-                  <h3>Migrations</h3>
-                  <p>Creates <code>EntityMap</code>, <code>SyncLog</code>, <code>PlanningCenterSettings</code> tables and registers the RockLink admin pages.</p>
-                </article>
-              </div>
-            </article>
-            <article class="architecture-node">
-              <h3>Frontend &mdash; com.dts.PlanningCenterSync.Obsidian</h3>
-              <p>Vue 3 + TypeScript Obsidian blocks. Built with the Rock Obsidian SDK and shipped to <code>~/Plugins/com_dts/RockLinkPlanningCenter/</code>.</p>
-              <div class="architecture-children">
-                <article class="architecture-node">
-                  <h3>planningCenterSettings.obs</h3>
-                  <p>Credentials, overwrite toggle, default connection status, campus mapping editor, &ldquo;Run Sync Now&rdquo;, last run status.</p>
-                </article>
-                <article class="architecture-node">
-                  <h3>planningCenterEntityMapping.obs</h3>
-                  <p>Group / Team / Person mapping editor with role mapping for Service Teams.</p>
-                </article>
-                <article class="architecture-node">
-                  <h3>planningCenterEntityLink.obs</h3>
-                  <p>Inline block for Person Profile and Group Viewer pages — surfaces a deep link into PCO and a per-group <em>Sync Now</em> button.</p>
-                </article>
-                <article class="architecture-node">
-                  <h3>planningCenterSyncHistory.obs</h3>
-                  <p>Grid of past <code>SyncLog</code> rows with counts, duration, status, and error details.</p>
-                </article>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="panel reveal">
           <h2>Admin Pages Installed</h2>
-          <p>Migration <code>004_AddPages</code> registers a top-level <strong>RockLink</strong> admin section with three child pages.</p>
+          <p>Installing the plugin adds a new <strong>RockLink</strong> section under Admin Tools, with three child pages, plus surfaces on the Person Profile and Group Viewer.</p>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Page</th>
-                  <th>Block(s)</th>
+                  <th>What&rsquo;s On It</th>
                   <th>Purpose</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>RockLink &rsaquo; Settings</td>
-                  <td>Planning Center Settings</td>
+                  <td>Planning Center Settings block</td>
                   <td>API credentials, sync policy, campus mapping, manual run trigger.</td>
                 </tr>
                 <tr>
                   <td>RockLink &rsaquo; Groups</td>
-                  <td>Planning Center Entity Mapping</td>
+                  <td>Planning Center Entity Mapping block</td>
                   <td>Manage Rock Group <span aria-hidden="true">↔</span> PCO Group / Service Team mappings.</td>
                 </tr>
                 <tr>
                   <td>RockLink &rsaquo; People</td>
-                  <td>Planning Center Entity Mapping</td>
+                  <td>Planning Center Entity Mapping block</td>
                   <td>Inspect Rock Person <span aria-hidden="true">↔</span> PCO Person mappings.</td>
                 </tr>
                 <tr>
                   <td>Person Profile</td>
-                  <td>Planning Center Entity Link</td>
+                  <td>Planning Center Entity Link block</td>
                   <td>Adds a &ldquo;View in Planning Center&rdquo; link on a person&rsquo;s profile when a mapping exists.</td>
                 </tr>
                 <tr>
                   <td>Group Viewer</td>
-                  <td>Planning Center Entity Link</td>
-                  <td>Adds a deep link and per-group <em>Sync Now</em> on the Group Viewer when a mapping exists.</td>
+                  <td>Planning Center Entity Link block</td>
+                  <td>Adds a deep link into Planning Center and a per-group <em>Sync Now</em> button when a mapping exists.</td>
                 </tr>
               </tbody>
             </table>
@@ -232,32 +184,38 @@
         </section>
 
         <section class="panel reveal">
-          <h2>Published Guides</h2>
+          <h2>Documentation</h2>
           <div class="link-grid">
             <a class="link-card" href="blocks.html">
               <p class="eyebrow">Reference</p>
               <h3>Blocks</h3>
-              <p>Settings, Entity Mapping, Entity Link, and Sync History — block attributes, where each is installed, and the actions exposed on each.</p>
+              <p>What each of the four blocks does, where it&rsquo;s installed, what you configure on it, and the actions it exposes to admins.</p>
             </a>
             <a class="link-card" href="sync-job.html">
               <p class="eyebrow">Automation</p>
               <h3>Sync Job</h3>
-              <p>The <code>SyncPlanningCenter</code> Rock Job: attributes, run lifecycle, what gets synced, error handling, and the &ldquo;Run Sync Now&rdquo; flow.</p>
+              <p>How the scheduled sync works: schedule, what it processes, how counts are reported, error handling, and the &ldquo;Run Sync Now&rdquo; flow.</p>
             </a>
             <a class="link-card" href="data-model.html">
-              <p class="eyebrow">Schema</p>
+              <p class="eyebrow">Concepts</p>
               <h3>Data Model</h3>
-              <p>The three custom tables — <code>EntityMap</code>, <code>SyncLog</code>, <code>PlanningCenterSettings</code> — including columns, indexes, and how Person mappings use <code>PersonAlias</code>.</p>
+              <p>What information the plugin keeps track of: the link between a Rock record and its PCO counterpart, the run history, and the connection settings.</p>
             </a>
           </div>
         </section>
 
         <section class="panel reveal">
-          <h2>Release &amp; Install</h2>
-          <ul>
-            <li>Tagging <code>v*</code> on <code>main</code> triggers <code>release.yml</code> on a Windows runner. The pipeline builds the C# DLL plus the Obsidian bundle and packs a <code>.plugin</code> file via <code>rock-dev-tool</code>, then attaches it to a GitHub Release.</li>
-            <li>Install in Rock via <strong>Admin Tools &rarr; System Settings &rarr; Plugins</strong> by uploading the <code>.plugin</code> file. EF migrations run automatically on first request after install.</li>
-          </ul>
+          <h2>Installing &amp; Updating</h2>
+          <p>
+            Plugin releases are published as <code>.plugin</code> files on GitHub. To install
+            or update:
+          </p>
+          <ol>
+            <li>Download the latest <code>.plugin</code> file from the project&rsquo;s GitHub Releases.</li>
+            <li>In Rock, go to <strong>Admin Tools &rarr; System Settings &rarr; Plugins</strong>.</li>
+            <li>Upload the <code>.plugin</code> file. Rock will install the plugin and run any database upgrades automatically on the next page load.</li>
+            <li>If this is a fresh install, navigate to <strong>RockLink &rsaquo; Settings</strong> and enter your Planning Center credentials.</li>
+          </ol>
         </section>
 
         <section class="panel reveal">
@@ -266,7 +224,7 @@
           <ul>
             <li><strong>Bi-directional sync.</strong> Allow Rock to be the source of truth and push changes back to PCO.</li>
             <li><strong>Attendance sync.</strong> Pull attendance records from PCO into Rock.</li>
-            <li><strong>Volunteer schedules.</strong> Import scheduled volunteer assignments (e.g. &ldquo;Axl Rose scheduled for 12/19&rdquo;).</li>
+            <li><strong>Volunteer schedules.</strong> Import scheduled volunteer assignments (e.g. &ldquo;Person X serving on Date Y&rdquo;).</li>
           </ul>
         </section>
       </div>
