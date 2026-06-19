@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overflow Gateway Docs | DTS Dev Docs</title>
+    <meta
+      name="description"
+      content="Overflow Gateway documentation — integrate the Overflow giving platform (crypto, stock, and DAF donations) with Rock RMS. Financial gateway plus a scheduled sync job for donors, recurring gifts, and contributions."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Overflow Gateway</h2>
+        <a href="./">Overview</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="sync-job.html">How the Sync Works</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="changelog.html">Changelog</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Overflow Gateway</p>
+          <h1>Bring Overflow giving into Rock RMS</h1>
+          <p class="panel-intro">
+            Overflow Gateway connects the <strong>Overflow</strong> giving platform &mdash; which
+            specializes in cryptocurrency, stock, and donor-advised-fund (DAF) gifts &mdash; to your
+            Rock database. A scheduled job pulls donors, recurring gifts, and contributions <em>out</em>
+            of Overflow and records them in Rock&rsquo;s financial system, so your contribution
+            statements, batches, and giving reports stay complete without any manual re-entry.
+          </p>
+          <div class="doc-chip-row">
+            <span class="doc-chip">Custom Plugin</span>
+            <span class="doc-chip">Rock RMS 16.13+</span>
+            <span class="doc-chip">Financial Gateway</span>
+            <span class="doc-chip">Scheduled Job</span>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>The Two Halves</h2>
+          <p>The plugin installs two cooperating pieces.</p>
+          <div class="cards">
+            <article class="card">
+              <p class="card-kicker">Financial Gateway</p>
+              <h3>Overflow Financial Gateway</h3>
+              <p>
+                Registers Overflow as a payment gateway in Rock and stores your API credentials,
+                batching preferences, and the fallback financial account. It&rsquo;s also the
+                connection the sync job uses to reach the Overflow API.
+              </p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Scheduled Job</p>
+              <h3>Overflow Sync Job</h3>
+              <p>
+                The heart of the plugin. On a schedule you choose (daily at 8:15&nbsp;AM by default),
+                it pulls the latest donors, subscriptions, and contributions from Overflow and writes
+                them into Rock as people, scheduled transactions, transactions, and batches.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>What It Syncs</h2>
+          <div class="cards">
+            <article class="card">
+              <p class="card-kicker">People</p>
+              <p>
+                Overflow donors are matched to existing Rock people (or created if new) and linked
+                with a durable connection so future runs update the same record.
+              </p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Recurring Gifts</p>
+              <p>
+                Overflow subscriptions become Rock <strong>scheduled transactions</strong>, including
+                the saved payment method and giving detail.
+              </p>
+            </article>
+            <article class="card">
+              <p class="card-kicker">Contributions</p>
+              <p>
+                Individual gifts &mdash; cash, card, ACH, <strong>stock</strong>, and
+                <strong>crypto</strong> &mdash; post as Rock financial transactions, allocated to the
+                right account and grouped into batches.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>How Data Flows</h2>
+          <div class="architecture-map">
+            <article class="architecture-node">
+              <h3>1. Connect the gateway</h3>
+              <p>
+                Enter your Overflow <strong>API Key</strong> and <strong>Client ID</strong> on the
+                Overflow Financial Gateway, and set your batching preferences and a fallback account.
+              </p>
+            </article>
+            <article class="architecture-node">
+              <h3>2. Map your campaigns</h3>
+              <p>
+                On the <strong>Campaign Maps</strong> page, link each Overflow campaign (and
+                subcampaign) to a Rock <strong>Financial Account</strong> so gifts land in the right
+                fund.
+              </p>
+            </article>
+            <article class="architecture-node">
+              <h3>3. Let the job run</h3>
+              <p>
+                The Overflow Sync Job runs on its schedule (or on demand via <em>Run Now</em>) and
+                walks four stages: People &rarr; Subscriptions &rarr; Transactions &rarr; Batching.
+              </p>
+            </article>
+            <article class="architecture-node">
+              <h3>4. Review the summary</h3>
+              <p>
+                Each run reports created / updated / skipped counts per stage, plus a
+                <strong>Skip Reason Breakdown</strong> with names and amounts so you can see exactly
+                what didn&rsquo;t map.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Direction of Sync</h2>
+          <p>
+            The primary direction is <strong>Overflow &rarr; Rock</strong> &mdash; Overflow is the
+            source of truth for giving data, and Rock is the destination. The gateway component also
+            supports a limited <strong>Rock &rarr; Overflow</strong> path for actions like cancelling
+            a subscription or initiating a refund.
+          </p>
+          <ul>
+            <li><strong>Idempotent.</strong> Re-running the job updates existing records instead of creating duplicates &mdash; each contribution is keyed by its Overflow ID.</li>
+            <li><strong>Resilient.</strong> One bad record doesn&rsquo;t stop the run; it&rsquo;s counted as a skip with a readable reason and the job keeps going.</li>
+            <li><strong>Rolling window.</strong> The transactions stage looks back a configurable number of days (30 by default), while people and subscriptions always pull in full.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Requirements</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Requirement</th><th>Detail</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Rock RMS</td><td>Requires Rock <strong>16.13 or later</strong>. Built and tested against Rock v18 (RockRMS.Rock 18.2.4 / .NET 4.7.2).</td></tr>
+                <tr><td>Overflow account</td><td>An active Overflow account with an <strong>API Key</strong> and <strong>Client ID</strong>.</td></tr>
+                <tr><td>Admin access</td><td>Rock administrator rights to install the plugin and configure gateways, accounts, and jobs.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Documentation</h2>
+          <div class="link-grid">
+            <a class="link-card" href="installation.html">
+              <p class="eyebrow">Get Started</p>
+              <h3>Installation</h3>
+              <p>Install the plugin from the package, restart Rock, and confirm the gateway, pages, and job were created.</p>
+            </a>
+            <a class="link-card" href="setup.html">
+              <p class="eyebrow">Configure</p>
+              <h3>Setup Guide</h3>
+              <p>Connect the gateway, map campaigns to accounts, tune the sync job, and run a first test.</p>
+            </a>
+            <a class="link-card" href="sync-job.html">
+              <p class="eyebrow">Reference</p>
+              <h3>How the Sync Works</h3>
+              <p>The four sync stages, how people and campaigns are matched, and how stock, crypto, and refunds are handled.</p>
+            </a>
+            <a class="link-card" href="troubleshooting.html">
+              <p class="eyebrow">Support</p>
+              <h3>Troubleshooting</h3>
+              <p>Reading the skip-reason breakdown, failed-transaction handling, cleaning up historical data, and common gotchas.</p>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

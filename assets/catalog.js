@@ -70,6 +70,24 @@ window.DTS_CATALOG = [
     ]
   },
   {
+    name: "Overflow Gateway",
+    href: "/projects/overflow-gateway/",
+    group: "Rock Plugins",
+    desc: "Integrates the Overflow giving platform (crypto, stock, and DAF donations) with Rock RMS. A financial gateway plus a scheduled job that syncs donors, recurring gifts, and contributions into Rock.",
+    badges: ["Custom Plugin", "Financial Gateway", "Scheduled Job"],
+    showInNav: true,
+    showInCatalog: true,
+    searchable: true,
+    featured: true,
+    quickLinks: [
+      { page: "Overview & Architecture", href: "/projects/overflow-gateway/" },
+      { page: "Installation", href: "/projects/overflow-gateway/installation.html" },
+      { page: "Setup Guide", href: "/projects/overflow-gateway/setup.html" },
+      { page: "How the Sync Works", href: "/projects/overflow-gateway/sync-job.html" },
+      { page: "Troubleshooting", href: "/projects/overflow-gateway/troubleshooting.html" }
+    ]
+  },
+  {
     name: "Mailgun Toolbox",
     href: "/projects/mailgun-toolbox/",
     group: "Rock Plugins",

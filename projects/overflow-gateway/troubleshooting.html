@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Troubleshooting | Overflow Gateway | DTS Dev Docs</title>
+    <meta name="description" content="Troubleshoot the Overflow Gateway — reading the skip-reason breakdown, the four failed-transaction handling modes, cleaning up historical data, and common gotchas." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Overflow Gateway</h2>
+        <a href="./">Overview</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="sync-job.html">How the Sync Works</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="changelog.html">Changelog</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Support</p>
+          <h1>Troubleshooting</h1>
+          <p class="panel-intro">
+            Most issues come down to a campaign that isn&rsquo;t mapped, a gift that hasn&rsquo;t
+            settled yet, or the rolling sync window. The run summary tells you almost everything you
+            need &mdash; this page explains how to read it and how to handle the trickier cases like
+            failed gifts and cleaning up historical data.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Start With the Run Summary</h2>
+          <p>
+            After any run, open the job&rsquo;s <strong>Result</strong> message. The
+            <strong>Skip Reason Breakdown</strong> groups everything that didn&rsquo;t import, with
+            human-readable examples &mdash; campaign and donor <strong>names</strong> and dollar
+            <strong>amounts</strong>, not bare IDs. Nine times out of ten the answer to &ldquo;why
+            didn&rsquo;t this gift show up?&rdquo; is right there.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Common Issues</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Symptom</th><th>Likely cause &amp; fix</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>/overflow</code> page doesn&rsquo;t load, or the gateway/job is missing</td>
+                  <td>Migrations didn&rsquo;t run. Confirm the DLL is in <code>RockWeb\Bin</code> and <strong>restart Rock</strong>. See <a class="text-link" href="installation.html">Installation</a>.</td>
+                </tr>
+                <tr>
+                  <td>Job fails immediately or reports it can&rsquo;t reach Overflow</td>
+                  <td>Check the gateway&rsquo;s <strong>API Key</strong> and <strong>Client ID</strong>, that it&rsquo;s <strong>Active</strong>, and that <strong>Server URL</strong> is correct (production is <code>https://server.overflow.co</code>).</td>
+                </tr>
+                <tr>
+                  <td>Gifts skipped &mdash; &ldquo;no campaign map / no account&rdquo;</td>
+                  <td>The campaign isn&rsquo;t mapped and there&rsquo;s no fallback account. Add a <a class="text-link" href="setup.html">Campaign Map</a>, set a default Account on the gateway, or enable <strong>Create Accounts If Not Mapped</strong>.</td>
+                </tr>
+                <tr>
+                  <td>A recent gift hasn&rsquo;t appeared</td>
+                  <td>Stock and crypto only sync once they&rsquo;re fully settled (liquidated / paid out). Failed or pending gifts are skipped by default. Re-run after it settles.</td>
+                </tr>
+                <tr>
+                  <td>An older gift never imported</td>
+                  <td>It&rsquo;s outside the <strong>Sync Days Back</strong> window (default 30). Temporarily widen the window, run once, then set it back &mdash; see <em>Historical cleanup</em> below.</td>
+                </tr>
+                <tr>
+                  <td>A duplicate transaction</td>
+                  <td>Shouldn&rsquo;t happen &mdash; gifts are keyed by their Overflow ID. If you see one, check whether it was also entered manually in Rock.</td>
+                </tr>
+                <tr>
+                  <td>Batch total looks off after a cleanup</td>
+                  <td>You likely zeroed or deleted a gift in a <strong>closed</strong> batch. Use the reversal mode instead &mdash; see <em>Failed Transaction Handling</em> and the closed-batch caution below.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Failed Transaction Handling</h2>
+          <p>
+            The <strong>Failed Transaction Handling</strong> job setting controls what happens to
+            non-settled and failed / cancelled gifts. (Refunds, voids, and chargebacks always create a
+            linked reversal regardless of this setting.)
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Mode</th><th>Behavior</th><th>When to use</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1 &mdash; Only import settled</strong> <span class="doc-chip">Default</span></td>
+                  <td>Skips failed / pending / processing / abandoned / cancelled gifts entirely until they settle.</td>
+                  <td>The safe default for most churches &mdash; only real, settled money lands in Rock.</td>
+                </tr>
+                <tr>
+                  <td><strong>2 &mdash; Import all, zero out</strong></td>
+                  <td>Imports everything; sets failed / cancelled gifts to <strong>$0.00</strong> with an explanatory note.</td>
+                  <td>When you want a record that the attempt happened, with no dollar impact.</td>
+                </tr>
+                <tr>
+                  <td><strong>3 &mdash; Import all, reverse</strong></td>
+                  <td>Imports everything; creates an offsetting reversal for failed / cancelled gifts so they wash to zero.</td>
+                  <td>When the target gifts may sit in <strong>closed</strong> batches &mdash; this is the only safe cleanup mode for those (see below).</td>
+                </tr>
+                <tr>
+                  <td><strong>4 &mdash; Import all, delete</strong></td>
+                  <td>Imports everything; deletes failed / cancelled gifts (reported as <em>Transactions Removed</em>).</td>
+                  <td>When you want them gone entirely and they&rsquo;re only in <strong>open</strong> batches.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout-warm">
+            <p>
+              <strong>Closed-batch caution.</strong> Modes 2 (zero) and 4 (delete) <em>mutate the
+              original transaction</em>, which throws off the total of a batch that&rsquo;s already
+              <strong>closed / reconciled</strong> &mdash; batching only recalculates totals for
+              <em>open</em> batches. If the records you&rsquo;re cleaning up are in closed batches, use
+              <strong>mode 3 (reverse)</strong> instead: the original stays put and the offsetting entry
+              posts to a new open batch as an adjustment. Reserve modes 2 and 4 for records still in open
+              batches.
+            </p>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Cleaning Up Historical Data</h2>
+          <p>
+            The job pulls a rolling <strong>Sync Days Back</strong> window (filtered on when a gift was
+            last updated in Overflow). Settings like <em>Create Accounts If Not Mapped</em> and the
+            failed-handling modes only affect the records the job re-fetches in that window. To clean up
+            data older than the window:
+          </p>
+          <ol>
+            <li>Temporarily widen <strong>Sync Days Back</strong> to cover the date range you need to fix.</li>
+            <li>Run the job once (<strong>Run Now</strong>).</li>
+            <li>Set <strong>Sync Days Back</strong> back to its normal value (e.g. 30).</li>
+          </ol>
+          <p>Because the sync is idempotent, this re-processes the older gifts without duplicating the ones already imported.</p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Getting Support</h2>
+          <p>
+            If a problem isn&rsquo;t explained by the run summary, gather the job&rsquo;s
+            <strong>Result</strong> message and any related entries in
+            <strong>Admin Tools &rarr; System Settings &rarr; Exception List</strong>, then reach out to
+            DTS with those details. Note your <strong>Rock version</strong> and the plugin
+            <strong>version</strong> (see the <a class="text-link" href="changelog.html">Changelog</a>).
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

@@ -109,6 +109,73 @@
     });
   }
 
+  // ── Image lightbox ──────────────────────────────────────────
+  var figureImages = document.querySelectorAll(".doc-figure img");
+
+  if (figureImages.length) {
+    var lightbox = document.createElement("div");
+    lightbox.className = "lightbox";
+    lightbox.setAttribute("role", "dialog");
+    lightbox.setAttribute("aria-modal", "true");
+    lightbox.setAttribute("aria-hidden", "true");
+    lightbox.innerHTML =
+      '<button class="lightbox-close" type="button" aria-label="Close image">&times;</button>' +
+      '<img class="lightbox-img" alt="" />';
+    document.body.appendChild(lightbox);
+
+    var lightboxImg = lightbox.querySelector(".lightbox-img");
+    var lastFocused = null;
+
+    function openLightbox(src, alt) {
+      lightboxImg.src = src;
+      lightboxImg.alt = alt || "";
+      lastFocused = document.activeElement;
+      lightbox.classList.add("is-open");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.classList.add("lightbox-active");
+      lightbox.querySelector(".lightbox-close").focus();
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove("is-open");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("lightbox-active");
+      lightboxImg.src = "";
+      if (lastFocused && typeof lastFocused.focus === "function") {
+        lastFocused.focus();
+      }
+    }
+
+    figureImages.forEach(function (img) {
+      img.classList.add("is-zoomable");
+      img.setAttribute("role", "button");
+      img.setAttribute("tabindex", "0");
+      img.setAttribute("aria-label", "Expand image" + (img.alt ? ": " + img.alt : ""));
+
+      img.addEventListener("click", function () {
+        openLightbox(img.currentSrc || img.src, img.alt);
+      });
+      img.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " " || event.key === "Spacebar") {
+          event.preventDefault();
+          openLightbox(img.currentSrc || img.src, img.alt);
+        }
+      });
+    });
+
+    lightbox.addEventListener("click", function (event) {
+      if (event.target !== lightboxImg) {
+        closeLightbox();
+      }
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && lightbox.classList.contains("is-open")) {
+        closeLightbox();
+      }
+    });
+  }
+
   // ── Scroll reveal ───────────────────────────────────────────
   var revealNodes = document.querySelectorAll(".reveal");
 

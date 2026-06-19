@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Installation | Overflow Gateway | DTS Dev Docs</title>
+    <meta name="description" content="Install the Overflow Gateway plugin into Rock RMS from the package and verify the gateway, admin pages, and sync job were created." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Overflow Gateway</h2>
+        <a href="./">Overview</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="sync-job.html">How the Sync Works</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="changelog.html">Changelog</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Get Started</p>
+          <h1>Installing Overflow Gateway</h1>
+          <p class="panel-intro">
+            The plugin ships as a single package that mirrors the <code>RockWeb</code> folder
+            structure, so installing is essentially a file copy plus a restart. Rock runs the
+            plugin&rsquo;s migrations automatically on the next startup &mdash; they create the
+            <strong>Overflow Financial Gateway</strong>, the <strong>Overflow admin pages</strong>,
+            and the <strong>Overflow Sync Job</strong> for you. No SQL scripts or Rock Shop account
+            are needed.
+          </p>
+          <div class="doc-chip-row">
+            <span class="doc-chip">Manual install</span>
+            <span class="doc-chip">Rock RMS 16.13+</span>
+          </div>
+          <p class="download-row">
+            <a class="btn btn-primary" href="com.overflow.Gateway-1.0.4.zip" download>Download the plugin package (v1.0.4)</a>
+          </p>
+          <div class="callout callout-warm">
+            <p>
+              <strong>Heads up &mdash; this restarts Rock.</strong> Installing or updating the plugin
+              drops a new DLL into <code>Bin</code>, which recycles the application pool and
+              <strong>restarts Rock</strong>. Active users are briefly logged out and in-progress
+              requests are interrupted, so install during a low-traffic window.
+            </p>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Before You Start</h2>
+          <ul>
+            <li><strong>Back up</strong> the Rock database and the <code>RockWeb</code> folder.</li>
+            <li>Confirm you&rsquo;re on <strong>Rock 16.13 or later</strong>.</li>
+            <li>Download the install package (button above): <code>com.overflow.Gateway-1.0.4.zip</code>.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>What&rsquo;s in the Package</h2>
+          <p>The zip mirrors the <code>RockWeb</code> layout, so each item drops into the matching folder:</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Package item</th><th>Copies to</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>Bin\com.overflow.Gateway.dll</code></td><td><code>RockWeb\Bin\</code></td></tr>
+                <tr><td><code>Plugins\com_overflow\Gateway\*.obs.js</code> (+ <code>.map</code>)</td><td><code>RockWeb\Plugins\com_overflow\Gateway\</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Install Steps</h2>
+          <ol>
+            <li><strong>Back up</strong> the Rock database and the <code>RockWeb</code> folder.</li>
+            <li>Unzip <code>com.overflow.Gateway-1.0.4.zip</code>.</li>
+            <li>
+              Copy the <code>Bin</code> and <code>Plugins</code> folders into your site&rsquo;s
+              <code>RockWeb</code> folder, merging when prompted:
+              <pre><code>…\RockWeb\Bin\com.overflow.Gateway.dll
+…\RockWeb\Plugins\com_overflow\Gateway\*.obs.js</code></pre>
+            </li>
+            <li>
+              <strong>Restart Rock</strong> &mdash; recycle the application pool, or use
+              <em>Admin Tools &rarr; Power Tools &rarr; Restart Rock</em>. Dropping a new DLL into
+              <code>Bin</code> usually recycles the app automatically.
+            </li>
+            <li>
+              On startup, the plugin migrations run automatically and create the gateway, admin
+              pages, and job.
+            </li>
+          </ol>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Verify the Install</h2>
+          <p>Three quick checks confirm everything was created:</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Check</th><th>Where</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>The <strong>Overflow</strong> admin page loads with <strong>Campaign Maps</strong> and <strong>Person Maps</strong> tabs</td>
+                  <td>Browse to <code>/overflow</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Overflow Financial Gateway</strong> exists</td>
+                  <td>Admin Tools &rarr; System Settings &rarr; Financial Gateways</td>
+                </tr>
+                <tr>
+                  <td><strong>Overflow Sync Job</strong> exists</td>
+                  <td>Admin Tools &rarr; System Settings &rarr; Jobs Administration</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Once these are present, continue to the <a class="text-link" href="setup.html">Setup Guide</a> to connect and configure the plugin.</p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Upgrading an Existing Install</h2>
+          <p>
+            Same process &mdash; replace the DLL and the <code>.obs.js</code> files, then restart.
+            Migrations are <strong>idempotent</strong>: only new ones run, and your settings, campaign
+            maps, person links, and synced data are preserved.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Uninstall / Rollback</h2>
+          <p>To remove the plugin code:</p>
+          <ol>
+            <li>Delete <code>RockWeb\Bin\com.overflow.Gateway.dll</code>.</li>
+            <li>Delete the <code>RockWeb\Plugins\com_overflow\Gateway\</code> folder.</li>
+            <li>Restart Rock.</li>
+          </ol>
+          <p>
+            The database objects &mdash; the mapping tables
+            (<code>_com_dtschurch_OverflowPersonMap</code>, <code>_com_dtschurch_OverflowCampaignMap</code>),
+            the gateway, the admin pages, and the job &mdash; remain in the database unless you remove
+            them manually. This is intentional so your synced financial history isn&rsquo;t lost.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How the Sync Works | Overflow Gateway | DTS Dev Docs</title>
+    <meta name="description" content="How the Overflow Sync Job works — the four stages, how donors and campaigns are matched, and how stock, crypto, refunds, and batching are handled." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div>
+      <div class="glow glow-b"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <header id="site-header"></header>
+
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Overflow Gateway</h2>
+        <a href="./">Overview</a>
+        <a href="installation.html">Installation</a>
+        <a href="setup.html">Setup Guide</a>
+        <a href="sync-job.html">How the Sync Works</a>
+        <a href="troubleshooting.html">Troubleshooting</a>
+        <a href="changelog.html">Changelog</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Reference</p>
+          <h1>How the Sync Works</h1>
+          <p class="panel-intro">
+            One Rock job &mdash; the <strong>Overflow Sync Job</strong> &mdash; drives everything. It
+            uses the credentials and settings saved on the gateway, runs four independent stages, and
+            reports a detailed summary every time. This page explains what each stage does, how records
+            are matched, and how special gift types are handled, so you can read a run summary with
+            confidence.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>The Four Stages</h2>
+          <p>
+            Each stage can be toggled independently on the job (Setup Step&nbsp;C). They run in order,
+            and each adds its own block to the run summary. If one stage hits a problem, the others
+            still run; the job reports a warning at the end.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Stage</th><th>What it does</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1. Sync People</strong></td>
+                  <td>Pulls Overflow donor profiles, finds or creates the matching Rock <strong>Person</strong>, and records a durable link between the donor and that person.</td>
+                </tr>
+                <tr>
+                  <td><strong>2. Sync Subscriptions</strong></td>
+                  <td>Pulls Overflow subscriptions (recurring gifts) into Rock <strong>scheduled transactions</strong>, including the saved payment method and giving detail.</td>
+                </tr>
+                <tr>
+                  <td><strong>3. Sync Transactions</strong></td>
+                  <td>Pulls contributions from the rolling window into Rock <strong>financial transactions</strong>. One-time gifts stand alone; recurring gifts are linked to their scheduled transaction.</td>
+                </tr>
+                <tr>
+                  <td><strong>4. Perform Batching</strong></td>
+                  <td>Groups the synced transactions into Rock <strong>batches</strong> by date / campus / payment method (per your gateway settings) and recalculates each batch&rsquo;s control amount.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            <p>
+              <strong>Window note:</strong> only the <em>transactions</em> stage uses <strong>Sync Days
+              Back</strong> (30 by default). People and subscriptions always pull in full.
+            </p>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>How People Are Matched</h2>
+          <p>To avoid duplicates, the sync matches an Overflow donor to a Rock person in this order:</p>
+          <ol>
+            <li><strong>By existing link.</strong> If the donor is already linked to a Rock person, that record is used.</li>
+            <li><strong>By identity.</strong> Otherwise it looks for a Rock person matching the donor&rsquo;s first name, last name, and email.</li>
+            <li><strong>Create new.</strong> If there&rsquo;s still no match, a new Rock person is created.</li>
+          </ol>
+          <p>
+            Either way, the donor and person are tied together by a <strong>Person Map</strong> (the
+            durable Overflow-donor &harr; Rock-person link). Future runs reuse that map, so the same
+            person is updated rather than re-created. If a Rock person is later merged with another, the
+            link follows the surviving record automatically.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>How Campaigns Are Matched</h2>
+          <p>Each gift references an Overflow campaign (and optionally a subcampaign). The sync resolves the Rock account like this:</p>
+          <div class="architecture-map">
+            <article class="architecture-node">
+              <h3>Mapped</h3>
+              <p>A <strong>Campaign Map</strong> links the campaign / subcampaign to a Rock Financial Account &mdash; the gift posts there.</p>
+            </article>
+            <article class="architecture-node">
+              <h3>Unmapped &rarr; fallback</h3>
+              <p>No map, but the gateway has a default <strong>Account</strong> &mdash; the gift posts to the fallback account.</p>
+            </article>
+            <article class="architecture-node">
+              <h3>Unmapped &rarr; auto-create</h3>
+              <p>No map, and <strong>Create Accounts If Not Mapped</strong> is on &mdash; a Rock account and map are created automatically, then the gift posts there.</p>
+            </article>
+            <article class="architecture-node">
+              <h3>Unmapped &rarr; skipped</h3>
+              <p>No map, no default, auto-create off &mdash; the gift is <strong>skipped</strong> and listed in the Skip Reason Breakdown.</p>
+            </article>
+          </div>
+          <p>
+            <strong>Auto-created accounts</strong> are named from the campaign and subcampaign names
+            (truncated to Rock&rsquo;s 50-character limit), created flat (no parent, campus, or GL
+            code), and the creation count appears as an <strong>Accounts Created</strong> line in the
+            summary. The behavior is idempotent &mdash; later runs reuse the same map.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Special Gift Handling</h2>
+          <p>Overflow specializes in non-cash giving, so a few gift types get special treatment:</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Type</th><th>How it&rsquo;s handled</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Stock</strong></td>
+                  <td>Only synced once the gift reaches <em>liquidation complete</em> (the proceeds are final). Uses the gateway&rsquo;s <strong>Stock Currency Type</strong> (Non-Cash by default).</td>
+                </tr>
+                <tr>
+                  <td><strong>Crypto</strong></td>
+                  <td>Only synced once the gift is <em>paid out</em>. Uses the gateway&rsquo;s <strong>Crypto Currency Type</strong>, or the underlying card/ACH method if that&rsquo;s left blank.</td>
+                </tr>
+                <tr>
+                  <td><strong>Refunds &amp; voids</strong></td>
+                  <td>A refunded or voided gift creates an offsetting <strong>negative</strong> transaction with the same date and amount, linked to the original so Rock&rsquo;s UI shows it as a refund. The two net to zero.</td>
+                </tr>
+                <tr>
+                  <td><strong>Chargebacks</strong></td>
+                  <td>Handled the same way as a refund &mdash; an offsetting reversal linked to the original, carrying a &ldquo;Chargeback on &lt;date&gt;&rdquo; note.</td>
+                </tr>
+                <tr>
+                  <td><strong>Failed / pending</strong></td>
+                  <td>Governed by the <strong>Failed Transaction Handling</strong> setting. By default these are <em>not</em> imported until they settle. See <a class="text-link" href="troubleshooting.html">Troubleshooting</a> for the four modes.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            <p>
+              Reversals (refund / void / chargeback) always wash to zero regardless of the Failed
+              Transaction Handling setting &mdash; that setting only governs <em>failed and cancelled</em>
+              gifts.
+            </p>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Idempotency &amp; Resilience</h2>
+          <ul>
+            <li><strong>No duplicates.</strong> Each contribution is keyed by its Overflow ID (refunds use a <code>-R</code> suffix). Re-running the job updates the existing Rock transaction instead of creating a new one.</li>
+            <li><strong>One bad record won&rsquo;t poison the run.</strong> Records are saved individually, so a single failure is counted as a skip with a reason and the rest of the batch still processes.</li>
+            <li><strong>Re-runs are safe.</strong> Because matching and keying are durable, you can run the job as often as you like &mdash; on the schedule or via <em>Run Now</em> &mdash; without risk of double-counting.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Reading the Run Summary</h2>
+          <p>After every run, the job&rsquo;s <strong>Result</strong> message reports, per stage:</p>
+          <ul>
+            <li><strong>Created / Updated / Skipped</strong> counts for the records it processed.</li>
+            <li><strong>Accounts Created</strong> &mdash; how many Rock accounts were auto-created (when that setting is on).</li>
+            <li><strong>Transactions Removed</strong> &mdash; used by Failed Transaction Handling mode 4.</li>
+            <li>
+              <strong>Skip Reason Breakdown</strong> &mdash; grouped reasons with up to five human-readable
+              examples each: campaign / subcampaign <strong>names</strong> (with the Overflow ID in
+              brackets), the dollar <strong>amount</strong>, and the <strong>donor name</strong>. This is
+              the fastest way to see what didn&rsquo;t import and why.
+            </li>
+          </ul>
+          <p>If any stage caught an error, the job ends with a warning so it&rsquo;s visible in the Jobs grid.</p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Running On Demand</h2>
+          <p>
+            You don&rsquo;t have to wait for the schedule &mdash; click <strong>Run Now</strong> on the
+            Overflow Sync Job at any time. Because the sync is idempotent, an on-demand run alongside the
+            scheduled one is safe.
+          </p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>What the Sync Does Not Do</h2>
+          <ul>
+            <li>It doesn&rsquo;t push gifts entered in Rock back to Overflow &mdash; the giving direction is Overflow &rarr; Rock.</li>
+            <li>It doesn&rsquo;t import gifts outside the configured transactions window unless you widen <strong>Sync Days Back</strong>.</li>
+            <li>It doesn&rsquo;t reconcile or close batches for you &mdash; batching only groups transactions and recalculates open-batch totals.</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+
+    <script src="../../assets/catalog.js"></script>
+    <script src="../../assets/nav.js"></script>
+    <script src="../../assets/site.js"></script>
+  </body>
+</html>
