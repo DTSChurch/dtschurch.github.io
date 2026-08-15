@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rock Records Docs | DTS Dev Docs</title>
+    <meta name="description" content="Rock Records documentation for typed records, entity associations, templates, reporting, and workflow automation in Rock RMS." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true">
+      <div class="glow glow-a"></div><div class="glow glow-b"></div><div class="grid-overlay"></div>
+    </div>
+    <header id="site-header"></header>
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Rock Records</h2>
+        <a href="./">Overview</a>
+        <a href="configuration.html">Configuration</a>
+        <a href="administration.html">Administration</a>
+        <a href="templates-reporting.html">Templates &amp; Reporting</a>
+        <a href="automation-integrations.html">Automation &amp; Integrations</a>
+        <div class="docs-page-toc">
+          <p class="docs-subnav-label">On This Page</p>
+          <nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav>
+        </div>
+      </aside>
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Rock Records</p>
+          <h1>Structured records that can follow any Rock entity</h1>
+          <p class="panel-intro">Rock Records adds configurable record types, custom attributes, entity associations, Lava-driven detail views and PDFs, and workflow actions for creating and maintaining records. It is useful when information needs a durable home outside a single workflow while remaining connected to people, groups, or other Rock entities.</p>
+          <div class="doc-chip-row">
+            <span class="doc-chip">Version 1.1.3</span>
+            <span class="doc-chip">Obsidian UI</span>
+            <span class="doc-chip">Rock 17.2.4</span>
+            <span class="doc-chip">Rock 18.2.4</span>
+            <span class="doc-chip">Rock 19.1.8</span>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Core Model</h2>
+          <div class="architecture-map">
+            <article class="architecture-node">
+              <h3>Record Type</h3>
+              <p>Defines the schema and presentation: category, active state, record attributes, manual-entry preference, entity mappings, and Lava templates.</p>
+              <div class="architecture-children">
+                <article class="architecture-node"><h3>Record</h3><p>Stores the name, description, timestamps, workflow metadata, and values for the attributes defined by its record type.</p></article>
+                <article class="architecture-node"><h3>Record Association</h3><p>Connects a record to another Rock entity by entity type and entity ID.</p></article>
+                <article class="architecture-node"><h3>Entity Type Mapping</h3><p>Declares which Rock entity types may use a record type and powers context-aware record lists.</p></article>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Installed Experience</h2>
+          <figure class="doc-figure">
+            <img src="images/record-types.png" alt="Rock Records record type navigation showing a neutral example category" />
+            <figcaption>Record types are organized with Rock categories. The label shown here is neutral demonstration data from a non-production Rock instance.</figcaption>
+          </figure>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Surface</th><th>Default Route</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td>Records</td><td><code>/records</code></td><td>Browse record-type categories and manage record types.</td></tr>
+                <tr><td>Record Type Detail</td><td><code>/records/type/{RecordTypeId}</code></td><td>Configure a type and review its records.</td></tr>
+                <tr><td>Record Detail</td><td><code>/records/{RecordId}</code></td><td>View or edit one record and download its PDF when configured.</td></tr>
+                <tr><td>Person Records</td><td><code>/person/{PersonId}/records</code></td><td>Show records associated with a person when their types allow person-profile display.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Primary Blocks</h2>
+          <div class="cards">
+            <article class="card"><p class="card-kicker">Browse</p><h3>Record Type List</h3><p>Category-aware list with name, description, active state, custom grid columns, and security-aware actions.</p></article>
+            <article class="card"><p class="card-kicker">Configure</p><h3>Record Type Detail</h3><p>Edits templates, attributes, category, display options, and allowed entity types.</p></article>
+            <article class="card"><p class="card-kicker">Operate</p><h3>Record List</h3><p>Context-aware grid with configurable columns, attribute filters, date filters, and optional PDF actions.</p></article>
+            <article class="card"><p class="card-kicker">Present</p><h3>Record Detail</h3><p>Renders standard fields or a Lava detail template and exposes PDF generation when a report template exists.</p></article>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Documentation</h2>
+          <div class="link-grid">
+            <a class="link-card" href="configuration.html"><p class="eyebrow">Setup</p><h3>Configuration</h3><p>Create record types, add attributes, map entity types, and apply security.</p></a>
+            <a class="link-card" href="administration.html"><p class="eyebrow">Daily Use</p><h3>Administration</h3><p>Manage record grids, detail views, associations, filters, and logs.</p></a>
+            <a class="link-card" href="templates-reporting.html"><p class="eyebrow">Presentation</p><h3>Templates &amp; Reporting</h3><p>Use Lava templates, filters, merge fields, and on-demand PDF output.</p></a>
+            <a class="link-card" href="automation-integrations.html"><p class="eyebrow">Extensibility</p><h3>Automation &amp; Integrations</h3><p>Build workflow-driven records and use the authenticated picker APIs and field types.</p></a>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Authorization Boundary</h2>
+          <div class="callout callout-warm"><p>Rock Records checks Rock authorization when listing, viewing, editing, deleting, and selecting record types and records. Configure security deliberately for each record type and test with a non-administrator account before exposing a record surface.</p></div>
+        </section>
+      </div>
+    </main>
+    <script src="../../assets/catalog.js"></script><script src="../../assets/nav.js"></script><script src="../../assets/site.js"></script>
+  </body>
+</html>

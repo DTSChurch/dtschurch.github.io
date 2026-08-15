@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administration | Rock Records | DTS Dev Docs</title>
+    <meta name="description" content="Administer Rock Records lists, details, associations, filters, PDF actions, and logging." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true"><div class="glow glow-a"></div><div class="glow glow-b"></div><div class="grid-overlay"></div></div>
+    <header id="site-header"></header>
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Rock Records</h2><a href="./">Overview</a><a href="configuration.html">Configuration</a><a href="administration.html">Administration</a><a href="templates-reporting.html">Templates &amp; Reporting</a><a href="automation-integrations.html">Automation &amp; Integrations</a>
+        <div class="docs-page-toc"><p class="docs-subnav-label">On This Page</p><nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav></div>
+      </aside>
+      <div class="docs-main">
+        <section class="panel reveal"><p class="eyebrow">Daily Use</p><h1>Administration</h1><p class="panel-intro">The installed Obsidian blocks support category-based type management, context-aware record grids, standard or Lava-rendered detail views, entity associations, and on-demand PDF output.</p></section>
+
+        <section class="panel reveal">
+          <h2>Manage Record Types</h2>
+          <p>The Records page combines Rock&rsquo;s category tree with Record Type List. Select a category to display its types, then open a type to edit its configuration and view the records that belong to it.</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Column or Action</th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td>Name and Description</td><td>Identify each type in the selected category.</td></tr>
+              <tr><td>Active</td><td>Shows whether the type participates in active lists and pickers.</td></tr>
+              <tr><td>Custom Grid Columns</td><td>Includes record-type attributes selected through Rock&rsquo;s customized grid settings.</td></tr>
+              <tr><td>Add / Edit / Delete</td><td>Available only when the current person passes the corresponding Rock authorization checks.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Add and Edit Records</h2>
+          <figure class="doc-figure">
+            <img src="images/add-record.png" alt="Blank Add Record form with Name and Description fields" />
+            <figcaption>A blank record form captured from a non-production Rock development instance. No record was saved.</figcaption>
+          </figure>
+          <p>A record stores Name and Description plus the custom attributes defined by its type. When the page supplies a record type, the form loads that type and its secured public-edit attributes. Association parameters can also carry the owning entity into the detail flow.</p>
+          <ul>
+            <li>If automation does not provide a name, the record type&rsquo;s Name Template can generate one after attributes are saved.</li>
+            <li>A record can be associated with people, groups, or any other mapped entity type.</li>
+            <li>Record detail enforces attribute security when loading values for view or edit.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Configure Record List</h2>
+          <p>Record List can be pinned to one record type or resolve type and entity context from the current page. Its block settings control the linked detail page and the standard columns shown.</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Setting</th><th>Default</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td>Show Name Column</td><td>On</td><td>Displays the generated or supplied record name.</td></tr>
+              <tr><td>Show Record Type Column</td><td>On</td><td>Identifies the type in mixed-type grids.</td></tr>
+              <tr><td>Show Description Column</td><td>On</td><td>Displays the record description.</td></tr>
+              <tr><td>Show PDF Download Column</td><td>On</td><td>Offers a download when the record type has a report template.</td></tr>
+              <tr><td>Created / Modified DateTime</td><td>Off</td><td>Adds Rock entity timestamps.</td></tr>
+              <tr><td>Workflow Created DateTime</td><td>Off</td><td>Adds the source workflow creation timestamp with a configurable heading.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Filter and Sort</h2>
+          <ul>
+            <li>Use Rock customized-grid settings to choose visible record attributes and sorting.</li>
+            <li>Defined Value, Campus, and Single Select grid attributes receive option-based filters.</li>
+            <li>Workflow-created date filtering supports start and end dates for workflow-derived records.</li>
+            <li>Context pages restrict the available record types to types mapped to the current entity and authorized for the current person.</li>
+          </ul>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Person Profile Records</h2>
+          <p>The plugin installs a Records page under the Person Profile. It resolves the profile person, gathers all of that person&rsquo;s aliases, and shows associated records whose types are both authorized and configured for person-profile display.</p>
+          <div class="callout callout-warm"><p>Do not use person-profile display as a substitute for security. The record type and record still need explicit View permissions appropriate for the staff who open the profile.</p></div>
+        </section>
+
+        <section class="panel">
+          <h2>Diagnostics</h2>
+          <p>Version 1.1.3 writes plugin diagnostics to <strong>Admin &rarr; System Settings &rarr; Rock Logs</strong> under the <code>org.tpcc.Records</code> category.</p>
+          <ul>
+            <li>Add the <code>org.tpcc.Records</code> category at <strong>Information</strong> for operational entries.</li>
+            <li>Use <strong>Debug</strong> for detailed record-list resolution and workflow-action traces.</li>
+            <li>Routine plugin diagnostics no longer create entries in Rock&rsquo;s exception log; genuine errors retain their stack traces.</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+    <script src="../../assets/catalog.js"></script><script src="../../assets/nav.js"></script><script src="../../assets/site.js"></script>
+  </body>
+</html>

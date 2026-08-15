@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configuration | Rock Records | DTS Dev Docs</title>
+    <meta name="description" content="Configure Rock Records record types, custom attributes, entity mappings, templates, and security." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true"><div class="glow glow-a"></div><div class="glow glow-b"></div><div class="grid-overlay"></div></div>
+    <header id="site-header"></header>
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Rock Records</h2><a href="./">Overview</a><a href="configuration.html">Configuration</a><a href="administration.html">Administration</a><a href="templates-reporting.html">Templates &amp; Reporting</a><a href="automation-integrations.html">Automation &amp; Integrations</a>
+        <div class="docs-page-toc"><p class="docs-subnav-label">On This Page</p><nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav></div>
+      </aside>
+      <div class="docs-main">
+        <section class="panel reveal">
+          <p class="eyebrow">Setup</p><h1>Configuration</h1>
+          <p class="panel-intro">Start in <strong>Admin Tools &rarr; Installed Plugins &rarr; Records</strong>. A record type defines what a record stores, where it can appear, and how it is presented.</p>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Create a Record Type</h2>
+          <figure class="doc-figure">
+            <img class="is-zoomable" src="images/add-record-type.png" alt="Blank Add Record Type form in Rock Records" tabindex="0" />
+            <figcaption>The blank configuration form captured from a non-production Rock development instance. No record type was saved.</figcaption>
+          </figure>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Field</th><th>What It Controls</th></tr></thead>
+            <tbody>
+              <tr><td>Name and Description</td><td>Administrator-facing identity and explanatory text for the record type.</td></tr>
+              <tr><td>Active</td><td>Whether the type is available in active type queries and picker trees.</td></tr>
+              <tr><td>Category</td><td>Where the type appears in the Records category tree.</td></tr>
+              <tr><td>Allows Manual Add</td><td>Records the type&rsquo;s manual-entry preference for user-facing experiences.</td></tr>
+              <tr><td>Show On Person Profiles</td><td>Makes the type eligible for the person-profile Records surface.</td></tr>
+              <tr><td>Name Template</td><td>Lava used to generate a record name when automation does not provide one.</td></tr>
+              <tr><td>Detail Header Template</td><td>Lava rendered above the record detail content.</td></tr>
+              <tr><td>Detail Template</td><td>Lava replacement for the standard detail presentation.</td></tr>
+              <tr><td>Report PDF Template</td><td>Lava transformed into an on-demand Letter-size PDF.</td></tr>
+              <tr><td>Allowed Entity Types</td><td>Rock entity types that records of this type may be associated with.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Add Record Attributes</h2>
+          <p>Rock Records uses Rock&rsquo;s Attribute system for type-specific fields. Record attributes are qualified to one record type, so two types can have different schemas without adding columns to the plugin tables.</p>
+          <ol>
+            <li>Save the record type so it has an identifier.</li>
+            <li>Add attributes for the information each record should hold.</li>
+            <li>Mark attributes as grid columns when staff should see or filter them in Record List.</li>
+            <li>Set field-type qualifiers and attribute security just as you would for other Rock entities.</li>
+          </ol>
+          <div class="callout"><p><strong>Filter support:</strong> grid attributes using Defined Value, Campus, or Single Select field types receive option-based filters in Record List. Other attribute types can still be displayed as grid columns.</p></div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Choose Allowed Entity Types</h2>
+          <p>Entity type mappings define the contexts in which a record type is relevant. For example, a type mapped to Person can be associated with a person; a type mapped to Group can be associated with a group. A record may have multiple associations.</p>
+          <ul>
+            <li>Choose only the entity types the record type actually supports.</li>
+            <li>Enable <strong>Show On Person Profiles</strong> only for types intended for person context.</li>
+            <li>Use the context-aware Record List block on entity detail pages to show only allowed, authorized types.</li>
+          </ul>
+        </section>
+
+        <section class="panel">
+          <h2>Plan Security Before Data</h2>
+          <p>Record types and records are secured entities. List blocks and picker APIs call Rock authorization checks for the current person before returning or changing data.</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Permission</th><th>Effect</th></tr></thead>
+            <tbody>
+              <tr><td>View</td><td>Controls whether a type or record appears in lists, detail views, and authenticated picker trees.</td></tr>
+              <tr><td>Edit</td><td>Controls add, edit, and delete actions in the Obsidian blocks.</td></tr>
+              <tr><td>Administrate</td><td>Controls access to security administration for a record type.</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout callout-warm"><p>Test every configured surface as a representative non-administrator. Administrator access does not prove that the intended staff role can see the same record type, record, or picker value.</p></div>
+        </section>
+
+        <section class="panel">
+          <h2>Configuration Checklist</h2>
+          <ul>
+            <li>Name, description, category, and active state are correct.</li>
+            <li>Record attributes have the right field types, qualifiers, grid flags, and security.</li>
+            <li>Allowed entity types match the association design.</li>
+            <li>Person-profile display is enabled only when intended.</li>
+            <li>Name, detail, header, and report templates render with a safe sample record.</li>
+            <li>View and Edit permissions work for both administrators and target staff roles.</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+    <script src="../../assets/catalog.js"></script><script src="../../assets/nav.js"></script><script src="../../assets/site.js"></script>
+  </body>
+</html>

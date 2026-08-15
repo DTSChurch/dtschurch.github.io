@@ -1,0 +1,28 @@
+{
+  "capturedAt": "2026-08-15T02:53:35-05:00",
+  "sourceSystem": "non-production Rock instance",
+  "sourceEnvironment": "non-production Rock development instance",
+  "rockVersion": "18.3.5",
+  "pluginVersion": "1.1.3",
+  "writePolicy": "read-only capture; no Rock object was created or changed",
+  "images": [
+    {
+      "file": "record-types.png",
+      "sourcePage": "Page 3151",
+      "sourceSurface": "Records / Record Type List",
+      "processing": "cropped to the record-type panel; client category label replaced with neutral demonstration text"
+    },
+    {
+      "file": "add-record-type.png",
+      "sourcePage": "Page 3152 with RecordTypeId=0",
+      "sourceSurface": "Add Record Type",
+      "processing": "cropped to the blank form; user identity and environment chrome excluded; no form submission"
+    },
+    {
+      "file": "add-record.png",
+      "sourcePage": "Page 3153 with RecordId=0",
+      "sourceSurface": "Add Record",
+      "processing": "captured as the blank form only; no record type, record values, or user identity visible; no form submission"
+    }
+  ]
+}

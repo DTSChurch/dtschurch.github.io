@@ -53,6 +53,24 @@ window.DTS_CATALOG = [
     ]
   },
   {
+    name: "Rock Records",
+    href: "/projects/rock-records/",
+    group: "Rock Plugins",
+    desc: "Typed records, custom attributes, entity associations, Lava templates, PDF reporting, and workflow automation for Rock RMS.",
+    badges: ["Custom Plugin", "Obsidian", "Workflow Actions"],
+    showInNav: true,
+    showInCatalog: true,
+    searchable: true,
+    featured: true,
+    quickLinks: [
+      { page: "Overview & Architecture", href: "/projects/rock-records/" },
+      { page: "Configuration", href: "/projects/rock-records/configuration.html" },
+      { page: "Administration", href: "/projects/rock-records/administration.html" },
+      { page: "Templates & Reporting", href: "/projects/rock-records/templates-reporting.html" },
+      { page: "Automation & Integrations", href: "/projects/rock-records/automation-integrations.html" }
+    ]
+  },
+  {
     name: "Planning Center Sync",
     href: "/projects/pco-sync/",
     group: "Rock Plugins",
