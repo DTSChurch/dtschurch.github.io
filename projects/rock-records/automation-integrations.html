@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Automation &amp; Integrations | Rock Records | DTS Dev Docs</title>
+    <meta name="description" content="Automate Rock Records with workflow actions, field types, entity associations, and authenticated picker APIs." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body>
+    <div class="site-bg" aria-hidden="true"><div class="glow glow-a"></div><div class="glow glow-b"></div><div class="grid-overlay"></div></div>
+    <header id="site-header"></header>
+    <main class="page docs-shell">
+      <aside class="docs-nav reveal">
+        <h2>Rock Records</h2><a href="./">Overview</a><a href="configuration.html">Configuration</a><a href="administration.html">Administration</a><a href="templates-reporting.html">Templates &amp; Reporting</a><a href="automation-integrations.html">Automation &amp; Integrations</a>
+        <div class="docs-page-toc"><p class="docs-subnav-label">On This Page</p><nav class="docs-page-toc-links" data-page-toc aria-label="On this page"></nav></div>
+      </aside>
+      <div class="docs-main">
+        <section class="panel reveal"><p class="eyebrow">Extensibility</p><h1>Automation &amp; Integrations</h1><p class="panel-intro">Rock Records includes three workflow actions, four field types, authenticated picker endpoints, and generic associations for connecting records to the rest of Rock.</p></section>
+
+        <section class="panel reveal">
+          <h2>Workflow Actions</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Action</th><th>Use It To</th><th>Important Inputs</th></tr></thead>
+            <tbody>
+              <tr><td>Create Record Type From Workflow Type</td><td>Create or reuse a record type from a workflow type, copy workflow attributes, and optionally backfill workflows as records.</td><td>Source workflow type, category, optional name/description, copy/include-inactive options, association attribute keys.</td></tr>
+              <tr><td>Record Upsert</td><td>Create or update a record, map workflow values into record attributes, preserve workflow timestamps, and optionally associate an entity.</td><td>Record reference, name, description, Record Mapping value, entity type and entity reference.</td></tr>
+              <tr><td>Associate Record</td><td>Connect an existing record to a Person, Group, Attribute Matrix, or another Rock entity.</td><td>Record workflow attribute, entity type, entity reference, optional replace-existing switch and result attribute.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Workflow Migration Pattern</h2>
+          <ol>
+            <li>Create a category for the new record types.</li>
+            <li>Run <strong>Create Record Type From Workflow Type</strong> with copy disabled to inspect the generated schema first.</li>
+            <li>Review copied attribute field types, qualifiers, grid flags, and security.</li>
+            <li>Configure Name, Detail, Header, and Report templates.</li>
+            <li>If required, rerun with <strong>Copy Existing Workflows</strong> and decide whether inactive workflows belong in the archive.</li>
+            <li>Use <strong>Record Upsert</strong> in the source workflow for future records.</li>
+          </ol>
+          <div class="callout"><p>The migration action avoids duplicate record types with the same name and category, and avoids duplicate records when a matching source workflow is already represented.</p></div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Field Types</h2>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Field Type</th><th>Storage / Platform</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td>Record Type</td><td>RecordType GUID; WebForms and Obsidian</td><td>Single-select authenticated tree picker grouped by record-type category.</td></tr>
+              <tr><td>Record</td><td>Record GUID; WebForms and Obsidian</td><td>Single-select authenticated tree picker grouped by record type.</td></tr>
+              <tr><td>Record Mapping</td><td>Serialized record type and attribute mappings; WebForms system field</td><td>Maps record attributes to workflow attributes or Lava values for Record Upsert.</td></tr>
+              <tr><td>Workflow Record Attribute</td><td>Workflow configuration</td><td>Selects the workflow attribute that holds a Record reference for Associate Record.</td></tr>
+            </tbody>
+          </table></div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Authenticated Picker APIs</h2>
+          <p>The Record and Record Type field types call two authenticated POST endpoints. Both return Rock universal tree-picker items and filter selectable types or records through Rock View authorization.</p>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Endpoint</th><th>Tree Shape</th></tr></thead>
+            <tbody>
+              <tr><td><code>/api/v2/plugins/org.tpcc/recordtypes/tree</code></td><td>Categories as folders, active authorized record types as selectable items.</td></tr>
+              <tr><td><code>/api/v2/plugins/org.tpcc/records/tree</code></td><td>Active authorized record types as folders, authorized records as selectable items.</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout callout-warm"><p>These are picker endpoints, not general-purpose CRUD APIs. They require an authenticated Rock request and return only data the current person is authorized to view.</p></div>
+        </section>
+
+        <section class="panel reveal">
+          <h2>Association Behavior</h2>
+          <ul>
+            <li>Standard entities are associated by entity type and entity ID.</li>
+            <li>Person references accept Person Alias or Person GUIDs and normalize the association to the Person entity.</li>
+            <li>Attribute Matrix associations can scan matrix items for Person and Group fields and create multiple associations.</li>
+            <li>Associate Record can remove existing associations of the same entity type before adding the new target.</li>
+          </ul>
+        </section>
+
+        <section class="panel">
+          <h2>Operational Logging</h2>
+          <p>Version 1.1.3 logs Record List, Record Detail, Associate Record, and Create Record Type From Workflow Type diagnostics through Rock&rsquo;s logging system. Add the <code>org.tpcc.Records</code> category in Rock Logs at Information or Debug when validating an automation.</p>
+          <a class="btn btn-ghost" href="https://github.com/DTSChurch/records">View Rock Records source</a>
+        </section>
+      </div>
+    </main>
+    <script src="../../assets/catalog.js"></script><script src="../../assets/nav.js"></script><script src="../../assets/site.js"></script>
+  </body>
+</html>
